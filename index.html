@@ -422,6 +422,9 @@
                 <option value="qa">בדיקות תוכנה ואוטומציה (QA)</option>
                 <option value="networks">ניהול רשתות ואבטחת מידע</option>
                 <option value="aispecialist">מיישם AI בארגונים</option>
+                <option value="devops">Devops Engineer</option>
+                <option value="aimanager">AI Management EXPERT</option>
+                <option value="datamaster">Data Master - Data Analyst + BI</option>
                 <option value="custom">מותאם אישית...</option>
             </select>
         </div>
@@ -769,6 +772,42 @@
                 study: "אונליין",
                 tamatSymbol: "",
                 depositCode: ""
+            },
+            devops: {
+                name: "Devops Engineer",
+                hours: "350",
+                originalPrice: 22900,
+                code: "02447551",
+                schedule: "א'+ד', 17:30-21:15",
+                tamat: "0011010148",
+                format: "evening",
+                study: "היברידי",
+                tamatSymbol: "3528",
+                depositCode: "0240043105"
+            },
+            aimanager: {
+                name: "AI Management EXPERT",
+                hours: "180",
+                originalPrice: 12900,
+                code: "02447548",
+                schedule: "ב'+ה', 17:30-21:15",
+                tamat: "0011010148",
+                format: "evening",
+                study: "אונליין",
+                tamatSymbol: "",
+                depositCode: ""
+            },
+            datamaster: {
+                name: "Data Master - Data Analyst + BI",
+                hours: "320",
+                originalPrice: 19900,
+                code: "02447555",
+                schedule: "ב'+ה', 17:30-21:15",
+                tamat: "0011010148",
+                format: "evening",
+                study: "היברידי",
+                tamatSymbol: "3924",
+                depositCode: "0240043106"
             }
         };
 
@@ -1359,8 +1398,14 @@
                 detectedCourse = "שיווק דיגיטלי";
             } else if (text.includes("בדיקות") || text.includes("QA") || text.includes("אוטומציה")) {
                 detectedCourse = "בדיקות תוכנה ואוטומציה (QA)";
+            } else if (text.includes("Devops") || text.includes("DevOps")) {
+                detectedCourse = "Devops Engineer";
+            } else if (text.includes("Management") || text.includes("EXPERT")) {
+                detectedCourse = "AI Management EXPERT";
             } else if (text.includes("AI")) {
                 detectedCourse = "מיישם AI בארגונים";
+            } else if (text.includes("Data") || text.includes("BI") || text.includes("Analyst") || text.includes("Master")) {
+                detectedCourse = "Data Master - Data Analyst + BI";
             } else {
                 detectedCourse = els.courseSelect.options[els.courseSelect.selectedIndex].text;
             }
