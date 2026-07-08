@@ -406,6 +406,39 @@
             }
             body.print-tofes #printableTofesHe2 {
                 display: block !important;
+                padding: 15px !important;
+                line-height: 1.4 !important;
+                font-size: 13.5px !important;
+            }
+            body.print-tofes .tofes-header {
+                margin-bottom: 15px !important;
+                padding-bottom: 8px !important;
+            }
+            body.print-tofes .tofes-header img {
+                height: 48px !important;
+            }
+            body.print-tofes .tofes-title {
+                font-size: 18px !important;
+                margin-bottom: 5px !important;
+            }
+            body.print-tofes .tofes-subtitle {
+                font-size: 11px !important;
+                margin-bottom: 20px !important;
+            }
+            body.print-tofes .tofes-body p {
+                margin-bottom: 6px !important;
+                font-size: 13.5px !important;
+            }
+            body.print-tofes .tofes-body h3 {
+                margin-top: 20px !important;
+                margin-bottom: 10px !important;
+                font-size: 14.5px !important;
+            }
+            body.print-tofes .tofes-signature-area {
+                margin-top: 30px !important;
+            }
+            body.print-tofes .tofes-fill {
+                min-width: 100px !important;
             }
         }
 
@@ -567,7 +600,7 @@
             </div>
             <div class="form-group">
                 <label for="academicHours">שעות לימוד אקדמיות</label>
-                <input type="text" id="academicHours" value="395">
+                <input type="text" id="academicHours" value="400">
             </div>
         </div>
 
@@ -720,7 +753,7 @@
                     </li>
 
                     <li><span class="bold-text">מתכונת לימודים:</span> <span id="lblStudyFormat">היברידי</span></li>
-                    <li><span class="bold-text">שעות לימוד אקדמיות:</span> <span id="lblHours">395</span> שעות</li>
+                    <li><span class="bold-text">שעות לימוד אקדמיות:</span> <span id="lblHours">400</span> שעות</li>
                     
                     <!-- Dynamic price elements will be inserted here -->
                     <div id="dynamicPriceArea"></div>
@@ -829,7 +862,7 @@
         const coursePresets = {
             cyber: {
                 name: "סייבר ואבטחת מידע",
-                hours: "395",
+                hours: "400",
                 originalPrice: 25900,
                 code: "02447550",
                 schedule: "א'+ד', 17:30-21:15",
@@ -865,7 +898,7 @@
             },
             uiux: {
                 name: "עיצוב גרפי וחווית משתמש UI/UX",
-                hours: "300",
+                hours: "430",
                 originalPrice: 18900,
                 code: "02447547",
                 schedule: "ב'+ה', 17:30-21:15",
@@ -877,7 +910,7 @@
             },
             qa: {
                 name: "בדיקות תוכנה ואוטומציה (QA)",
-                hours: "375",
+                hours: "300",
                 originalPrice: 18900,
                 code: "02447549",
                 schedule: "א'+ד', 17:30-21:15",
@@ -889,7 +922,7 @@
             },
             networks: {
                 name: "ניהול רשתות ואבטחת מידע",
-                hours: "530",
+                hours: "400",
                 originalPrice: 19900,
                 code: "02447553",
                 schedule: "א'+ד', 17:30-21:15",
@@ -913,7 +946,7 @@
             },
             devops: {
                 name: "Devops Engineer",
-                hours: "350",
+                hours: "430",
                 originalPrice: 22900,
                 code: "02447551",
                 schedule: "א'+ד', 17:30-21:15",
@@ -925,7 +958,7 @@
             },
             aimanager: {
                 name: "AI Management EXPERT",
-                hours: "180",
+                hours: "40",
                 originalPrice: 12900,
                 code: "02447548",
                 schedule: "ב'+ה', 17:30-21:15",
@@ -937,7 +970,7 @@
             },
             datamaster: {
                 name: "Data Master - Data Analyst + BI",
-                hours: "320",
+                hours: "255",
                 originalPrice: 19900,
                 code: "02447555",
                 schedule: "ב'+ה', 17:30-21:15",
