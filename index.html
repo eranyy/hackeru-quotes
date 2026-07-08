@@ -1349,6 +1349,8 @@
             let detectedCourse = "";
             if (text.includes("עיצוב") || text.includes("גרפי") || text.includes("UX") || text.includes("UI")) {
                 detectedCourse = "עיצוב גרפי וחווית משתמש UI/UX";
+            } else if (text.includes("רשתות")) {
+                detectedCourse = "ניהול רשתות ואבטחת מידע";
             } else if (text.includes("סייבר") || text.includes("אבטחת מידע")) {
                 detectedCourse = "סייבר ואבטחת מידע";
             } else if (text.includes("פיתוח") || text.includes("תוכנה") || text.includes("Stack")) {
@@ -1357,8 +1359,6 @@
                 detectedCourse = "שיווק דיגיטלי";
             } else if (text.includes("בדיקות") || text.includes("QA") || text.includes("אוטומציה")) {
                 detectedCourse = "בדיקות תוכנה ואוטומציה (QA)";
-            } else if (text.includes("רשתות")) {
-                detectedCourse = "ניהול רשתות ואבטחת מידע";
             } else if (text.includes("AI")) {
                 detectedCourse = "מיישם AI בארגונים";
             } else {
