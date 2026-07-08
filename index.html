@@ -32,7 +32,7 @@
             font-family: 'Rubik', sans-serif;
             background-color: var(--bg-color);
             color: var(--text-light);
-            display: flex;
+            display: block;
             height: 100vh;
             overflow: hidden;
         }
@@ -396,8 +396,9 @@
             bottom: 0 !important;
             width: 100vw !important;
             height: 100vh !important;
-            background-color: rgba(15, 23, 42, 0.97) !important;
-            backdrop-filter: blur(10px);
+            background: radial-gradient(circle at center, #1E1B4B 0%, #0B0F19 100%) !important;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             z-index: 99999 !important;
             display: flex !important;
             justify-content: center;
@@ -406,12 +407,72 @@
         }
 
         .login-card {
-            background-color: #0F172A;
-            border: 1px solid #334155;
-            padding: 40px;
-            border-radius: 12px;
-            width: 380px;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.4);
+            background: rgba(30, 41, 59, 0.45);
+            backdrop-filter: blur(16px) saturate(180%);
+            -webkit-backdrop-filter: blur(16px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 45px 40px;
+            border-radius: 16px;
+            width: 400px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+
+        .login-card .logo-main {
+            font-size: 38px;
+            color: #FFF;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+        }
+
+        .login-card .logo-main .dot {
+            color: var(--primary-color);
+        }
+
+        .login-card .sublogo {
+            text-shadow: 0 0 10px rgba(0, 210, 122, 0.5);
+            font-weight: 800;
+        }
+
+        .login-input {
+            width: 100%;
+            padding: 14px;
+            font-size: 15px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background-color: rgba(15, 23, 42, 0.6);
+            color: white;
+            text-align: center;
+            transition: all 0.3s;
+            outline: none;
+        }
+
+        .login-input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 15px rgba(0, 210, 122, 0.25), inset 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+            font-size: 15px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary-color) 0%, #10B981 100%);
+            color: var(--text-dark);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 210, 122, 0.3);
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 210, 122, 0.5);
+        }
+
+        .login-btn:active {
+            transform: translateY(0);
         }
     </style>
 </head>
@@ -426,9 +487,9 @@
             </div>
             <h3 style="margin-bottom: 25px; color: #F8FAFC; text-align: center; font-size: 18px; font-weight: 500; direction: rtl;">מערכת הצעות מחיר - שער כניסה</h3>
             <div class="form-group" style="margin-bottom: 20px; direction: rtl;">
-                <input type="password" id="loginPassword" placeholder="הקש סיסמת כניסה לחברה..." style="width: 100%; padding: 12px; font-size: 15px; border-radius: 6px; border: 1px solid #475569; background-color: #1E293B; color: white; text-align: center;">
+                <input type="password" id="loginPassword" class="login-input" placeholder="הקש סיסמת כניסה לחברה...">
             </div>
-            <button id="btnLoginSubmit" style="width: 100%; padding: 12px; font-size: 15px; font-weight: 700; background-color: var(--primary-color); color: white; border: none; border-radius: 6px; cursor: pointer; transition: opacity 0.2s;" onmouseover="this.style.opacity=0.9" onmouseout="this.style.opacity=1">התחבר למערכת</button>
+            <button id="btnLoginSubmit" class="login-btn">התחבר למערכת</button>
             <div id="loginError" style="margin-top: 15px; color: #EF4444; font-size: 13px; text-align: center; display: none; direction: rtl;">סיסמה שגויה. אנא נסה שוב.</div>
         </div>
     </div>
