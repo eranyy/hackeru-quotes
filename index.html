@@ -519,6 +519,31 @@
                 <option value="standard">שבלונה רגילה (מחיר אחד)</option>
             </select>
         </div>
+        
+        <div class="form-group">
+            <label for="fundingType">מסלול מימון / זכאות</label>
+            <select id="fundingType">
+                <option value="standard" selected>מסלול רגיל</option>
+                <option value="vouchers">תוכנית השוברים (משרד העבודה/הקליטה)</option>
+                <option value="deposit">פיקדון לחיילים משוחררים</option>
+            </select>
+            <div id="voucherWarning" style="display: none; padding: 10px; margin-top: 8px; text-align: right; line-height: 1.4; border: 1px solid; border-radius: 6px; font-size: 12px;"></div>
+        </div>
+
+        <!-- Voucher Documents Package -->
+        <div class="import-box" id="voucherDocsPanel" style="display: none; border-color: var(--primary-color); background-color: rgba(0, 210, 122, 0.05);">
+            <label style="color: var(--primary-color); font-weight: 700; margin-bottom: 8px; display: block;">
+                📂 ערכת מסמכים לשוברים / פיקדון
+            </label>
+            <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 5px;">
+                <a href="ishur_hakara_2026.pdf" download="אישור הכרה האקריו 2026.pdf" class="btn btn-outline" style="padding: 8px; font-size: 13px; text-decoration: none; text-align: center; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                    <span>📄 הורד אישור הכרה 2026</span>
+                </a>
+                <a href="tofes_he_2.pdf" download="טופס ה2 חתום.pdf" class="btn btn-outline" style="padding: 8px; font-size: 13px; text-decoration: none; text-align: center; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                    <span>📝 הורד טופס ה'2 חתום</span>
+                </a>
+            </div>
+        </div>
 
         <div class="form-group">
             <label for="quoteValidity">תוקף ההצעה (בסוגריים)</label>
@@ -625,6 +650,14 @@
                     
                     <!-- Dynamic price elements will be inserted here -->
                     <div id="dynamicPriceArea"></div>
+
+                    <!-- PWA / Government recognition block -->
+                    <div id="lblGovernmentDetails" style="display: none; border-top: 1px dashed #E2E8F0; margin-top: 12px; padding-top: 10px;">
+                        <li style="font-weight: 700; margin-bottom: 6px; color: #0F172A; list-style-type: none;">פרטי הכרה ופיקוח ממשלתי:</li>
+                        <li style="margin-bottom: 4px; padding-right: 15px; list-style-type: none;">• סמל מוסד מוכר: <span class="bold-text">40043</span> (האקריו בע"מ)</li>
+                        <li style="margin-bottom: 4px; padding-right: 15px; list-style-type: none;">• סמל מגמה מאושרת: <span class="bold-text" id="lblTamatSymbol">-</span></li>
+                        <li id="lblDepositCodeBlock" style="margin-bottom: 4px; padding-right: 15px; display: none; list-style-type: none;">• קוד מוטב (לפיקדון): <span class="bold-text" id="lblDepositCode">-</span></li>
+                    </div>
                 </ul>
 
                 <div class="intro-text">
@@ -661,7 +694,9 @@
                 schedule: "א'+ד', 17:30-21:15",
                 tamat: "0011010148",
                 format: "evening",
-                study: "היברידי"
+                study: "היברידי",
+                tamatSymbol: "3923",
+                depositCode: "0240043101"
             },
             fullstack: {
                 name: "Full Stack Development",
@@ -671,7 +706,9 @@
                 schedule: "א'+ד', 17:30-21:15",
                 tamat: "0011010148",
                 format: "evening",
-                study: "אונליין"
+                study: "אונליין",
+                tamatSymbol: "3925",
+                depositCode: "0240043102"
             },
             marketing: {
                 name: "שיווק דיגיטלי",
@@ -681,7 +718,9 @@
                 schedule: "ב'+ה', 17:30-21:15",
                 tamat: "0011010148",
                 format: "evening",
-                study: "היברידי"
+                study: "היברידי",
+                tamatSymbol: "",
+                depositCode: ""
             },
             uiux: {
                 name: "עיצוב גרפי וחווית משתמש UI/UX",
@@ -691,7 +730,9 @@
                 schedule: "ב'+ה', 17:30-21:15",
                 tamat: "0011010148",
                 format: "evening",
-                study: "היברידי"
+                study: "היברידי",
+                tamatSymbol: "573",
+                depositCode: "0240043100"
             },
             qa: {
                 name: "בדיקות תוכנה ואוטומציה (QA)",
@@ -701,7 +742,9 @@
                 schedule: "א'+ד', 17:30-21:15",
                 tamat: "0011010148",
                 format: "evening",
-                study: "היברידי"
+                study: "היברידי",
+                tamatSymbol: "3528",
+                depositCode: "0240043105"
             },
             networks: {
                 name: "ניהול רשתות ואבטחת מידע",
@@ -711,7 +754,9 @@
                 schedule: "א'+ד', 17:30-21:15",
                 tamat: "0011010148",
                 format: "evening",
-                study: "היברידי"
+                study: "היברידי",
+                tamatSymbol: "3515",
+                depositCode: "0240043104"
             },
             aispecialist: {
                 name: "מיישם AI בארגונים",
@@ -721,7 +766,9 @@
                 schedule: "א'+ד', 17:30-21:15",
                 tamat: "0011010148",
                 format: "evening",
-                study: "אונליין"
+                study: "אונליין",
+                tamatSymbol: "",
+                depositCode: ""
             }
         };
 
@@ -754,6 +801,15 @@
             dateButtonsContainer: document.getElementById('dateButtonsContainer'),
             importCount: document.getElementById('importCount'),
             importSuccessMsg: document.getElementById('importSuccessMsg'),
+            
+            // Voucher controls
+            fundingType: document.getElementById('fundingType'),
+            voucherDocsPanel: document.getElementById('voucherDocsPanel'),
+            voucherWarning: document.getElementById('voucherWarning'),
+            lblGovernmentDetails: document.getElementById('lblGovernmentDetails'),
+            lblTamatSymbol: document.getElementById('lblTamatSymbol'),
+            lblDepositCodeBlock: document.getElementById('lblDepositCodeBlock'),
+            lblDepositCode: document.getElementById('lblDepositCode'),
             
             // Labels inside letterhead
             lblClientName: document.getElementById('lblClientName'),
@@ -833,6 +889,46 @@
             }
 
             els.dynamicPriceArea.innerHTML = html;
+
+            // Vouchers / Deposit recognition logic
+            const fund = els.fundingType.value;
+            const courseKey = els.courseSelect.value;
+            const preset = coursePresets[courseKey] || {};
+
+            if (fund === 'vouchers' || fund === 'deposit') {
+                els.voucherDocsPanel.style.display = 'block';
+                els.lblGovernmentDetails.style.display = 'block';
+                
+                els.lblTamatSymbol.textContent = preset.tamatSymbol || 'טרם אושר סופית';
+                
+                if (fund === 'deposit') {
+                    els.lblDepositCodeBlock.style.display = 'block';
+                    els.lblDepositCode.textContent = preset.depositCode || 'טרם אושר סופית';
+                } else {
+                    els.lblDepositCodeBlock.style.display = 'none';
+                }
+
+                // Warnings logic
+                if (courseKey === 'marketing') {
+                    els.voucherWarning.textContent = '⚠️ קורס שיווק דיגיטלי אינו מאושר עדיין לתוכנית השוברים (האישור צפוי להתקבל בקרוב).';
+                    els.voucherWarning.style.display = 'block';
+                    els.voucherWarning.style.backgroundColor = 'rgba(239, 68, 68, 0.1)';
+                    els.voucherWarning.style.borderColor = '#EF4444';
+                    els.voucherWarning.style.color = '#EF4444';
+                } else if (courseKey !== 'cyber' && courseKey !== 'uiux' && courseKey !== 'custom') {
+                    els.voucherWarning.textContent = 'ℹ️ שימו לב: קורס זה מופיע באישור ההכרה של הסניף, אך בהתאם להנחיות הפנימיות הפעילות ממוקדת בסייבר ועיצוב גרפי בלבד.';
+                    els.voucherWarning.style.display = 'block';
+                    els.voucherWarning.style.backgroundColor = 'rgba(59, 130, 246, 0.1)';
+                    els.voucherWarning.style.borderColor = '#3B82F6';
+                    els.voucherWarning.style.color = '#3B82F6';
+                } else {
+                    els.voucherWarning.style.display = 'none';
+                }
+            } else {
+                els.voucherDocsPanel.style.display = 'none';
+                els.lblGovernmentDetails.style.display = 'none';
+                els.voucherWarning.style.display = 'none';
+            }
         }
 
         // Update document title dynamically to pre-fill PDF filename
@@ -912,6 +1008,7 @@
         els.scholarshipAmount.addEventListener('input', recalculateFromScholarship);
         els.finalPrice.addEventListener('input', recalculateFromFinal);
         els.idfPrice.addEventListener('input', updatePreview);
+        els.fundingType.addEventListener('change', updatePreview);
 
         // Helper: Expand single letters representing days to full names
         function expandDayLetter(str) {

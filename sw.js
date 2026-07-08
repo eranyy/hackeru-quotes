@@ -5,7 +5,9 @@ const ASSETS = [
   './manifest.json',
   './icon-192.png',
   './icon-512.png',
-  './image001.png'
+  './image001.png',
+  './ishur_hakara_2026.pdf',
+  './tofes_he_2.pdf'
 ];
 
 self.addEventListener('install', (e) => {
