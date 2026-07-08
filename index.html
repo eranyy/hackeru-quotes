@@ -1882,6 +1882,10 @@
             const yyyy = today.getFullYear();
             document.getElementById('tofesDate').innerText = `${dd}/${mm}/${yyyy}`;
 
+            const client = els.clientName.value.trim() || '______________';
+            const courseName = preset.name || els.courseSelect.options[els.courseSelect.selectedIndex].text;
+            document.title = `נספח ה2 - ${client} - ${courseName}`;
+
             document.body.classList.add('print-tofes');
             window.print();
         }
@@ -1895,6 +1899,7 @@
         // Restore layout after print dialog closes
         window.addEventListener('afterprint', () => {
             document.body.classList.remove('print-tofes');
+            updateDocumentTitle();
         });
 
         window.printTofesHe2 = printTofesHe2;
