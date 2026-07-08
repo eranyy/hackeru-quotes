@@ -1,0 +1,1664 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מחולל הצעות מחיר | HackerU</title>
+    <!-- Import Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&family=Outfit:wght@100..900&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #00D27A;
+            --primary-dark: #00a05a;
+            --bg-color: #0F172A;
+            --panel-bg: #1E293B;
+            --text-light: #F8FAFC;
+            --text-dark: #0F172A;
+            --border-color: #334155;
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.3), 0 4px 6px -4px rgb(0 0 0 / 0.3);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Rubik', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-light);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Sidebar Control Panel */
+        .sidebar {
+            width: 460px;
+            background-color: var(--panel-bg);
+            border-left: 1px solid var(--border-color);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+            z-index: 10;
+        }
+
+        .no-print {
+            display: block;
+        }
+
+        /* Main Preview Area */
+        .preview-area {
+            flex: 1;
+            padding: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            overflow-y: auto;
+            background-color: #0B0F19;
+            position: relative;
+        }
+
+        h2 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--primary-color);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        .clear-btn {
+            font-size: 11px;
+            color: #EF4444;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .clear-btn:hover {
+            text-decoration: underline;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        label {
+            font-size: 13px;
+            font-weight: 500;
+            color: #94A3B8;
+        }
+
+        input, select, textarea {
+            background-color: #0F172A;
+            border: 1px solid var(--border-color);
+            color: var(--text-light);
+            padding: 10px 12px;
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(0, 210, 122, 0.2);
+        }
+
+        /* Buttons styling */
+        .btn {
+            background-color: var(--primary-color);
+            color: var(--text-dark);
+            border: none;
+            padding: 12px;
+            border-radius: 6px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .btn-outline:hover {
+            background-color: rgba(0, 210, 122, 0.1);
+        }
+
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        /* Date sub-selection buttons */
+        .date-buttons-container {
+            display: flex;
+            gap: 8px;
+            margin-top: 4px;
+        }
+
+        .date-btn {
+            flex: 1;
+            background-color: #334155;
+            border: 1px solid #475569;
+            color: var(--text-light);
+            padding: 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .date-btn.active {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            color: var(--text-dark);
+        }
+
+        /* Priza Net Import Panel */
+        .import-box {
+            background-color: #0F172A;
+            border: 1px dashed #475569;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+        }
+
+        .import-box label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .import-badge {
+            background-color: rgba(0, 210, 122, 0.2);
+            color: var(--primary-color);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 11px;
+        }
+
+        /* Pixel Perfect Letterhead Preview */
+        .letterhead-container {
+            background-color: white;
+            color: #1A1A1A;
+            width: 794px; /* A4 width at 96 DPI */
+            min-height: 1123px; /* A4 height at 96 DPI */
+            padding: 96px 120px 160px 120px; /* Margins: Top: 72pt, Left/Right: 90pt, Bottom: 160px */
+            box-shadow: var(--shadow-lg);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .letterhead-content {
+            flex-grow: 1;
+        }
+
+        /* Document Header Styling */
+        .doc-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 60px;
+        }
+
+        .logo-main {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            font-size: 32px;
+            color: #000;
+            line-height: 1;
+            letter-spacing: -0.5px;
+        }
+
+        .logo-main .dot {
+            color: #6C5DD3; /* Purple/Blue dot from the new template */
+        }
+
+        .logo-main .sublogo {
+            font-size: 11px;
+            color: #00D27A; /* Green subtext from the new template */
+            font-weight: 700;
+            margin-top: -2px;
+            letter-spacing: 1.5px;
+        }
+
+        .doc-date {
+            font-size: 14px;
+            color: #333;
+            margin-top: 15px;
+        }
+
+        .recipient-details {
+            margin-bottom: 30px;
+            line-height: 1.6;
+            font-size: 15px;
+        }
+
+        .subject-title {
+            text-align: center;
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 25px;
+            text-decoration: underline;
+            text-underline-offset: 4px;
+        }
+
+        .intro-text {
+            margin-bottom: 20px;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        /* Details list styling */
+        .details-list {
+            list-style: none;
+            margin-bottom: 30px;
+        }
+
+        .details-list li {
+            position: relative;
+            padding-right: 20px;
+            margin-bottom: 12px;
+            font-size: 15px;
+            line-height: 1.5;
+        }
+
+        .details-list li::before {
+            content: "•";
+            position: absolute;
+            right: 0;
+            color: #1a1a1a;
+            font-size: 18px;
+            line-height: 1;
+        }
+
+        /* Highlight classes */
+        .highlight-yellow {
+            background-color: #FFFF00;
+            padding: 2px 4px;
+            font-weight: 700;
+            border-radius: 2px;
+        }
+
+        .strike-through {
+            text-decoration: line-through;
+            color: #666;
+        }
+
+        .bold-text {
+            font-weight: 700;
+        }
+
+        /* Signature block */
+        .signature-block {
+            margin-top: 40px;
+            line-height: 1.6;
+            font-size: 15px;
+        }
+
+        .signature-img {
+            margin-top: 8px;
+            height: 60px;
+            opacity: 0.85;
+        }
+
+        .doc-footer-img {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .badge-success {
+            background-color: rgba(0, 210, 122, 0.1);
+            border: 1px solid var(--primary-color);
+            color: var(--primary-color);
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            text-align: center;
+            display: none;
+        }
+
+        /* Print Media Styles */
+        @media print {
+            body {
+                background: white;
+                color: black;
+                overflow: visible;
+                height: auto;
+            }
+            .sidebar {
+                display: none !important;
+            }
+            .preview-area {
+                background: white;
+                padding: 0;
+                overflow: visible;
+            }
+            .letterhead-container {
+                box-shadow: none;
+                width: 100%;
+                min-height: auto;
+                padding: 0;
+                margin: 0;
+            }
+        /* Login Overlay Styles */
+        .login-overlay {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            bottom: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            background-color: rgba(15, 23, 42, 0.97) !important;
+            backdrop-filter: blur(10px);
+            z-index: 99999 !important;
+            display: flex !important;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.4s ease-out;
+        }
+
+        .login-card {
+            background-color: #0F172A;
+            border: 1px solid #334155;
+            padding: 40px;
+            border-radius: 12px;
+            width: 380px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.4);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Login Lock Screen Overlay -->
+    <div id="loginOverlay" class="login-overlay">
+        <div class="login-card">
+            <div class="logo-main" style="margin-bottom: 20px; text-align: center;">
+                Hacker<span class="dot">.</span>U
+                <div class="sublogo" style="margin-top: 2px;">TECHDX</div>
+            </div>
+            <h3 style="margin-bottom: 25px; color: #F8FAFC; text-align: center; font-size: 18px; font-weight: 500; direction: rtl;">מערכת הצעות מחיר - שער כניסה</h3>
+            <div class="form-group" style="margin-bottom: 20px; direction: rtl;">
+                <input type="password" id="loginPassword" placeholder="הקש סיסמת כניסה לחברה..." style="width: 100%; padding: 12px; font-size: 15px; border-radius: 6px; border: 1px solid #475569; background-color: #1E293B; color: white; text-align: center;">
+            </div>
+            <button id="btnLoginSubmit" style="width: 100%; padding: 12px; font-size: 15px; font-weight: 700; background-color: var(--primary-color); color: white; border: none; border-radius: 6px; cursor: pointer; transition: opacity 0.2s;" onmouseover="this.style.opacity=0.9" onmouseout="this.style.opacity=1">התחבר למערכת</button>
+            <div id="loginError" style="margin-top: 15px; color: #EF4444; font-size: 13px; text-align: center; display: none; direction: rtl;">סיסמה שגויה. אנא נסה שוב.</div>
+        </div>
+    </div>
+
+    <div id="appContainer" style="display: none; width: 100%; height: 100%; display: flex;">
+    <!-- Sidebar controls -->
+    <div class="sidebar no-print">
+        <h2>הגדרות הצעת מחיר (v1.3) <span onclick="lockSystem()" style="cursor:pointer; font-size: 16px; float: left; margin-top: 4px;" title="נעילת מערכת">🔒</span></h2>
+        
+        <!-- Clipboard importer -->
+        <div class="import-box">
+            <label>
+                <span>ייבוא מועדים מ-Priza-Net</span>
+                <span class="import-badge" id="importCount">0 מועדים שמורים</span>
+            </label>
+            <textarea id="prizaImport" placeholder="העתק את דף הקורסים מפריזה (כולל הטבלה) והדבק כאן..." rows="3" style="width: 100%; margin-top: 5px; font-size: 12px; resize: none;"></textarea>
+            <button id="btnManualImport" style="width: 100%; margin-top: 6px; padding: 8px; font-size: 13px; font-weight: 700; background-color: var(--primary-color); color: white; border: none; border-radius: 6px; cursor: pointer; transition: opacity 0.2s;" onmouseover="this.style.opacity=0.9" onmouseout="this.style.opacity=1">ייבוא נתונים מפריזה</button>
+            <div id="importSuccessMsg" class="badge-success" style="margin-top: 8px;">מועדים יובאו ונשמרו בהצלחה!</div>
+        </div>
+
+        <div class="form-group">
+            <label for="courseSelect">בחר קורס (תבנית)</label>
+            <select id="courseSelect">
+                <option value="cyber" selected>סייבר ואבטחת מידע</option>
+                <option value="fullstack">פיתוח תוכנה (Full Stack)</option>
+                <option value="marketing">שיווק דיגיטלי (מאסטר)</option>
+                <option value="uiux">עיצוב גרפי וחווית משתמש UI/UX</option>
+                <option value="qa">בדיקות תוכנה ואוטומציה (QA)</option>
+                <option value="networks">ניהול רשתות ואבטחת מידע</option>
+                <option value="aispecialist">מיישם AI בארגונים</option>
+                <option value="custom">מותאם אישית...</option>
+            </select>
+        </div>
+
+        <!-- Dynamic Dropdown of Imported Dates -->
+        <div class="form-group" id="importedDatesGroup">
+            <label style="color: var(--primary-color); display: flex; justify-content: space-between;">
+                <span>בחר מחזור לימודים (מתוך פריזה)</span>
+                <button class="clear-btn" onclick="clearSavedSchedules()">נקה מועדים</button>
+            </label>
+            <select id="scheduleDropdown" style="border-color: var(--primary-color);">
+                <option value="">-- טרם יובאו תאריכים עבור קורס זה --</option>
+            </select>
+        </div>
+
+        <!-- Dynamic sub-selection of dates A, B, C -->
+        <div class="form-group" id="tamatDatesSubgroup" style="display: none;">
+            <label>בחר תאריך פתיחה זמין (A / B / C)</label>
+            <div class="date-buttons-container" id="dateButtonsContainer">
+                <!-- Buttons populated dynamically -->
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="clientName">שם הלקוח (לכבוד)</label>
+                <input type="text" id="clientName" value="ולד גודין">
+            </div>
+            <div class="form-group">
+                <label for="clientId">תעודת זהות</label>
+                <input type="text" id="clientId" value="308687136">
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="courseFormat">פורמט לימודים</label>
+                <select id="courseFormat">
+                    <option value="evening" selected>קורס ערב</option>
+                    <option value="morning">קורס בוקר</option>
+                    <option value="online">אונליין</option>
+                    <option value="hybrid">היברידי</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="studyFormat">מתכונת לימודים (מלל)</label>
+                <select id="studyFormat">
+                    <option value="היברידי" selected>היברידי</option>
+                    <option value="אונליין">אונליין</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="startDate">מועד פתיחה</label>
+                <input type="text" id="startDate" value="18/10/2026">
+            </div>
+            <div class="form-group">
+                <label for="endDate">מועד סיום משוער</label>
+                <input type="text" id="endDate" value="22/08/2027">
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="scheduleDays">ימים ושעות</label>
+                <input type="text" id="scheduleDays" value="א'+ד', 17:30-21:15">
+            </div>
+            <div class="form-group">
+                <label for="academicHours">שעות לימוד אקדמיות</label>
+                <input type="text" id="academicHours" value="395">
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="syllabusCode">סמל מגמה / קורס</label>
+                <input type="text" id="syllabusCode" value="02447550">
+            </div>
+            <div class="form-group">
+                <label for="tamatCode">ספק משרד הביטחון</label>
+                <input type="text" id="tamatCode" value="0011010148">
+            </div>
+        </div>
+
+        <h2>סוג שבלונה ותמחור</h2>
+
+        <div class="form-group">
+            <label for="templateStyle">סגנון שבלונת הצעת מחיר</label>
+            <select id="templateStyle">
+                <option value="scholarship" selected>שבלונת מלגה (מקורי / מלגה / סופי)</option>
+                <option value="discount">שבלונת הנחה (קו חוצה על המקור)</option>
+                <option value="idf">שבלונת פורשי צה"ל</option>
+                <option value="standard">שבלונה רגילה (מחיר אחד)</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="quoteValidity">תוקף ההצעה (בסוגריים)</label>
+            <select id="quoteValidity">
+                <option value="תקף לחודש זה בלבד" selected>תקף לחודש זה בלבד</option>
+                <option value="תקף לשבוע זה בלבד">תקף לשבוע זה בלבד</option>
+                <option value="תקף ל-72 שעות בלבד">תקף ל-72 שעות בלבד</option>
+                <option value="תקף ל-48 שעות בלבד">תקף ל-48 שעות בלבד</option>
+                <option value="custom">מותאם אישית...</option>
+            </select>
+            <input type="text" id="quoteValidityCustom" placeholder="הקלד תוקף מותאם אישית..." style="display:none; margin-top:5px;">
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="originalPrice">מחיר קורס מקורי</label>
+                <input type="number" id="originalPrice" value="25900">
+            </div>
+            <div class="form-group">
+                <label for="scholarshipAmount">גובה המלגה / הנחה</label>
+                <input type="number" id="scholarshipAmount" value="4140">
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="finalPrice">מחיר סופי (לתשלום)</label>
+                <input type="number" id="finalPrice" value="21760">
+            </div>
+            <div class="form-row" style="display:none;">
+                <div class="form-group">
+                    <label for="idfPrice">עלות לפורשי צה"ל</label>
+                    <input type="number" id="idfPrice" value="21760">
+                </div>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="advisorName">שם יועץ הלימודים</label>
+                <input type="text" id="advisorName" value="ערן ידיגר">
+            </div>
+            <div class="form-group">
+                <label for="advisorTitle">תפקיד</label>
+                <input type="text" id="advisorTitle" value="יועץ לימודים | HackerU">
+            </div>
+        </div>
+
+        <div class="button-group">
+            <button class="btn" onclick="window.print()">
+                הדפסה ושמירה כ-PDF
+            </button>
+            <button class="btn btn-outline" onclick="copyToClipboard()">
+                העתק טקסט להודעה (Email / WhatsApp)
+            </button>
+            <button class="btn btn-outline" onclick="exportWordHtml()">
+                הורד כקובץ Word (.doc)
+            </button>
+        </div>
+    </div>
+
+    <!-- Live preview area -->
+    <div class="preview-area">
+        <div class="letterhead-container" id="printableQuote">
+            <div class="letterhead-content">
+                <!-- Header -->
+                <div class="doc-header">
+                    <div class="logo-main">
+                        Hacker<span class="dot">.</span>U
+                        <div class="sublogo">TECHDX</div>
+                    </div>
+                    <div class="doc-date" id="lblDate"></div>
+                </div>
+
+                <!-- Recipient -->
+                <div class="recipient-details">
+                    <div class="bold-text">לכבוד: <span id="lblClientName">ולד גודין</span></div>
+                    <div id="lblClientIdBlock">ת.ז: <span id="lblClientId">308687136</span></div>
+                </div>
+
+                <!-- Subject -->
+                <div class="subject-title">
+                    הצעת מחיר לקורס - <span id="lblSubjectCourse">סייבר ואבטחת מידע</span>
+                </div>
+
+                <!-- Intro -->
+                <div class="intro-text">
+                    בהתאם לבקשתך, להלן הצעת המחיר עבור קורס – <span id="lblIntroCourse">סייבר ואבטחת מידע</span>
+                </div>
+
+                <!-- Details List -->
+                <ul class="details-list">
+                    <li><span class="bold-text">מועד פתיחה:</span> <span id="lblStartDate">18/10/2026</span></li>
+                    <li><span class="bold-text">מועד סיום משוער:</span> <span id="lblEndDate">22/08/2027</span></li>
+                    
+                    <!-- Dynamic multi-line schedule -->
+                    <li id="lblScheduleBlock">
+                        <span class="bold-text">ימי לימוד ושעות:</span>
+                        <span id="lblSchedule">א'+ד', 17:30-21:15</span>
+                    </li>
+
+                    <li><span class="bold-text">מתכונת לימודים:</span> <span id="lblStudyFormat">היברידי</span></li>
+                    <li><span class="bold-text">שעות לימוד אקדמיות:</span> <span id="lblHours">395</span> שעות</li>
+                    
+                    <!-- Dynamic price elements will be inserted here -->
+                    <div id="dynamicPriceArea"></div>
+                </ul>
+
+                <div class="intro-text">
+                    נשמח לעמוד לרשותך לכל שאלה או הבהרה. ניתן לפנות אלינו בטלפון 03-6135565.
+                </div>
+
+                <!-- Signature -->
+                <div class="signature-block">
+                    בברכה,<br>
+                    <span class="bold-text" id="lblAdvisorName">ערן ידיגר</span><br>
+                    <span id="lblAdvisorTitle">יועץ לימודים | HackerU</span><br>
+                    <!-- Signature representation -->
+                    <svg class="signature-img" viewBox="0 0 200 60" width="150" height="45">
+                        <path d="M 10 30 C 50 10, 80 50, 100 20 C 120 -10, 150 40, 190 25" fill="none" stroke="#2B6CB0" stroke-width="2" stroke-linecap="round"/>
+                        <path d="M 70 45 C 90 20, 110 5, 130 15" fill="none" stroke="#2B6CB0" stroke-width="1.5"/>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Footer Image from template -->
+            <img src="data:image/png;base64,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" alt="HackerU Footer" class="doc-footer-img">
+        </div>
+    </div>
+    </div>
+
+    <!-- Script for handling live updates, storage and computations -->
+    <script>
+        // Preset course options database
+        const coursePresets = {
+            cyber: {
+                name: "סייבר ואבטחת מידע",
+                hours: "395",
+                originalPrice: 25900,
+                code: "02447550",
+                schedule: "א'+ד', 17:30-21:15",
+                tamat: "0011010148",
+                format: "evening",
+                study: "היברידי"
+            },
+            fullstack: {
+                name: "Full Stack Development",
+                hours: "410",
+                originalPrice: 22900,
+                code: "02447548",
+                schedule: "א'+ד', 17:30-21:15",
+                tamat: "0011010148",
+                format: "evening",
+                study: "אונליין"
+            },
+            marketing: {
+                name: "שיווק דיגיטלי",
+                hours: "335",
+                originalPrice: 17900,
+                code: "02447552",
+                schedule: "ב'+ה', 17:30-21:15",
+                tamat: "0011010148",
+                format: "evening",
+                study: "היברידי"
+            },
+            uiux: {
+                name: "עיצוב גרפי וחווית משתמש UI/UX",
+                hours: "300",
+                originalPrice: 18900,
+                code: "02447547",
+                schedule: "ב'+ה', 17:30-21:15",
+                tamat: "0011010148",
+                format: "evening",
+                study: "היברידי"
+            },
+            qa: {
+                name: "בדיקות תוכנה ואוטומציה (QA)",
+                hours: "375",
+                originalPrice: 18900,
+                code: "02447549",
+                schedule: "א'+ד', 17:30-21:15",
+                tamat: "0011010148",
+                format: "evening",
+                study: "היברידי"
+            },
+            networks: {
+                name: "ניהול רשתות ואבטחת מידע",
+                hours: "530",
+                originalPrice: 19900,
+                code: "02447553",
+                schedule: "א'+ד', 17:30-21:15",
+                tamat: "0011010148",
+                format: "evening",
+                study: "היברידי"
+            },
+            aispecialist: {
+                name: "מיישם AI בארגונים",
+                hours: "160",
+                originalPrice: 11900,
+                code: "02447548",
+                schedule: "א'+ד', 17:30-21:15",
+                tamat: "0011010148",
+                format: "evening",
+                study: "אונליין"
+            }
+        };
+
+        // Cache DOM elements
+        const els = {
+            courseSelect: document.getElementById('courseSelect'),
+            clientName: document.getElementById('clientName'),
+            clientId: document.getElementById('clientId'),
+            courseFormat: document.getElementById('courseFormat'),
+            studyFormat: document.getElementById('studyFormat'),
+            startDate: document.getElementById('startDate'),
+            endDate: document.getElementById('endDate'),
+            scheduleDays: document.getElementById('scheduleDays'),
+            academicHours: document.getElementById('academicHours'),
+            syllabusCode: document.getElementById('syllabusCode'),
+            tamatCode: document.getElementById('tamatCode'),
+            templateStyle: document.getElementById('templateStyle'),
+            quoteValidity: document.getElementById('quoteValidity'),
+            quoteValidityCustom: document.getElementById('quoteValidityCustom'),
+            originalPrice: document.getElementById('originalPrice'),
+            scholarshipAmount: document.getElementById('scholarshipAmount'),
+            finalPrice: document.getElementById('finalPrice'),
+            idfPrice: document.getElementById('idfPrice'),
+            advisorName: document.getElementById('advisorName'),
+            advisorTitle: document.getElementById('advisorTitle'),
+            prizaImport: document.getElementById('prizaImport'),
+            btnManualImport: document.getElementById('btnManualImport'),
+            scheduleDropdown: document.getElementById('scheduleDropdown'),
+            tamatDatesSubgroup: document.getElementById('tamatDatesSubgroup'),
+            dateButtonsContainer: document.getElementById('dateButtonsContainer'),
+            importCount: document.getElementById('importCount'),
+            importSuccessMsg: document.getElementById('importSuccessMsg'),
+            
+            // Labels inside letterhead
+            lblClientName: document.getElementById('lblClientName'),
+            lblClientId: document.getElementById('lblClientId'),
+            lblClientIdBlock: document.getElementById('lblClientIdBlock'),
+            lblSubjectCourse: document.getElementById('lblSubjectCourse'),
+            lblIntroCourse: document.getElementById('lblIntroCourse'),
+            lblStartDate: document.getElementById('lblStartDate'),
+            lblEndDate: document.getElementById('lblEndDate'),
+            lblScheduleBlock: document.getElementById('lblScheduleBlock'),
+            lblStudyFormat: document.getElementById('lblStudyFormat'),
+            lblHours: document.getElementById('lblHours'),
+            lblAdvisorName: document.getElementById('lblAdvisorName'),
+            lblAdvisorTitle: document.getElementById('lblAdvisorTitle'),
+            lblDate: document.getElementById('lblDate'),
+            dynamicPriceArea: document.getElementById('dynamicPriceArea')
+        };
+
+        // Initialize schedules database in localStorage
+        let savedSchedules = [];
+        try {
+            const data = localStorage.getItem('hackeru_schedules');
+            if (data) {
+                const parsed = JSON.parse(data);
+                if (Array.isArray(parsed)) {
+                    savedSchedules = parsed;
+                }
+            }
+        } catch (e) {
+            console.error("Error loading schedules from localStorage", e);
+        }
+
+        // Active schedule data holds selected item structure
+        let activeScheduleItem = null;
+
+        // Update badge count
+        updateBadgeCount();
+
+        // Format currency helper
+        function formatILS(num) {
+            return Number(num).toLocaleString('he-IL') + " ₪";
+        }
+
+        // Render dynamic preview fields based on style templates
+        function updatePreview() {
+            if (!els.templateStyle) return;
+            const style = els.templateStyle.value;
+            const orig = Number(els.originalPrice.value) || 0;
+            const schol = Number(els.scholarshipAmount.value) || 0;
+            const final = Number(els.finalPrice.value) || 0;
+            const idf = Number(els.idfPrice.value) || 0;
+
+            let validityText = els.quoteValidity.value === "custom" ? els.quoteValidityCustom.value : els.quoteValidity.value;
+
+            let html = "";
+
+            if (style === "scholarship") {
+                html = `
+                    <li><span class="bold-text">מחיר קורס מקורי:</span> ${formatILS(orig)}</li>
+                    <li><span class="bold-text">סה"כ מלגות:</span> ${formatILS(schol)}</li>
+                    <li><span class="bold-text">מחיר אחרי מלגות:</span> <span class="highlight-yellow">${formatILS(final)}</span> <span class="bold-text">( ${validityText} )</span></li>
+                `;
+            } else if (style === "discount") {
+                html = `
+                    <li><span class="bold-text">עלות:</span> <span class="strike-through">${formatILS(orig)}</span> כולל מע"מ פר משתתף</li>
+                    <li><span class="bold-text">עלות קורס לאחר הנחה:</span> <span class="highlight-yellow">${formatILS(final)}</span> כולל מע"מ פר משתתף</li>
+                `;
+            } else if (style === "idf") {
+                html = `
+                    <li><span class="bold-text">עלות:</span> ${formatILS(orig)} כולל מע"מ פר משתתף</li>
+                    <li><span class="bold-text">עלות קורס עבור פורשי צה"ל:</span> <span class="highlight-yellow">${formatILS(idf)}</span> כולל מע"מ פר משתתף</li>
+                `;
+            } else { // standard
+                html = `
+                    <li><span class="bold-text">עלות:</span> <span class="highlight-yellow">${formatILS(orig)}</span> כולל מע"מ פר משתתף</li>
+                `;
+            }
+
+            els.dynamicPriceArea.innerHTML = html;
+        }
+
+        // Update document title dynamically to pre-fill PDF filename
+        function updateDocumentTitle() {
+            if (!els.clientName || !els.courseSelect) return;
+            const clientName = els.clientName.value.trim();
+            const courseName = els.courseSelect.options[els.courseSelect.selectedIndex].text.trim();
+            
+            if (clientName) {
+                document.title = `הצעת מחיר - ${clientName} - ${courseName}`;
+            } else {
+                document.title = `הצעת מחיר - ${courseName}`;
+            }
+        }
+
+        // Set date to today
+        const today = new Date();
+        const dd = String(today.getDate()).padStart(2, '0');
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+        const yyyy = today.getFullYear();
+        els.lblDate.innerText = `${dd}/${mm}/${yyyy}`;
+
+        // Add Event Listeners
+        els.courseSelect.addEventListener('change', () => {
+            handleCoursePresetChange();
+            updateDocumentTitle();
+        });
+        els.clientName.addEventListener('input', updateDocumentTitle);
+        els.clientName.addEventListener('change', updateDocumentTitle);
+        els.templateStyle.addEventListener('change', updatePreview);
+        els.scheduleDropdown.addEventListener('change', handleScheduleSelection);
+        els.scheduleDays.addEventListener('input', (e) => {
+            updateSchedulePreview(e.target.value);
+        });
+        
+        els.quoteValidity.addEventListener('change', (e) => {
+            if (e.target.value === "custom") {
+                els.quoteValidityCustom.style.display = "block";
+            } else {
+                els.quoteValidityCustom.style.display = "none";
+            }
+            updatePreview();
+        });
+        els.quoteValidityCustom.addEventListener('input', updatePreview);
+
+        // Input bindings to preview labels
+        const bindings = [
+            ['clientName', 'lblClientName'],
+            ['clientId', 'lblClientId'],
+            ['studyFormat', 'lblStudyFormat'],
+            ['startDate', 'lblStartDate'],
+            ['endDate', 'lblEndDate'],
+            ['academicHours', 'lblHours'],
+            ['advisorName', 'lblAdvisorName'],
+            ['advisorTitle', 'lblAdvisorTitle']
+        ];
+
+        bindings.forEach(([inputId, labelId]) => {
+            const inputEl = document.getElementById(inputId);
+            const handler = (e) => {
+                document.getElementById(labelId).innerText = e.target.value;
+                if(inputId === 'clientId') {
+                    els.lblClientIdBlock.style.display = e.target.value ? 'block' : 'none';
+                }
+            };
+            inputEl.addEventListener('input', handler);
+            inputEl.addEventListener('change', handler);
+        });
+
+        // Specific binding for format selector
+        els.courseFormat.addEventListener('change', (e) => {
+            updateSchedulePreview(els.scheduleDays.value);
+        });
+
+        // Price changes: Double-binding logic
+        els.originalPrice.addEventListener('input', recalculateFromOriginal);
+        els.scholarshipAmount.addEventListener('input', recalculateFromScholarship);
+        els.finalPrice.addEventListener('input', recalculateFromFinal);
+        els.idfPrice.addEventListener('input', updatePreview);
+
+        // Helper: Expand single letters representing days to full names
+        function expandDayLetter(str) {
+            let match = str.match(/^([א-ת])\s*\((.*?)\)/);
+            if (match) {
+                return `יום ${match[1]}' (${match[2]})`;
+            }
+            return str;
+        }
+
+        // Helper: dynamic splitter that builds HTML and plain text for comma separated days
+        function formatScheduleHtmlAndText(scheduleStr) {
+            const formatText = els.courseFormat.options[els.courseFormat.selectedIndex].text;
+            let formatClean = formatText.replace("קורס ", "").trim();
+
+            if (!scheduleStr) return { html: `<span class="bold-text">ימי לימוד ושעות (${formatClean}):</span> <span>לא צוין</span>`, text: `ימי לימוד ושעות (${formatClean}): לא צוין` };
+            
+            let cleanStr = scheduleStr.trim();
+            if (cleanStr.startsWith("(") && cleanStr.endsWith(")")) {
+                cleanStr = cleanStr.substring(1, cleanStr.length - 1).trim();
+            }
+
+            let parts = cleanStr.split(',').map(p => p.trim());
+            let items = [];
+            
+            if (cleanStr.includes('(')) {
+                parts.forEach(part => {
+                    if (!part) return;
+                    items.push(expandDayLetter(part));
+                });
+            } else {
+                if (parts.length >= 2) {
+                    let daysPart = parts[0];
+                    let hoursPart = parts[1];
+                    let days = daysPart.split(/[\++]/).map(d => d.replace(/'/g, '').trim());
+                    days.forEach(day => {
+                        if (!day) return;
+                        items.push(`יום ${day}' (${hoursPart})`);
+                    });
+                } else {
+                    items.push(cleanStr);
+                }
+            }
+            
+            // Generate HTML (with sub-bullets)
+            let html = `<span class="bold-text">ימי לימוד ושעות (${formatClean}):</span>`;
+            if (items.length > 1) {
+                html += `<div style="margin-right: 20px; margin-top: 5px; font-size: 14.5px; line-height: 1.5; color: #333;">`;
+                items.forEach(item => {
+                    html += `<div style="margin-bottom: 4px;">• ${item}</div>`;
+                });
+                html += `</div>`;
+            } else {
+                html += ` <span>${items[0]}</span>`;
+            }
+            
+            // Generate Text (with sub-bullets)
+            let text = `ימי לימוד ושעות (${formatClean}):`;
+            if (items.length > 1) {
+                items.forEach(item => {
+                    text += `\n  - ${item}`;
+                });
+            } else {
+                text += ` ${items[0]}`;
+            }
+            
+            return { html, text };
+        }
+
+        // Live schedule update call
+        function updateSchedulePreview(val) {
+            const formatted = formatScheduleHtmlAndText(val);
+            els.lblScheduleBlock.innerHTML = formatted.html;
+        }
+
+        function handleCoursePresetChange() {
+            const code = els.courseSelect.value;
+            if (code === 'custom') return;
+            
+            const preset = coursePresets[code];
+            if (preset) {
+                els.clientName.value = "ולד גודין";
+                els.clientId.value = "308687136";
+                els.studyFormat.value = preset.study;
+                els.scheduleDays.value = preset.schedule;
+                els.academicHours.value = preset.hours;
+                els.syllabusCode.value = preset.code;
+                els.tamatCode.value = preset.tamat;
+                els.originalPrice.value = preset.originalPrice;
+                
+                // Select course format
+                els.courseFormat.value = preset.format;
+
+                // Sync pricing
+                els.scholarshipAmount.value = Math.round(preset.originalPrice * 0.16); 
+                els.finalPrice.value = preset.originalPrice - els.scholarshipAmount.value;
+                els.idfPrice.value = Math.round(preset.originalPrice * 0.84); 
+
+                // Trigger inputs event to update preview
+                bindings.forEach(([inputId, labelId]) => {
+                    document.getElementById(labelId).innerText = document.getElementById(inputId).value;
+                });
+                
+                els.lblSubjectCourse.innerText = preset.name;
+                els.lblIntroCourse.innerText = preset.name;
+
+                // Update schedule preview
+                updateSchedulePreview(preset.schedule);
+
+                // Hide dates subselector by default
+                els.tamatDatesSubgroup.style.display = "none";
+                activeScheduleItem = null;
+
+                // Populate the schedule dropdown for this course
+                populateScheduleDropdown(preset.name);
+                
+                updatePreview();
+            }
+        }
+
+        // Helper: normalize date string to dd/mm/yyyy
+        function normalizeDate(dateStr) {
+            if (!dateStr) return "";
+            let normalized = dateStr.trim().replace(/\./g, '/');
+            const parts = normalized.split('/');
+            if (parts.length === 3) {
+                parts[0] = parts[0].padStart(2, '0');
+                parts[1] = parts[1].padStart(2, '0');
+                if (parts[2].length === 2) {
+                    parts[2] = "20" + parts[2];
+                }
+                return parts.join('/');
+            }
+            return normalized;
+        }
+
+        // Helper: estimate end date based on start date and evening/morning format
+        function estimateEndDate(startDateStr, format) {
+            try {
+                const parts = startDateStr.split('/');
+                if (parts.length !== 3) return "";
+                const day = parseInt(parts[0], 10);
+                const month = parseInt(parts[1], 10) - 1; 
+                const year = parseInt(parts[2], 10);
+                
+                const dateObj = new Date(year, month, day);
+                const monthsToAdd = (format === "בוקר") ? 6 : 10;
+                dateObj.setMonth(dateObj.getMonth() + monthsToAdd);
+                
+                const dd = String(dateObj.getDate()).padStart(2, '0');
+                const mm = String(dateObj.getMonth() + 1).padStart(2, '0');
+                const yyyy = dateObj.getFullYear();
+                return `${dd}/${mm}/${yyyy}`;
+            } catch(e) {
+                return "";
+            }
+        }
+
+        // Populate Dropdown from Imported schedules
+        function populateScheduleDropdown(courseName) {
+            let searchKeyword = "";
+            if (courseName.includes("סייבר")) searchKeyword = "סייבר";
+            else if (courseName.includes("Full") || courseName.includes("פיתוח") || courseName.includes("תוכנה")) searchKeyword = "תוכנה";
+            else if (courseName.includes("שיווק") || courseName.includes("דיגיטלי")) searchKeyword = "שיווק";
+            else if (courseName.includes("עיצוב") || courseName.includes("גרפי") || courseName.includes("UI") || courseName.includes("UX")) searchKeyword = "עיצוב";
+            else if (courseName.includes("בדיקות") || courseName.includes("QA") || courseName.includes("תוכנה ואוטומציה")) searchKeyword = "בדיקות";
+            else if (courseName.includes("רשתות")) searchKeyword = "רשתות";
+            else if (courseName.includes("AI")) searchKeyword = "AI";
+
+            const filtered = savedSchedules.filter(s => {
+                if (!s || !s.course) return false;
+                if (!searchKeyword) return false;
+                return s.course.includes(searchKeyword) || courseName.includes(s.course);
+            });
+
+            els.scheduleDropdown.innerHTML = "";
+            
+            if (filtered.length === 0) {
+                const opt = document.createElement('option');
+                opt.value = "";
+                opt.innerText = "-- טרם יובאו תאריכים עבור קורס זה --";
+                els.scheduleDropdown.appendChild(opt);
+                return;
+            }
+
+            const defaultOpt = document.createElement('option');
+            defaultOpt.value = "";
+            defaultOpt.innerText = `-- בחר מתוך (${filtered.length}) מחזורים שיובאו --`;
+            els.scheduleDropdown.appendChild(defaultOpt);
+
+            filtered.forEach((item, index) => {
+                const opt = document.createElement('option');
+                opt.value = JSON.stringify(item);
+                const dateA = item.startDateA || item.startDate || '';
+                const format = item.format || '';
+                const scheduleText = item.schedule || '';
+                const titleText = item.title || '';
+                opt.innerText = `${dateA} | ${format} | ${scheduleText.substring(0, 30)}... [${titleText.substring(0, 15)}]`;
+                els.scheduleDropdown.appendChild(opt);
+            });
+        }
+
+        // Handle selection of a schedule from the dropdown
+        function handleScheduleSelection() {
+            const selectedVal = els.scheduleDropdown.value;
+            if (!selectedVal) {
+                els.tamatDatesSubgroup.style.display = "none";
+                activeScheduleItem = null;
+                return;
+            }
+
+            activeScheduleItem = JSON.parse(selectedVal);
+            
+            // Render sub-selection buttons for unique dates A, B, C
+            renderDateSubButtons(activeScheduleItem);
+            
+            // Apply Date A by default
+            const defaultDate = activeScheduleItem.startDateA || activeScheduleItem.startDate;
+            applySelectedDate(defaultDate, "A");
+            
+            // Populate non-date details
+            els.scheduleDays.value = activeScheduleItem.schedule || '';
+            updateSchedulePreview(activeScheduleItem.schedule || '');
+
+            if (activeScheduleItem.hours) {
+                els.academicHours.value = activeScheduleItem.hours;
+                els.lblHours.innerText = activeScheduleItem.hours;
+            }
+
+            if (activeScheduleItem.format && activeScheduleItem.format.includes("בוקר")) {
+                els.courseFormat.value = "morning";
+                els.studyFormat.value = "היברידי";
+                els.lblStudyFormat.innerText = "היברידי";
+            } else if (activeScheduleItem.format && activeScheduleItem.format.includes("ערב")) {
+                els.courseFormat.value = "evening";
+                els.studyFormat.value = "היברידי";
+                els.lblStudyFormat.innerText = "היברידי";
+            } else if (activeScheduleItem.format) {
+                els.courseFormat.value = activeScheduleItem.format;
+            }
+            
+            updateSchedulePreview(els.scheduleDays.value);
+            updatePreview();
+        }
+
+        // Render date sub-selector buttons
+        function renderDateSubButtons(item) {
+            els.dateButtonsContainer.innerHTML = "";
+            
+            const dateA = item.startDateA || item.startDate;
+            const dateB = item.startDateB || item.startDate;
+            const dateC = item.startDateC || item.startDate;
+
+            // Build unique options list
+            const datesList = [];
+            if (dateA) datesList.push({ label: "תאריך א' (A)", date: dateA, key: "A" });
+            if (dateB && dateB !== dateA) {
+                datesList.push({ label: "תאריך ב' (B)", date: dateB, key: "B" });
+            }
+            if (dateC && dateC !== dateA && dateC !== dateB) {
+                datesList.push({ label: "תאריך ג' (C)", date: dateC, key: "C" });
+            }
+
+            if (datesList.length <= 1) {
+                els.tamatDatesSubgroup.style.display = "none";
+                return;
+            }
+
+            els.tamatDatesSubgroup.style.display = "block";
+
+            datesList.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = "date-btn" + (opt.key === "A" ? " active" : "");
+                btn.innerText = `${opt.label}\n${opt.date}`;
+                btn.type = "button";
+                btn.addEventListener('click', () => {
+                    Array.from(els.dateButtonsContainer.children).forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    applySelectedDate(opt.date, opt.key);
+                });
+                els.dateButtonsContainer.appendChild(btn);
+            });
+        }
+
+        // Apply selected date and recalculate estimated end date
+        function applySelectedDate(dateVal, key) {
+            els.startDate.value = dateVal;
+            els.lblStartDate.innerText = dateVal;
+
+            const formatText = els.courseFormat.options[els.courseFormat.selectedIndex].text;
+            const formatKey = formatText.includes("בוקר") ? "בוקר" : "ערב";
+            
+            const estimatedEnd = estimateEndDate(dateVal, formatKey);
+            els.endDate.value = estimatedEnd;
+            els.lblEndDate.innerText = estimatedEnd;
+            
+            updatePreview();
+        }
+
+        // Calculations double-binding formulas
+        function recalculateFromOriginal() {
+            const orig = Number(els.originalPrice.value) || 0;
+            const schol = Number(els.scholarshipAmount.value) || 0;
+            els.finalPrice.value = orig - schol;
+            updatePreview();
+        }
+
+        // Keep scholarship calculation sync
+        function recalculateFromScholarship() {
+            const orig = Number(els.originalPrice.value) || 0;
+            const schol = Number(els.scholarshipAmount.value) || 0;
+            els.finalPrice.value = orig - schol;
+            updatePreview();
+        }
+
+        function recalculateFromFinal() {
+            const orig = Number(els.originalPrice.value) || 0;
+            const finalVal = Number(els.finalPrice.value) || 0;
+            els.scholarshipAmount.value = orig - finalVal;
+            updatePreview();
+        }
+
+        function updateBadgeCount() {
+            if (els.importCount) {
+                els.importCount.innerText = `${savedSchedules.length} מועדים שמורים`;
+            }
+        }
+
+        function processPrizaImport(text) {
+            if (!text || text.startsWith("מועדים יובאו") || text.startsWith("לא נמצאו")) return;
+
+            // Clean RTL control characters and zero-width spaces
+            text = text.replace(/[\u200e\u200f\u200b\u202a-\u202e]/g, '');
+
+            // Join wrapped lines: Replace newlines that are NOT followed by a cycle prefix
+            text = text.replace(/\n(?!\s*(מורחב|מחזור|סיכום|ייצוא|סייבר|עיצוב|פיתוח|תוכנה|שיווק|בדיקות|ניהול|רשתות|מיישם|AI|\d{5}))/gi, ' ');
+
+            let detectedCourse = "";
+            if (text.includes("עיצוב") || text.includes("גרפי") || text.includes("UX") || text.includes("UI")) {
+                detectedCourse = "עיצוב גרפי וחווית משתמש UI/UX";
+            } else if (text.includes("סייבר") || text.includes("אבטחת מידע")) {
+                detectedCourse = "סייבר ואבטחת מידע";
+            } else if (text.includes("פיתוח") || text.includes("תוכנה") || text.includes("Stack")) {
+                detectedCourse = "Full Stack Development";
+            } else if (text.includes("שיווק") || text.includes("דיגיטלי")) {
+                detectedCourse = "שיווק דיגיטלי";
+            } else if (text.includes("בדיקות") || text.includes("QA") || text.includes("אוטומציה")) {
+                detectedCourse = "בדיקות תוכנה ואוטומציה (QA)";
+            } else if (text.includes("רשתות")) {
+                detectedCourse = "ניהול רשתות ואבטחת מידע";
+            } else if (text.includes("AI")) {
+                detectedCourse = "מיישם AI בארגונים";
+            } else {
+                detectedCourse = els.courseSelect.options[els.courseSelect.selectedIndex].text;
+            }
+
+            const lines = text.split('\n');
+            let currentFormat = "ערב"; 
+            let newlyImported = 0;
+            let updatedCount = 0;
+
+            // Engine 1: Original Tab-Split Parser (Fallback that worked perfectly at first)
+            function tryTabSplitParsing() {
+                let imported = 0;
+                let updated = 0;
+                for (let i = 0; i < lines.length; i++) {
+                    const line = lines[i].trim();
+                    if (!line) continue;
+
+                    if (line.includes("מחזורי בוקר")) {
+                        currentFormat = "בוקר";
+                        continue;
+                    } else if (line.includes("מחזורי ערב")) {
+                        currentFormat = "ערב";
+                        continue;
+                    }
+
+                    if (line.includes("מחזור") && line.includes("ת. התחלה")) continue;
+                    if (line.includes("ייצוא לאקסל")) continue;
+                    if (line.startsWith("סיכום")) continue;
+
+                    const cols = line.split('\t');
+                    if (cols.length >= 5) {
+                        const title = cols[0] ? cols[0].trim() : "";
+                        const startDateA = normalizeDate(cols[1]);
+                        const startDateB = cols[2] ? normalizeDate(cols[2]) : startDateA;
+                        const startDateC = cols[3] ? normalizeDate(cols[3]) : startDateB;
+                        const scheduleStr = cols[4] ? cols[4].trim() : "";
+
+                        if (!startDateA || startDateA.length < 6 || !startDateA.includes('/')) continue;
+
+                        const existingIndex = savedSchedules.findIndex(s => 
+                            s &&
+                            (s.startDateA === startDateA || s.startDate === startDateA) && 
+                            s.course === detectedCourse && 
+                            s.schedule === scheduleStr
+                        );
+
+                        if (existingIndex !== -1) {
+                            savedSchedules[existingIndex].startDateA = startDateA;
+                            savedSchedules[existingIndex].startDateB = startDateB;
+                            savedSchedules[existingIndex].startDateC = startDateC;
+                            savedSchedules[existingIndex].title = title;
+                            updated++;
+                        } else {
+                            savedSchedules.push({
+                                course: detectedCourse,
+                                startDateA: startDateA,
+                                startDateB: startDateB, 
+                                startDateC: startDateC, 
+                                format: currentFormat,
+                                schedule: scheduleStr,
+                                hours: coursePresets[els.courseSelect.value]?.hours || "350",
+                                title: title
+                            });
+                            imported++;
+                        }
+                    }
+                }
+                return { imported, updated };
+            }
+
+            // Engine 2: Regex-based Splitless Parser
+            function tryRegexParsing() {
+                let imported = 0;
+                let updated = 0;
+                for (let i = 0; i < lines.length; i++) {
+                    const line = lines[i].trim();
+                    if (!line) continue;
+
+                    if (line.includes("מחזורי בוקר")) {
+                        currentFormat = "בוקר";
+                        continue;
+                    } else if (line.includes("מחזורי ערב")) {
+                        currentFormat = "ערב";
+                        continue;
+                    }
+
+                    if (line.includes("מחזור") && line.includes("ת. התחלה")) continue;
+                    if (line.includes("ייצוא לאקסל")) continue;
+                    if (line.startsWith("סיכום")) continue;
+
+                    const dateRegex = /(\d{1,2}[\/.]\d{1,2}[\/.]\d{2,4})/g;
+                    const allDates = line.match(dateRegex);
+
+                    if (allDates && allDates.length >= 1) {
+                        const startDateA = normalizeDate(allDates[0]);
+                        const startDateB = allDates[1] ? normalizeDate(allDates[1]) : startDateA;
+                        const startDateC = allDates[2] ? normalizeDate(allDates[2]) : startDateB;
+
+                        const firstDateIdx = line.indexOf(allDates[0]);
+                        let title = line.substring(0, firstDateIdx).trim();
+                        title = title.replace(/\t+/g, ' ').replace(/\s{2,}/g, ' ');
+
+                        if (title.includes("מחזור") || title.includes("ייצוא") || title.includes("תאריך") || title.length < 3) {
+                            continue;
+                        }
+
+                        let scheduleStr = "";
+                        const scheduleRegex = /([א-ת]['+,-]*[א-ת]*\s*\(?\d{2}:\d{2}[^a-zA-Z]*?\d{2}:\d{2}\)?)/g;
+                        const scheduleMatches = line.match(scheduleRegex);
+
+                        if (scheduleMatches) {
+                            scheduleStr = scheduleMatches.join(', ');
+                        } else {
+                            scheduleStr = currentFormat === "בוקר" ? "ימים ושעות בוקר" : "ימים ושעות ערב";
+                        }
+
+                        const existingIndex = savedSchedules.findIndex(s => 
+                            s &&
+                            (s.startDateA === startDateA || s.startDate === startDateA) && 
+                            s.course === detectedCourse && 
+                            s.schedule === scheduleStr
+                        );
+
+                        if (existingIndex !== -1) {
+                            savedSchedules[existingIndex].startDateA = startDateA;
+                            savedSchedules[existingIndex].startDateB = startDateB;
+                            savedSchedules[existingIndex].startDateC = startDateC;
+                            savedSchedules[existingIndex].title = title;
+                            updated++;
+                        } else {
+                            savedSchedules.push({
+                                course: detectedCourse,
+                                startDateA: startDateA,
+                                startDateB: startDateB, 
+                                startDateC: startDateC, 
+                                format: currentFormat,
+                                schedule: scheduleStr,
+                                hours: coursePresets[els.courseSelect.value]?.hours || "350",
+                                title: title
+                            });
+                            imported++;
+                        }
+                    }
+                }
+                return { imported, updated };
+            }
+
+            // Run Engine 1 first (Tab-Split) since it is highly precise when copying tables
+            let result = tryTabSplitParsing();
+            newlyImported = result.imported;
+            updatedCount = result.updated;
+
+            // If Engine 1 found nothing, run Engine 2 (Regex-based)
+            if (newlyImported === 0 && updatedCount === 0) {
+                result = tryRegexParsing();
+                newlyImported = result.imported;
+                updatedCount = result.updated;
+            }
+
+            if (newlyImported > 0 || updatedCount > 0) {
+                localStorage.setItem('hackeru_schedules', JSON.stringify(savedSchedules));
+                updateBadgeCount();
+                
+                els.importSuccessMsg.style.display = 'block';
+                els.importSuccessMsg.style.backgroundColor = "rgba(0, 210, 122, 0.1)";
+                els.importSuccessMsg.style.borderColor = "var(--primary-color)";
+                els.importSuccessMsg.style.color = "var(--primary-color)";
+                els.importSuccessMsg.innerText = `זוהה קורס "${detectedCourse}". יובאו ${newlyImported} ועודכנו ${updatedCount} מחזורים בהצלחה!`;
+                
+                setTimeout(() => {
+                    els.importSuccessMsg.style.display = 'none';
+                    els.prizaImport.value = "";
+                }, 3500);
+
+                let targetOptionValue = "";
+                for (let opt of els.courseSelect.options) {
+                    if (detectedCourse.includes(opt.text.split(' ')[0])) {
+                        targetOptionValue = opt.value;
+                        break;
+                    }
+                }
+                if (targetOptionValue && els.courseSelect.value !== targetOptionValue) {
+                    els.courseSelect.value = targetOptionValue;
+                    handleCoursePresetChange();
+                } else {
+                    populateScheduleDropdown(detectedCourse);
+                }
+            } else {
+                els.importSuccessMsg.style.display = 'block';
+                els.importSuccessMsg.innerText = "לא נמצאו מועדים חדשים בטקסט שהודבק.";
+                els.importSuccessMsg.style.backgroundColor = "rgba(239, 68, 68, 0.1)";
+                els.importSuccessMsg.style.borderColor = "#EF4444";
+                els.importSuccessMsg.style.color = "#EF4444";
+                
+                setTimeout(() => {
+                    els.importSuccessMsg.style.display = 'none';
+                }, 3000);
+            }
+        }
+
+        els.prizaImport.addEventListener('input', (e) => {
+            try {
+                processPrizaImport(e.target.value);
+            } catch (err) {
+                console.error("Error during import parsing:", err);
+                alert("שגיאה במהלך ייבוא הנתונים: " + err.message);
+            }
+        });
+
+        els.btnManualImport.addEventListener('click', () => {
+            try {
+                processPrizaImport(els.prizaImport.value);
+            } catch (err) {
+                console.error("Error during import parsing:", err);
+                alert("שגיאה במהלך ייבוא הנתונים: " + err.message);
+            }
+        });
+
+        function clearSavedSchedules() {
+            if (confirm("האם אתה בטוח שברצונך למחוק את כל המועדים שייבאת מפריזה-נט?")) {
+                savedSchedules = [];
+                localStorage.removeItem('hackeru_schedules');
+                updateBadgeCount();
+                handleCoursePresetChange(); 
+                alert("כל המועדים השמורים נמחקו.");
+            }
+        }
+
+        // Initialize preview
+        handleCoursePresetChange();
+        updateDocumentTitle();
+
+        // Copy plain text to clipboard
+        function copyToClipboard() {
+            const client = els.clientName.value;
+            const id = els.clientId.value;
+            const course = els.lblSubjectCourse.innerText;
+            const start = els.startDate.value;
+            const end = els.endDate.value;
+            const format = els.courseFormat.options[els.courseFormat.selectedIndex].text;
+            const schedule = els.scheduleDays.value;
+            const hours = els.academicHours.value;
+            const style = els.templateStyle.value;
+            const orig = Number(els.originalPrice.value) || 0;
+            const schol = Number(els.scholarshipAmount.value) || 0;
+            const final = Number(els.finalPrice.value) || 0;
+            const idf = Number(els.idfPrice.value) || 0;
+            
+            let validityText = els.quoteValidity.value === "custom" ? els.quoteValidityCustom.value : els.quoteValidity.value;
+
+            let priceText = "";
+            if (style === "scholarship") {
+                priceText = `מחיר קורס מקורי: ${orig.toLocaleString()} ₪\nסה"כ מלגות: ${schol.toLocaleString()} ₪\nמחיר אחרי מלגות: ${final.toLocaleString()} ₪ (${validityText})`;
+            } else if (style === "discount") {
+                priceText = `עלות: ${orig.toLocaleString()} ₪ כולל מע"מ\nעלות לאחר הנחה: ${final.toLocaleString()} ₪ כולל מע"מ`;
+            } else if (style === "idf") {
+                priceText = `עלות: ${orig.toLocaleString()} ₪\nעלות עבור פורשי צה"ל: ${idf.toLocaleString()} ₪`;
+            } else {
+                priceText = `עלות: ${orig.toLocaleString()} ₪`;
+            }
+
+            const formattedSchedule = formatScheduleHtmlAndText(schedule);
+            const idBlock = id ? `ת.ז: ${id}\n` : '';
+
+            const text = `הצעת מחיר לקורס - ${course}\n\nלכבוד: ${client}\n${idBlock}\nפרטי הקורס:\n• מועד פתיחה: ${start}\n• מועד סיום משוער: ${end}\n• ${formattedSchedule.text}\n• מתכונת לימודים: ${els.studyFormat.value}\n• שעות לימוד: ${hours} שעות אקדמיות\n\nתמחור:\n${priceText}\n\nבברכה,\n${els.advisorName.value}\n${els.advisorTitle.value}`;
+
+            navigator.clipboard.writeText(text).then(() => {
+                alert("הטקסט הועתק ללוח בהצלחה!");
+            });
+        }
+
+        // Export as HTML file that opens in MS Word as a document (extremely simple and robust client-side trick)
+        function exportWordHtml() {
+            const client = els.clientName.value;
+            const htmlContent = document.getElementById('printableQuote').outerHTML;
+            
+            const header = `
+                <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+                <head>
+                    <title>הצעת מחיר</title>
+                    <style>
+                        body { font-family: 'Segoe UI', Arial; direction: rtl; }
+                        .letterhead-container { width: 100%; padding: 40px; }
+                        .doc-header { display: table; width: 100%; margin-bottom: 40px; }
+                        .logo-main { font-size: 24px; font-weight: bold; }
+                        .doc-date { text-align: left; }
+                        .subject-title { text-align: center; font-size: 18px; font-weight: bold; text-decoration: underline; margin-bottom: 20px; }
+                        .details-list { margin-bottom: 20px; }
+                        .details-list li { margin-bottom: 8px; font-size: 14px; }
+                        .highlight-yellow { background-color: yellow; }
+                        .strike-through { text-decoration: line-through; color: #666; }
+                        .doc-footer { margin-top: 50px; border-top: 1px solid #ccc; padding-top: 10px; font-size: 10px; color: #666; }
+                    </style>
+                </head>
+                <body>
+            `;
+            const footer = "</body></html>";
+            const fullHtml = header + htmlContent + footer;
+
+            const blob = new Blob([fullHtml], { type: 'application/msword' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `הצעת מחיר - ${client}.doc`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // Authorization Control Logic
+        const loginOverlay = document.getElementById('loginOverlay');
+        const loginPassword = document.getElementById('loginPassword');
+        const btnLoginSubmit = document.getElementById('btnLoginSubmit');
+        const loginError = document.getElementById('loginError');
+        const appContainer = document.getElementById('appContainer');
+
+        const CORRECT_PASSWORD = "HackerU@2026"; // Company Passcode
+
+        if (localStorage.getItem('hackeru_authorized') === 'true') {
+            loginOverlay.style.display = 'none';
+            if (appContainer) appContainer.style.display = 'flex';
+        }
+
+        function tryLogin() {
+            if (loginPassword.value === CORRECT_PASSWORD) {
+                localStorage.setItem('hackeru_authorized', 'true');
+                if (appContainer) appContainer.style.display = 'flex';
+                loginOverlay.style.opacity = '0';
+                setTimeout(() => {
+                    loginOverlay.style.display = 'none';
+                }, 400);
+            } else {
+                loginError.style.display = 'block';
+                loginPassword.value = '';
+                loginPassword.focus();
+            }
+        }
+
+        btnLoginSubmit.addEventListener('click', tryLogin);
+        loginPassword.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                tryLogin();
+            }
+        });
+
+        // Lock system function (global)
+        function lockSystem() {
+            localStorage.removeItem('hackeru_authorized');
+            if (appContainer) appContainer.style.display = 'none';
+            loginOverlay.style.display = 'flex';
+            loginOverlay.style.opacity = '1';
+            loginPassword.value = '';
+            loginError.style.display = 'none';
+            loginPassword.focus();
+        }
+        window.lockSystem = lockSystem;
+    </script>
+</body>
+</html>
