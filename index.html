@@ -1654,7 +1654,7 @@
             text = text.replace(/[\u200e\u200f\u200b\u202a-\u202e]/g, '');
 
             // Join wrapped lines: Replace newlines that are NOT followed by a cycle prefix
-            text = text.replace(/\n(?!\s*(מורחב|מחזור|סיכום|ייצוא|סייבר|עיצוב|פיתוח|תוכנה|שיווק|בדיקות|ניהול|רשתות|מיישם|AI|\d{5}))/gi, ' ');
+            text = text.replace(/\n(?!\s*(מורחב|מחזור|סיכום|ייצוא|סייבר|עיצוב|פיתוח|תוכנה|שיווק|בדיקות|ניהול|רשתות|מיישם|AI|Devops|DevOps|Data|QA|Help|Cisco|UX|UI|\d{5}|.*\t))/gi, ' ');
 
             let detectedCourse = "";
             if (text.includes("עיצוב") || text.includes("גרפי") || text.includes("UX") || text.includes("UI")) {
