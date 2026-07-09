@@ -1420,7 +1420,7 @@
             }
         }
 
-        // Helper: Check if a date string is expired (older than 7 days ago)
+        // Helper: Check if a date string is in the past
         function isDateExpired(dateStr) {
             if (!dateStr || !dateStr.includes('/')) return false;
             try {
@@ -1433,10 +1433,7 @@
                 
                 const today = new Date();
                 today.setHours(0,0,0,0);
-                
-                // Allow a safety margin of 7 days in the past
-                const cutoff = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
-                return dateObj < cutoff;
+                return dateObj < today;
             } catch (e) {
                 return false;
             }
@@ -1478,11 +1475,6 @@
 
             const filtered = savedSchedules.filter(s => {
                 if (!s || !s.course) return false;
-                
-                // Filter out expired dates (older than 7 days ago)
-                const dateA = s.startDateA || s.startDate || '';
-                if (isDateExpired(dateA)) return false;
-
                 if (searchKeyword && s.course.includes(searchKeyword)) return true;
                 return courseName.includes(s.course) || s.course.includes(courseName) || s.course.includes(courseName.split(' ')[0]);
             });
@@ -1510,7 +1502,11 @@
                 const format = item.format || '';
                 const scheduleText = item.schedule || '';
                 const titleText = item.title || '';
-                opt.innerText = `${dateA} | ${format} | ${scheduleText.substring(0, 30)}... [${titleText.substring(0, 15)}]`;
+                
+                // Show expired suffix if the date is in the past
+                const expiredSuffix = isDateExpired(dateA) ? " (עבר)" : "";
+                
+                opt.innerText = `${dateA}${expiredSuffix} | ${format} | ${scheduleText.substring(0, 30)}... [${titleText.substring(0, 15)}]`;
                 els.scheduleDropdown.appendChild(opt);
             });
         }
