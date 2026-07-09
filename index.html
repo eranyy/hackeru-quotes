@@ -535,9 +535,12 @@
 
         <!-- Dynamic Dropdown of Imported Dates -->
         <div class="form-group" id="importedDatesGroup">
-            <label style="color: var(--primary-color); display: flex; justify-content: space-between;">
+            <label style="color: var(--primary-color); display: flex; justify-content: space-between; align-items: center;">
                 <span>בחר מחזור לימודים (מתוך פריזה)</span>
-                <button class="clear-btn" onclick="clearSavedSchedules()">נקה מועדים</button>
+                <div style="display: flex; gap: 6px;">
+                    <button class="clear-btn" id="btnDeleteActive" style="display: none; background: #FEF2F2; color: #EF4444; border: 1px solid #FCA5A5; font-size: 11px; padding: 2px 6px; border-radius: 4px; cursor: pointer;" onclick="deleteActiveSchedule()">מחק מועד זה</button>
+                    <button class="clear-btn" style="font-size: 11px; padding: 2px 6px;" onclick="clearSavedSchedules()">נקה מועדים</button>
+                </div>
             </label>
             <select id="scheduleDropdown" style="border-color: var(--primary-color);">
                 <option value="">-- טרם יובאו תאריכים עבור קורס זה --</option>
@@ -1514,15 +1517,18 @@
         // Handle selection of a schedule from the dropdown
         function handleScheduleSelection() {
             const selectedVal = els.scheduleDropdown.value;
+            const btnDeleteActive = document.getElementById('btnDeleteActive');
             if (!selectedVal) {
                 els.tamatDatesSubgroup.style.display = "none";
                 activeScheduleItem = null;
                 activeScheduleIndex = -1;
+                if (btnDeleteActive) btnDeleteActive.style.display = "none";
                 return;
             }
 
             activeScheduleIndex = parseInt(selectedVal, 10);
             activeScheduleItem = savedSchedules[activeScheduleIndex];
+            if (btnDeleteActive) btnDeleteActive.style.display = "inline-block";
             
             // Render sub-selection buttons for unique dates A, B, C
             renderDateSubButtons(activeScheduleItem);
@@ -1653,7 +1659,9 @@
             text = text.replace(/\n(?!\s*(מורחב|מחזור|סיכום|ייצוא|סייבר|עיצוב|פיתוח|תוכנה|שיווק|בדיקות|ניהול|רשתות|מיישם|AI|Devops|DevOps|Data|QA|Help|Cisco|UX|UI|\d{5}|.*\t))/gi, ' ');
 
             let detectedCourse = "";
-            if (text.includes("עיצוב") || text.includes("גרפי") || text.includes("UX") || text.includes("UI")) {
+            if (text.includes("בדיקות") || text.includes("QA") || text.includes("אוטומציה")) {
+                detectedCourse = "בדיקות תוכנה ואוטומציה (QA)";
+            } else if (text.includes("עיצוב") || text.includes("גרפי") || text.includes("UX") || text.includes("UI")) {
                 detectedCourse = "עיצוב גרפי וחווית משתמש UI/UX";
             } else if (text.includes("רשתות")) {
                 detectedCourse = "ניהול רשתות ואבטחת מידע";
@@ -1661,10 +1669,6 @@
                 detectedCourse = "סייבר ואבטחת מידע";
             } else if (text.includes("פיתוח") || text.includes("תוכנה") || text.includes("Stack")) {
                 detectedCourse = "Full Stack Development";
-            } else if (text.includes("שיווק") || text.includes("דיגיטלי")) {
-                detectedCourse = "שיווק דיגיטלי";
-            } else if (text.includes("בדיקות") || text.includes("QA") || text.includes("אוטומציה")) {
-                detectedCourse = "בדיקות תוכנה ואוטומציה (QA)";
             } else if (text.includes("Devops") || text.includes("DevOps")) {
                 detectedCourse = "Devops Engineer";
             } else if (text.includes("Management") || text.includes("EXPERT")) {
@@ -1894,11 +1898,38 @@
             }
         });
 
+        function deleteActiveSchedule() {
+            if (activeScheduleIndex !== -1 && activeScheduleItem) {
+                if (confirm(`האם למחוק את מחזור הלימודים מיום ${activeScheduleItem.startDateA || activeScheduleItem.startDate}?`)) {
+                    savedSchedules.splice(activeScheduleIndex, 1);
+                    localStorage.setItem('hackeru_schedules', JSON.stringify(savedSchedules));
+                    updateBadgeCount();
+                    
+                    // Reset dropdown selection
+                    els.scheduleDropdown.value = "";
+                    els.tamatDatesSubgroup.style.display = "none";
+                    activeScheduleItem = null;
+                    activeScheduleIndex = -1;
+                    
+                    const btnDeleteActive = document.getElementById('btnDeleteActive');
+                    if (btnDeleteActive) btnDeleteActive.style.display = "none";
+                    
+                    // Repopulate and update
+                    handleCoursePresetChange();
+                    alert("המועד נמחק בהצלחה.");
+                }
+            }
+        }
+
         function clearSavedSchedules() {
             if (confirm("האם אתה בטוח שברצונך למחוק את כל המועדים שייבאת מפריזה-נט?")) {
                 savedSchedules = [];
                 localStorage.removeItem('hackeru_schedules');
                 updateBadgeCount();
+                
+                const btnDeleteActive = document.getElementById('btnDeleteActive');
+                if (btnDeleteActive) btnDeleteActive.style.display = "none";
+                
                 handleCoursePresetChange(); 
                 alert("כל המועדים השמורים נמחקו.");
             }
