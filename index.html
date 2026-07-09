@@ -1052,8 +1052,26 @@
             console.error("Error loading schedules from localStorage", e);
         }
 
+        // Load custom presets from localStorage on startup if exist
+        try {
+            const savedCustomPresets = localStorage.getItem('hackeru_custom_presets');
+            if (savedCustomPresets) {
+                const parsed = JSON.parse(savedCustomPresets);
+                for (let key in parsed) {
+                    if (coursePresets[key]) {
+                        Object.assign(coursePresets[key], parsed[key]);
+                    } else {
+                        coursePresets[key] = parsed[key];
+                    }
+                }
+            }
+        } catch(e) {
+            console.error("Failed to load custom presets", e);
+        }
+
         // Active schedule data holds selected item structure
         let activeScheduleItem = null;
+        let activeScheduleIndex = -1;
 
         // Update badge count
         updateBadgeCount();
@@ -1203,6 +1221,19 @@
                 if(inputId === 'clientId') {
                     els.lblClientIdBlock.style.display = e.target.value ? 'block' : 'none';
                 }
+                
+                // Save customized values back to the active cycle in savedSchedules
+                if (activeScheduleIndex !== -1 && activeScheduleItem) {
+                    if (inputId === 'endDate') {
+                        activeScheduleItem.customEndDate = e.target.value;
+                        localStorage.setItem('hackeru_schedules', JSON.stringify(savedSchedules));
+                    }
+                }
+                
+                // Save customized presets details if general preset fields are edited
+                if (inputId === 'academicHours') {
+                    saveCustomPreset();
+                }
             };
             inputEl.addEventListener('input', handler);
             inputEl.addEventListener('change', handler);
@@ -1214,11 +1245,22 @@
         });
 
         // Price changes: Double-binding logic
-        els.originalPrice.addEventListener('input', recalculateFromOriginal);
-        els.scholarshipAmount.addEventListener('input', recalculateFromScholarship);
-        els.finalPrice.addEventListener('input', recalculateFromFinal);
+        els.originalPrice.addEventListener('input', () => {
+            recalculateFromOriginal();
+            saveCustomPreset();
+        });
+        els.scholarshipAmount.addEventListener('input', () => {
+            recalculateFromScholarship();
+            saveCustomPreset();
+        });
+        els.finalPrice.addEventListener('input', () => {
+            recalculateFromFinal();
+            saveCustomPreset();
+        });
         els.idfPrice.addEventListener('input', updatePreview);
         els.fundingType.addEventListener('change', updatePreview);
+        els.syllabusCode.addEventListener('input', saveCustomPreset);
+        els.tamatCode.addEventListener('input', saveCustomPreset);
 
         // Helper: Expand single letters representing days to full names
         function expandDayLetter(str) {
@@ -1331,6 +1373,7 @@
                 // Hide dates subselector by default
                 els.tamatDatesSubgroup.style.display = "none";
                 activeScheduleItem = null;
+                activeScheduleIndex = -1;
 
                 // Populate the schedule dropdown for this course
                 populateScheduleDropdown(preset.name);
@@ -1377,6 +1420,51 @@
             }
         }
 
+        // Helper: Check if a date string is expired (older than 7 days ago)
+        function isDateExpired(dateStr) {
+            if (!dateStr || !dateStr.includes('/')) return false;
+            try {
+                const parts = dateStr.split('/');
+                if (parts.length !== 3) return false;
+                const day = parseInt(parts[0], 10);
+                const month = parseInt(parts[1], 10) - 1;
+                const year = parseInt(parts[2], 10);
+                const dateObj = new Date(year, month, day);
+                
+                const today = new Date();
+                today.setHours(0,0,0,0);
+                
+                // Allow a safety margin of 7 days in the past
+                const cutoff = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+                return dateObj < cutoff;
+            } catch (e) {
+                return false;
+            }
+        }
+
+        // Save customized preset properties to localStorage on edit
+        function saveCustomPreset() {
+            const courseKey = els.courseSelect.value;
+            if (!courseKey || courseKey === 'custom') return;
+            
+            if (!coursePresets[courseKey]) {
+                coursePresets[courseKey] = {};
+            }
+            
+            coursePresets[courseKey].hours = els.academicHours.value;
+            coursePresets[courseKey].originalPrice = Number(els.originalPrice.value) || 0;
+            coursePresets[courseKey].code = els.syllabusCode.value;
+            
+            const fund = els.fundingType.value;
+            if (fund === 'vouchers') {
+                coursePresets[courseKey].tamatSymbol = els.tamatCode.value;
+            } else if (fund === 'deposit') {
+                coursePresets[courseKey].depositCode = els.tamatCode.value;
+            }
+            
+            localStorage.setItem('hackeru_custom_presets', JSON.stringify(coursePresets));
+        }
+
         // Populate Dropdown from Imported schedules
         function populateScheduleDropdown(courseName) {
             let searchKeyword = "";
@@ -1390,8 +1478,13 @@
 
             const filtered = savedSchedules.filter(s => {
                 if (!s || !s.course) return false;
-                if (!searchKeyword) return false;
-                return s.course.includes(searchKeyword) || courseName.includes(s.course);
+                
+                // Filter out expired dates (older than 7 days ago)
+                const dateA = s.startDateA || s.startDate || '';
+                if (isDateExpired(dateA)) return false;
+
+                if (searchKeyword && s.course.includes(searchKeyword)) return true;
+                return courseName.includes(s.course) || s.course.includes(courseName) || s.course.includes(courseName.split(' ')[0]);
             });
 
             els.scheduleDropdown.innerHTML = "";
@@ -1409,9 +1502,10 @@
             defaultOpt.innerText = `-- בחר מתוך (${filtered.length}) מחזורים שיובאו --`;
             els.scheduleDropdown.appendChild(defaultOpt);
 
-            filtered.forEach((item, index) => {
+            filtered.forEach((item) => {
                 const opt = document.createElement('option');
-                opt.value = JSON.stringify(item);
+                // Store the index in savedSchedules directly as the value
+                opt.value = savedSchedules.indexOf(item);
                 const dateA = item.startDateA || item.startDate || '';
                 const format = item.format || '';
                 const scheduleText = item.schedule || '';
@@ -1427,10 +1521,12 @@
             if (!selectedVal) {
                 els.tamatDatesSubgroup.style.display = "none";
                 activeScheduleItem = null;
+                activeScheduleIndex = -1;
                 return;
             }
 
-            activeScheduleItem = JSON.parse(selectedVal);
+            activeScheduleIndex = parseInt(selectedVal, 10);
+            activeScheduleItem = savedSchedules[activeScheduleIndex];
             
             // Render sub-selection buttons for unique dates A, B, C
             renderDateSubButtons(activeScheduleItem);
@@ -1511,7 +1607,11 @@
             const formatText = els.courseFormat.options[els.courseFormat.selectedIndex].text;
             const formatKey = formatText.includes("בוקר") ? "בוקר" : "ערב";
             
-            const estimatedEnd = estimateEndDate(dateVal, formatKey);
+            // Apply manually adjusted customEndDate if exists, otherwise estimate
+            const estimatedEnd = (activeScheduleItem && activeScheduleItem.customEndDate) 
+                ? activeScheduleItem.customEndDate 
+                : estimateEndDate(dateVal, formatKey);
+                
             els.endDate.value = estimatedEnd;
             els.lblEndDate.innerText = estimatedEnd;
             
@@ -1750,20 +1850,6 @@
                     els.importSuccessMsg.style.display = 'none';
                     els.prizaImport.value = "";
                 }, 3500);
-
-                let targetOptionValue = "";
-                for (let opt of els.courseSelect.options) {
-                    if (detectedCourse.includes(opt.text.split(' ')[0])) {
-                        targetOptionValue = opt.value;
-                        break;
-                    }
-                }
-                if (targetOptionValue && els.courseSelect.value !== targetOptionValue) {
-                    els.courseSelect.value = targetOptionValue;
-                    handleCoursePresetChange();
-                } else {
-                    populateScheduleDropdown(detectedCourse);
-                }
             } else {
                 els.importSuccessMsg.style.display = 'block';
                 els.importSuccessMsg.innerText = "לא נמצאו מועדים חדשים בטקסט שהודבק.";
@@ -1774,6 +1860,23 @@
                 setTimeout(() => {
                     els.importSuccessMsg.style.display = 'none';
                 }, 3000);
+            }
+
+            // Always switch dropdown selection to the pasted course (even if 0 new cycles are added)
+            if (detectedCourse) {
+                let targetOptionValue = "";
+                for (let opt of els.courseSelect.options) {
+                    if (detectedCourse.toLowerCase().includes(opt.text.split(' ')[0].toLowerCase()) || opt.text.toLowerCase().includes(detectedCourse.split(' ')[0].toLowerCase())) {
+                        targetOptionValue = opt.value;
+                        break;
+                    }
+                }
+                if (targetOptionValue && els.courseSelect.value !== targetOptionValue) {
+                    els.courseSelect.value = targetOptionValue;
+                    handleCoursePresetChange();
+                } else {
+                    populateScheduleDropdown(detectedCourse);
+                }
             }
         }
 
