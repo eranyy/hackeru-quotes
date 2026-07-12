@@ -564,6 +564,10 @@
                 <label for="clientId">תעודת זהות</label>
                 <input type="text" id="clientId" value="308687136">
             </div>
+            <div class="form-group">
+                <label for="clientPhone">מספר טלפון</label>
+                <input type="text" id="clientPhone" value="0501234567" placeholder="למשל: 0501234567">
+            </div>
         </div>
 
         <div class="form-row">
@@ -693,6 +697,28 @@
 
         <div class="form-row">
             <div class="form-group">
+                <label for="installments">פריסת תשלומים (להודעה ופרינט)</label>
+                <select id="installments">
+                    <option value="1">תשלום אחד</option>
+                    <option value="12">12 תשלומים</option>
+                    <option value="24">24 תשלומים</option>
+                    <option value="36" selected>36 תשלומים</option>
+                    <option value="48">48 תשלומים</option>
+                    <option value="60">60 תשלומים</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>תשלום חודשי משוער</label>
+                <input type="text" id="monthlyPaymentDisplay" readonly style="background-color: #F8FAFC; color: #1E293B; font-weight: bold; text-align: center;" value="₪604 לחודש">
+            </div>
+        </div>
+        <div class="form-group" style="margin-top: 5px; display: flex; align-items: center; gap: 8px;">
+            <input type="checkbox" id="showInstallmentsOnQuote" checked style="width: auto; cursor: pointer;">
+            <label for="showInstallmentsOnQuote" style="margin-bottom: 0; font-size: 12px; cursor: pointer; color: #475569;">הצג פריסת תשלומים בהצעת המחיר המודפסת</label>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
                 <label for="advisorName">שם יועץ הלימודים</label>
                 <input type="text" id="advisorName" value="ערן ידיגר">
             </div>
@@ -706,12 +732,28 @@
             <button class="btn" onclick="printQuote()">
                 הדפסה ושמירה כ-PDF
             </button>
+            <button class="btn" onclick="shareOnWhatsApp()" style="background-color: #25D366; color: white; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                <span>💬 שלח הצעה ופרטים בוואטסאפ</span>
+            </button>
+            <button class="btn btn-outline" onclick="saveToHistory()">
+                💾 שמור הצעה בלקוחות אחרונים
+            </button>
             <button class="btn btn-outline" onclick="copyToClipboard()">
-                העתק טקסט להודעה (Email / WhatsApp)
+                העתק טקסט להודעה
             </button>
             <button class="btn btn-outline" onclick="exportWordHtml()">
                 הורד כקובץ Word (.doc)
             </button>
+        </div>
+        <!-- Local CRM Client History Drawer -->
+        <div class="import-box" style="margin-top: 20px; border-color: #A5B4FC; background-color: rgba(245, 243, 255, 0.5);">
+            <label style="color: #6366F1; font-weight: 700; display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <span>📂 הצעות אחרונות (CRM מקומי)</span>
+                <button class="clear-btn" style="color: #6366F1; border-color: #C7D2FE; font-size: 10px; padding: 1px 4px;" onclick="clearHistory()">נקה הכל</button>
+            </label>
+            <div id="historyListContainer" style="max-height: 200px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; font-size: 12px; padding: 5px;">
+                <!-- Populated dynamically -->
+            </div>
         </div>
     </div>
 
@@ -1005,6 +1047,11 @@
             scholarshipAmount: document.getElementById('scholarshipAmount'),
             finalPrice: document.getElementById('finalPrice'),
             idfPrice: document.getElementById('idfPrice'),
+            clientPhone: document.getElementById('clientPhone'),
+            installments: document.getElementById('installments'),
+            showInstallmentsOnQuote: document.getElementById('showInstallmentsOnQuote'),
+            monthlyPaymentDisplay: document.getElementById('monthlyPaymentDisplay'),
+            historyListContainer: document.getElementById('historyListContainer'),
             advisorName: document.getElementById('advisorName'),
             advisorTitle: document.getElementById('advisorTitle'),
             prizaImport: document.getElementById('prizaImport'),
@@ -1116,6 +1163,17 @@
             } else { // standard
                 html = `
                     <li><span class="bold-text">עלות:</span> <span class="highlight-yellow">${formatILS(orig)}</span> כולל מע"מ פר משתתף</li>
+                `;
+            }
+
+            // Append installment plan if checked and valid
+            const showInstallments = els.showInstallmentsOnQuote.checked;
+            const pmts = parseInt(els.installments.value, 10);
+            if (showInstallments && pmts > 1) {
+                const basePrice = (style === "idf") ? idf : final;
+                const monthly = Math.round(basePrice / pmts);
+                html += `
+                    <li style="margin-top: 6px; color: #475569; font-size: 0.9em; list-style-type: none; padding-right: 15px;">• פריסת תשלומים מוצעת: <span class="bold-text">${pmts}</span> תשלומים של <span class="bold-text">${formatILS(monthly)}</span> לחודש.</li>
                 `;
             }
 
@@ -1250,20 +1308,31 @@
         // Price changes: Double-binding logic
         els.originalPrice.addEventListener('input', () => {
             recalculateFromOriginal();
+            updateInstallments();
             saveCustomPreset();
         });
         els.scholarshipAmount.addEventListener('input', () => {
             recalculateFromScholarship();
+            updateInstallments();
             saveCustomPreset();
         });
         els.finalPrice.addEventListener('input', () => {
             recalculateFromFinal();
+            updateInstallments();
             saveCustomPreset();
         });
-        els.idfPrice.addEventListener('input', updatePreview);
-        els.fundingType.addEventListener('change', updatePreview);
+        els.idfPrice.addEventListener('input', () => {
+            updatePreview();
+            updateInstallments();
+        });
+        els.fundingType.addEventListener('change', () => {
+            updatePreview();
+            updateInstallments();
+        });
         els.syllabusCode.addEventListener('input', saveCustomPreset);
         els.tamatCode.addEventListener('input', saveCustomPreset);
+        els.installments.addEventListener('change', updateInstallments);
+        els.showInstallmentsOnQuote.addEventListener('change', updatePreview);
 
         // Helper: Expand single letters representing days to full names
         function expandDayLetter(str) {
@@ -1935,9 +2004,281 @@
             }
         }
 
+        // WhatsApp sharing constructor
+        function shareOnWhatsApp() {
+            const clientName = els.clientName.value.trim() || 'מועמד';
+            const phone = els.clientPhone.value.trim().replace(/\D/g, '');
+            const courseSelectText = els.courseSelect.options[els.courseSelect.selectedIndex].text;
+            const courseKey = els.courseSelect.value;
+            const preset = coursePresets[courseKey] || {};
+            const courseName = preset.name || courseSelectText;
+            
+            const start = els.startDate.value;
+            const end = els.endDate.value;
+            const formatText = els.courseFormat.options[els.courseFormat.selectedIndex].text;
+            const schedule = els.scheduleDays.value;
+            const hours = els.academicHours.value;
+            
+            const orig = Number(els.originalPrice.value) || 0;
+            const schol = Number(els.scholarshipAmount.value) || 0;
+            const finalVal = Number(els.finalPrice.value) || 0;
+            const idfVal = Number(els.idfPrice.value) || 0;
+            
+            const style = els.templateStyle.value;
+            const actualFinal = (style === "idf") ? idfVal : finalVal;
+            
+            const fund = els.fundingType.value;
+            let fundName = "מימון עצמי / הסדר שכר לימוד";
+            if (fund === 'vouchers') fundName = "תוכנית השוברים של לשכת התעסוקה / משרד הקליטה";
+            else if (fund === 'deposit') fundName = "פיקדון לחיילים משוחררים";
+            
+            let message = `שלום ${clientName},\n`;
+            message += `מצורף סיכום הצעת המחיר שלך למסלול ${courseName} במכללת האקריו:\n\n`;
+            message += `• היקף שעות: ${hours} שעות אקדמיות\n`;
+            message += `• מועדי הקורס: ${start} עד ${end}\n`;
+            message += `• מתכונת וימי לימוד: קורס ${formatText} - ${schedule}\n`;
+            message += `• מסלול הסדר ומימון: ${fundName}\n\n`;
+            
+            if (style === "scholarship") {
+                message += `• מחיר מלא: ₪${orig.toLocaleString()}\n`;
+                message += `• גובה מלגה: ₪${schol.toLocaleString()}\n`;
+                message += `• מחיר סופי לאחר מלגות: ₪${actualFinal.toLocaleString()}\n\n`;
+            } else if (style === "discount") {
+                message += `• מחיר מקורי: ₪${orig.toLocaleString()}\n`;
+                message += `• מחיר סופי לאחר הנחה: ₪${actualFinal.toLocaleString()}\n\n`;
+            } else if (style === "idf") {
+                message += `• מחיר מקורי: ₪${orig.toLocaleString()}\n`;
+                message += `• עלות מיוחדת לחיילים משוחררים/פורשי צה"ל: ₪${actualFinal.toLocaleString()}\n\n`;
+            } else {
+                message += `• עלות קורס: ₪${orig.toLocaleString()}\n\n`;
+            }
+            
+            const pmts = parseInt(els.installments.value, 10);
+            if (pmts > 1) {
+                const monthly = Math.round(actualFinal / pmts);
+                message += `💳 אפשרות פריסת תשלומים מוצעת:\n`;
+                message += `• ${pmts} תשלומים שווים של ₪${monthly.toLocaleString()} בחודש.\n\n`;
+            }
+            
+            if (fund === 'vouchers') {
+                message += `📌 לצורך הגשת הבקשה ללשכת התעסוקה/משרד הקליטה הועברו אליך:\n`;
+                message += `1. הצעת מחיר רשמית ומודפסת\n`;
+                message += `2. טופס ה'2 (נספח ה'2) חתום\n`;
+                message += `3. אישור ההכרה הממשלתי הרשמי לשנת 2026\n\n`;
+                message += `קישור ישיר להורדת אישור ההכרה הממשלתי (PDF):\n`;
+                message += `https://eranyy.github.io/hackeru-quotes/ishur_hakara_2026.pdf\n\n`;
+            }
+            
+            message += `בברכה,\n${els.advisorName.value}\n${els.advisorTitle.value}\nמכללת האקריו`;
+            
+            let cleanedPhone = phone;
+            if (cleanedPhone.startsWith('0')) {
+                cleanedPhone = '972' + cleanedPhone.substring(1);
+            }
+            if (!cleanedPhone.startsWith('972') && cleanedPhone.length > 0) {
+                cleanedPhone = '972' + cleanedPhone;
+            }
+            
+            saveToHistory(true);
+            
+            const waUrl = `https://wa.me/${cleanedPhone}?text=${encodeURIComponent(message)}`;
+            window.open(waUrl, '_blank');
+        }
+
+        // Installment Calculator Updater
+        function updateInstallments() {
+            const style = els.templateStyle.value;
+            const finalVal = Number(els.finalPrice.value) || 0;
+            const idfVal = Number(els.idfPrice.value) || 0;
+            
+            const basePrice = (style === "idf") ? idfVal : finalVal;
+            const pmts = parseInt(els.installments.value, 10);
+            const monthly = Math.round(basePrice / pmts);
+            
+            els.monthlyPaymentDisplay.value = `₪${monthly.toLocaleString()} לחודש`;
+            updatePreview();
+        }
+
+        // CRM Client History functions
+        function loadHistoryList() {
+            let history = [];
+            try {
+                const data = localStorage.getItem('hackeru_quote_history');
+                if (data) history = JSON.parse(data);
+            } catch(e) {
+                console.error("Failed to parse history", e);
+            }
+            
+            const container = els.historyListContainer;
+            if (!container) return;
+            container.innerHTML = "";
+            
+            if (history.length === 0) {
+                container.innerHTML = `<div style="text-align: center; color: #94A3B8; padding: 10px;">אין הצעות אחרונות שמורות.</div>`;
+                return;
+            }
+            
+            history.slice(0, 8).forEach((item, idx) => {
+                const card = document.createElement('div');
+                card.style.background = "white";
+                card.style.border = "1px solid #E2E8F0";
+                card.style.borderRadius = "6px";
+                card.style.padding = "8px";
+                card.style.cursor = "pointer";
+                card.style.display = "flex";
+                card.style.justifyContent = "space-between";
+                card.style.alignItems = "center";
+                card.style.boxShadow = "0 1px 2px rgba(0,0,0,0.05)";
+                card.onmouseover = () => card.style.borderColor = "#818CF8";
+                card.onmouseout = () => card.style.borderColor = "#E2E8F0";
+                
+                card.onclick = (e) => {
+                    if (e.target.tagName === 'BUTTON' || e.target.closest('button')) return;
+                    loadHistoryItem(item);
+                };
+                
+                const infoDiv = document.createElement('div');
+                infoDiv.style.flex = "1";
+                infoDiv.style.textAlign = "right";
+                
+                const nameSpan = document.createElement('div');
+                nameSpan.style.fontWeight = "bold";
+                nameSpan.style.color = "#1E293B";
+                nameSpan.innerText = item.clientName;
+                
+                const preset = coursePresets[item.courseKey] || {};
+                const courseName = preset.name || item.courseKey;
+                
+                const detailsSpan = document.createElement('div');
+                detailsSpan.style.color = "#64748B";
+                detailsSpan.style.fontSize = "11px";
+                detailsSpan.innerText = `${courseName.substring(0, 18)}... | ₪${Number(item.finalPrice).toLocaleString()}`;
+                
+                infoDiv.appendChild(nameSpan);
+                infoDiv.appendChild(detailsSpan);
+                
+                const deleteBtn = document.createElement('button');
+                deleteBtn.innerHTML = "×";
+                deleteBtn.style.background = "none";
+                deleteBtn.style.border = "none";
+                deleteBtn.style.color = "#94A3B8";
+                deleteBtn.style.fontSize = "16px";
+                deleteBtn.style.cursor = "pointer";
+                deleteBtn.style.padding = "0 6px";
+                deleteBtn.onmouseover = () => deleteBtn.style.color = "#EF4444";
+                deleteBtn.onmouseout = () => deleteBtn.style.color = "#94A3B8";
+                deleteBtn.onclick = () => deleteHistoryItem(idx);
+                
+                card.appendChild(infoDiv);
+                card.appendChild(deleteBtn);
+                container.appendChild(card);
+            });
+        }
+
+        function saveToHistory(silent = false) {
+            const clientName = els.clientName.value.trim();
+            if (!clientName || clientName === "ולד גודין" && !els.clientPhone.value) {
+                if (!silent) alert("נא להזין שם לקוח תקין לשמירה.");
+                return;
+            }
+            
+            let history = [];
+            try {
+                const data = localStorage.getItem('hackeru_quote_history');
+                if (data) history = JSON.parse(data);
+            } catch(e) {}
+            
+            const newItem = {
+                clientName: els.clientName.value,
+                clientId: els.clientId.value,
+                clientPhone: els.clientPhone.value,
+                courseKey: els.courseSelect.value,
+                startDate: els.startDate.value,
+                endDate: els.endDate.value,
+                scheduleDays: els.scheduleDays.value,
+                academicHours: els.academicHours.value,
+                originalPrice: els.originalPrice.value,
+                scholarshipAmount: els.scholarshipAmount.value,
+                finalPrice: els.finalPrice.value,
+                idfPrice: els.idfPrice.value,
+                fundingType: els.fundingType.value,
+                installments: els.installments.value,
+                templateStyle: els.templateStyle.value,
+                timestamp: new Date().toISOString()
+            };
+            
+            const dupIndex = history.findIndex(h => h.clientName === newItem.clientName || (h.clientId && h.clientId === newItem.clientId));
+            if (dupIndex !== -1) history.splice(dupIndex, 1);
+            
+            history.unshift(newItem);
+            localStorage.setItem('hackeru_quote_history', JSON.stringify(history));
+            loadHistoryList();
+            
+            if (!silent) alert(`הצעת המחיר עבור ${clientName} נשמרה בהיסטוריה בהצלחה.`);
+        }
+
+        function loadHistoryItem(item) {
+            els.clientName.value = item.clientName || '';
+            els.clientId.value = item.clientId || '';
+            els.clientPhone.value = item.clientPhone || '';
+            els.courseSelect.value = item.courseKey || 'custom';
+            els.startDate.value = item.startDate || '';
+            els.endDate.value = item.endDate || '';
+            els.scheduleDays.value = item.scheduleDays || '';
+            els.academicHours.value = item.academicHours || '';
+            els.originalPrice.value = item.originalPrice || '';
+            els.scholarshipAmount.value = item.scholarshipAmount || '';
+            els.finalPrice.value = item.finalPrice || '';
+            if (item.idfPrice) els.idfPrice.value = item.idfPrice;
+            els.fundingType.value = item.fundingType || 'standard';
+            els.installments.value = item.installments || '36';
+            if (item.templateStyle) els.templateStyle.value = item.templateStyle;
+            
+            bindings.forEach(([inputId, labelId]) => {
+                const el = document.getElementById(inputId);
+                const lbl = document.getElementById(labelId);
+                if (el && lbl) lbl.innerText = el.value;
+            });
+            
+            const presetName = coursePresets[item.courseKey]?.name || els.courseSelect.options[els.courseSelect.selectedIndex].text;
+            els.lblSubjectCourse.innerText = presetName;
+            els.lblIntroCourse.innerText = presetName;
+            
+            els.scheduleDropdown.value = "";
+            els.tamatDatesSubgroup.style.display = "none";
+            activeScheduleItem = null;
+            activeScheduleIndex = -1;
+            
+            populateScheduleDropdown(presetName);
+            updateInstallments();
+            updatePreview();
+            alert(`הצעת המחיר של ${item.clientName} נטענה בהצלחה.`);
+        }
+
+        function deleteHistoryItem(index) {
+            let history = [];
+            try {
+                const data = localStorage.getItem('hackeru_quote_history');
+                if (data) history = JSON.parse(data);
+            } catch(e) {}
+            
+            history.splice(index, 1);
+            localStorage.setItem('hackeru_quote_history', JSON.stringify(history));
+            loadHistoryList();
+        }
+
+        function clearHistory() {
+            if (confirm("האם למחוק את כל היסטוריית הלקוחות מהמערכת?")) {
+                localStorage.removeItem('hackeru_quote_history');
+                loadHistoryList();
+            }
+        }
+
         // Initialize preview
         handleCoursePresetChange();
         updateDocumentTitle();
+        loadHistoryList();
+        updateInstallments();
 
         // Copy plain text to clipboard
         function copyToClipboard() {
