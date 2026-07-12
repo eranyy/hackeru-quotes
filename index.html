@@ -10,6 +10,9 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="icon-192.png">
+    <!-- Firebase SDK Compat -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
     <!-- Import Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -871,6 +874,36 @@
             <div id="historyListContainer" style="max-height: 200px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; font-size: 12px; padding: 5px;">
                 <!-- Populated dynamically -->
             </div>
+        </div>
+
+        <!-- Firebase Sync Panel -->
+        <div class="import-box" style="margin-top: 15px; border-color: #34D399; background-color: rgba(52, 211, 153, 0.05);">
+            <label style="color: #34D399; font-weight: 700; display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <span>☁️ סנכרון ענן (Real-time Sync)</span>
+                <span id="firebaseStatus" style="font-size: 10px; color: #EF4444;">🔴 לא מחובר</span>
+            </label>
+            
+            <div id="firebaseSetupFields" style="display: none; flex-direction: column; gap: 8px; margin-bottom: 8px;">
+                <div class="form-group" style="margin-bottom: 5px;">
+                    <label for="fbConfigInput" style="font-size: 11px; color: #94A3B8;">קונפיגורציית Firebase (JSON):</label>
+                    <textarea id="fbConfigInput" placeholder='{"apiKey": "...", "databaseURL": "...", ...}' rows="4" style="width: 100%; font-size: 11px; font-family: monospace;"></textarea>
+                </div>
+                <div class="form-group" style="margin-bottom: 5px;">
+                    <label for="fbSyncKey" style="font-size: 11px; color: #94A3B8;">מפתח סנכרון (Sync Key):</label>
+                    <input type="text" id="fbSyncKey" placeholder="למשל: eran-quotes" style="width: 100%; padding: 6px;">
+                </div>
+                <button class="btn" id="btnSaveFirebase" style="padding: 6px; font-size: 12px; background-color: #10B981; color: white;">שמור והתחבר</button>
+            </div>
+            
+            <div id="firebaseConnectedFields" style="display: none; flex-direction: column; gap: 6px; font-size: 12px;">
+                <div>מפתח סנכרון פעיל: <strong id="lblActiveSyncKey" style="color: #34D399;">-</strong></div>
+                <div style="display: flex; gap: 6px; margin-top: 4px;">
+                    <button class="clear-btn" style="color: #EF4444; border-color: #FCA5A5; font-size: 10px; padding: 2px 6px;" onclick="disconnectFirebase()">נתק סנכרון</button>
+                    <button class="clear-btn" style="color: #34D399; border-color: #34D399; font-size: 10px; padding: 2px 6px;" onclick="syncNowFirebase()">סנכרן כעת</button>
+                </div>
+            </div>
+            
+            <button class="clear-btn" id="btnToggleFirebaseSetup" style="font-size: 11px; margin-top: 4px; display: block; text-decoration: underline; color: #34D399;">הגדרות חיבור לענן...</button>
         </div>
     </div>
 
@@ -2034,6 +2067,7 @@
             if (newlyImported > 0 || updatedCount > 0) {
                 localStorage.setItem('hackeru_schedules', JSON.stringify(savedSchedules));
                 updateBadgeCount();
+                if (typeof uploadToFirebase === 'function') uploadToFirebase();
                 
                 els.importSuccessMsg.style.display = 'block';
                 els.importSuccessMsg.style.backgroundColor = "rgba(0, 210, 122, 0.1)";
@@ -2099,6 +2133,7 @@
                     savedSchedules.splice(activeScheduleIndex, 1);
                     localStorage.setItem('hackeru_schedules', JSON.stringify(savedSchedules));
                     updateBadgeCount();
+                    if (typeof uploadToFirebase === 'function') uploadToFirebase();
                     
                     // Reset dropdown selection
                     els.scheduleDropdown.value = "";
@@ -2121,6 +2156,7 @@
                 savedSchedules = [];
                 localStorage.removeItem('hackeru_schedules');
                 updateBadgeCount();
+                if (typeof uploadToFirebase === 'function') uploadToFirebase();
                 
                 const btnDeleteActive = document.getElementById('btnDeleteActive');
                 if (btnDeleteActive) btnDeleteActive.style.display = "none";
@@ -2339,6 +2375,7 @@
             history.unshift(newItem);
             localStorage.setItem('hackeru_quote_history', JSON.stringify(history));
             loadHistoryList();
+            if (typeof uploadToFirebase === 'function') uploadToFirebase();
             
             if (!silent) alert(`הצעת המחיר עבור ${clientName} נשמרה בהיסטוריה בהצלחה.`);
         }
@@ -2391,12 +2428,14 @@
             history.splice(index, 1);
             localStorage.setItem('hackeru_quote_history', JSON.stringify(history));
             loadHistoryList();
+            if (typeof uploadToFirebase === 'function') uploadToFirebase();
         }
 
         function clearHistory() {
             if (confirm("האם למחוק את כל היסטוריית הלקוחות מהמערכת?")) {
                 localStorage.removeItem('hackeru_quote_history');
                 loadHistoryList();
+                if (typeof uploadToFirebase === 'function') uploadToFirebase();
             }
         }
 
@@ -2443,6 +2482,7 @@
                         }
                         loadHistoryList();
                         handleCoursePresetChange();
+                        if (typeof uploadToFirebase === 'function') uploadToFirebase();
                         alert("שחזור הנתונים בוצע בהצלחה!");
                     } catch(err) {
                         alert("שגיאה בטעינת קובץ הגיבוי.");
@@ -2684,6 +2724,192 @@
             originalUpdatePreview();
             setTimeout(adjustMobileScale, 50);
         };
+
+        // ==========================================
+        // Firebase Real-time Sync Integration
+        // ==========================================
+        let db = null;
+        let isFirebaseInitialized = false;
+        let isSyncingFromRemote = false;
+
+        function initFirebase() {
+            const configStr = localStorage.getItem('hackeru_fb_config');
+            const syncKey = localStorage.getItem('hackeru_fb_synckey');
+            
+            const statusEl = document.getElementById('firebaseStatus');
+            const connectedFields = document.getElementById('firebaseConnectedFields');
+            const setupFields = document.getElementById('firebaseSetupFields');
+            const activeKeyEl = document.getElementById('lblActiveSyncKey');
+
+            if (!configStr || !syncKey) {
+                if (statusEl) {
+                    statusEl.innerText = "🔴 לא מחובר";
+                    statusEl.style.color = "#EF4444";
+                }
+                if (connectedFields) connectedFields.style.display = 'none';
+                return;
+            }
+
+            try {
+                const config = JSON.parse(configStr);
+                
+                // Avoid double initialization
+                if (!firebase.apps.length) {
+                    firebase.initializeApp(config);
+                }
+                
+                db = firebase.database();
+                isFirebaseInitialized = true;
+                
+                if (statusEl) {
+                    statusEl.innerText = "🟢 מחובר ומסונכרן";
+                    statusEl.style.color = "#10B981";
+                }
+                if (connectedFields) {
+                    connectedFields.style.display = 'flex';
+                    activeKeyEl.innerText = syncKey;
+                }
+                if (setupFields) setupFields.style.display = 'none';
+
+                // Set up database listeners for this specific workspace syncKey
+                setupFirebaseListeners(syncKey);
+            } catch(e) {
+                console.error("Firebase init failed:", e);
+                if (statusEl) {
+                    statusEl.innerText = "⚠️ שגיאת חיבור";
+                    statusEl.style.color = "#F59E0B";
+                }
+            }
+        }
+
+        function setupFirebaseListeners(syncKey) {
+            if (!db) return;
+
+            const safeKey = encodeURIComponent(syncKey).replace(/\./g, '%2E');
+
+            // Listen for changes in schedules
+            db.ref(`workspaces/${safeKey}/schedules`).on('value', (snapshot) => {
+                const remoteSchedules = snapshot.val();
+                if (remoteSchedules) {
+                    isSyncingFromRemote = true;
+                    savedSchedules = remoteSchedules;
+                    localStorage.setItem('hackeru_schedules', JSON.stringify(savedSchedules));
+                    updateBadgeCount();
+                    handleCoursePresetChange();
+                    isSyncingFromRemote = false;
+                }
+            });
+
+            // Listen for changes in customer quote history
+            db.ref(`workspaces/${safeKey}/history`).on('value', (snapshot) => {
+                const remoteHistory = snapshot.val();
+                if (remoteHistory) {
+                    isSyncingFromRemote = true;
+                    localStorage.setItem('hackeru_quote_history', JSON.stringify(remoteHistory));
+                    loadHistoryList();
+                    isSyncingFromRemote = false;
+                }
+            });
+        }
+
+        function uploadToFirebase() {
+            if (!isFirebaseInitialized || !db || isSyncingFromRemote) return;
+            
+            const syncKey = localStorage.getItem('hackeru_fb_synckey');
+            if (!syncKey) return;
+            const safeKey = encodeURIComponent(syncKey).replace(/\./g, '%2E');
+
+            db.ref(`workspaces/${safeKey}/schedules`).set(savedSchedules);
+            
+            let history = [];
+            try {
+                const historyData = localStorage.getItem('hackeru_quote_history');
+                if (historyData) history = JSON.parse(historyData);
+            } catch(e) {}
+            db.ref(`workspaces/${safeKey}/history`).set(history);
+        }
+
+        function disconnectFirebase() {
+            if (confirm("האם לנתק את הסנכרון לענן? הנתונים יישמרו על המכשיר אך לא יסתנכרנו יותר.")) {
+                const syncKey = localStorage.getItem('hackeru_fb_synckey');
+                if (syncKey && db) {
+                    const safeKey = encodeURIComponent(syncKey).replace(/\./g, '%2E');
+                    db.ref(`workspaces/${safeKey}/schedules`).off();
+                    db.ref(`workspaces/${safeKey}/history`).off();
+                }
+                
+                localStorage.removeItem('hackeru_fb_config');
+                localStorage.removeItem('hackeru_fb_synckey');
+                
+                db = null;
+                isFirebaseInitialized = false;
+                
+                initFirebase();
+                alert("הסנכרון נותק בהצלחה.");
+            }
+        }
+
+        function syncNowFirebase() {
+            if (!isFirebaseInitialized) {
+                alert("יש להתחבר ל-Firebase תחילה.");
+                return;
+            }
+            uploadToFirebase();
+            alert("הסנכרון בוצע בהצלחה! הנתונים עלו לענן.");
+        }
+
+        window.disconnectFirebase = disconnectFirebase;
+        window.syncNowFirebase = syncNowFirebase;
+        window.uploadToFirebase = uploadToFirebase;
+
+        // Bind Setup UI toggles and button events
+        document.getElementById('btnToggleFirebaseSetup').addEventListener('click', () => {
+            const setupFields = document.getElementById('firebaseSetupFields');
+            if (setupFields.style.display === 'none' || !setupFields.style.display) {
+                setupFields.style.display = 'flex';
+                document.getElementById('fbConfigInput').value = localStorage.getItem('hackeru_fb_config') || '';
+                document.getElementById('fbSyncKey').value = localStorage.getItem('hackeru_fb_synckey') || '';
+            } else {
+                setupFields.style.display = 'none';
+            }
+        });
+
+        document.getElementById('btnSaveFirebase').addEventListener('click', () => {
+            const configVal = document.getElementById('fbConfigInput').value.trim();
+            const syncKeyVal = document.getElementById('fbSyncKey').value.trim();
+
+            if (!configVal || !syncKeyVal) {
+                alert("נא למלא את כל השדות.");
+                return;
+            }
+
+            try {
+                JSON.parse(configVal);
+            } catch(e) {
+                alert("הגדרות ה-Firebase שהזנת אינן בפורמט JSON תקין.");
+                return;
+            }
+
+            localStorage.setItem('hackeru_fb_config', configVal);
+            localStorage.setItem('hackeru_fb_synckey', syncKeyVal);
+
+            initFirebase();
+            
+            // Seed database if empty
+            if (isFirebaseInitialized && db) {
+                const safeKey = encodeURIComponent(syncKeyVal).replace(/\./g, '%2E');
+                db.ref(`workspaces/${safeKey}`).once('value').then((snapshot) => {
+                    if (!snapshot.exists()) {
+                        uploadToFirebase();
+                    }
+                });
+            }
+
+            alert("החיבור והסנכרון ל-Firebase הופעלו בהצלחה!");
+        });
+
+        // Initialize Firebase on startup if configuration exists
+        initFirebase();
 
         // Register Service Worker for PWA installation support
         if ('serviceWorker' in navigator) {
