@@ -1,4 +1,4 @@
-const CACHE_NAME = 'hackeru-quotes-v1';
+const CACHE_NAME = 'hackeru-quotes-v2';
 const ASSETS = [
   './',
   './index.html',
@@ -33,9 +33,33 @@ self.addEventListener('activate', (e) => {
 });
 
 self.addEventListener('fetch', (e) => {
-  e.respondWith(
-    caches.match(e.request).then((cachedResponse) => {
-      return cachedResponse || fetch(e.request);
-    })
-  );
+  // Network-First strategy for HTML/navigational requests to prevent stale caching
+  if (e.request.mode === 'navigate' || e.request.url.includes('index.html')) {
+    e.respondWith(
+      fetch(e.request)
+        .then((response) => {
+          const copy = response.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(e.request, copy);
+          });
+          return response;
+        })
+        .catch(() => {
+          return caches.match(e.request);
+        })
+    );
+  } else {
+    // Cache-First strategy for static assets (images, PDFs)
+    e.respondWith(
+      caches.match(e.request).then((cachedResponse) => {
+        return cachedResponse || fetch(e.request).then((response) => {
+          const copy = response.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(e.request, copy);
+          });
+          return response;
+        });
+      })
+    );
+  }
 });

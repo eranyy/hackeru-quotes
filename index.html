@@ -649,11 +649,29 @@
             <label style="color: var(--primary-color); font-weight: 700; margin-bottom: 8px; display: block;">
                 📂 ערכת מסמכים לשוברים / פיקדון
             </label>
+            
+            <!-- Document Checklist -->
+            <div style="font-size: 11px; color: #374151; margin-bottom: 10px; display: flex; flex-direction: column; gap: 4px; padding: 6px; background: white; border: 1px solid #E2E8F0; border-radius: 4px;">
+                <div style="font-weight: bold; color: var(--primary-color); margin-bottom: 2px;">📋 סטטוס תיק מסמכים:</div>
+                <div style="display: flex; align-items: center; gap: 6px;">
+                    <input type="checkbox" id="chkQuotePrinted" disabled style="width: auto; cursor: default;">
+                    <label for="chkQuotePrinted" style="margin-bottom: 0; font-size: 11px; cursor: default;">1. הצעת מחיר הופקה (PDF)</label>
+                </div>
+                <div style="display: flex; align-items: center; gap: 6px;">
+                    <input type="checkbox" id="chkTofesPrinted" disabled style="width: auto; cursor: default;">
+                    <label for="chkTofesPrinted" style="margin-bottom: 0; font-size: 11px; cursor: default;">2. נספח ה'2 הופק וחתום</label>
+                </div>
+                <div style="display: flex; align-items: center; gap: 6px;">
+                    <input type="checkbox" id="chkIshurDownloaded" disabled style="width: auto; cursor: default;">
+                    <label for="chkIshurDownloaded" style="margin-bottom: 0; font-size: 11px; cursor: default;">3. אישור הכרה 2026 הורד</label>
+                </div>
+            </div>
+
             <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 5px;">
                 <button class="btn" onclick="printTofesHe2()" style="padding: 10px; font-size: 13px; width: 100%; display: flex; align-items: center; justify-content: center; gap: 6px; background: linear-gradient(135deg, var(--primary-color) 0%, #10B981 100%); color: var(--text-dark);">
                     <span>📝 הדפס טופס ה'2 מלא וחתום</span>
                 </button>
-                <a href="ishur_hakara_2026.pdf" download="אישור הכרה האקריו 2026.pdf" class="btn btn-outline" style="padding: 8px; font-size: 13px; text-decoration: none; text-align: center; display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 2px;">
+                <a id="lnkDownloadIshur" href="ishur_hakara_2026.pdf" download="אישור הכרה האקריו 2026.pdf" class="btn btn-outline" style="padding: 8px; font-size: 13px; text-decoration: none; text-align: center; display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 2px;">
                     <span>📄 הורד אישור הכרה 2026</span>
                 </a>
             </div>
@@ -677,8 +695,17 @@
                 <input type="number" id="originalPrice" value="25900">
             </div>
             <div class="form-group">
-                <label for="scholarshipAmount">גובה המלגה / הנחה</label>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <label for="scholarshipAmount">גובה המלגה / הנחה</label>
+                    <a href="https://scholarships.hackeru.co.il/simulation" target="_blank" style="font-size: 10px; color: var(--primary-color); text-decoration: underline;">🔗 סימולטור מלגות</a>
+                </div>
                 <input type="number" id="scholarshipAmount" value="4140">
+                <div style="display: flex; gap: 4px; margin-top: 4px;">
+                    <button type="button" class="clear-btn" style="font-size: 9px; padding: 2px 4px; border-radius: 4px; cursor: pointer;" onclick="applyQuickScholarship(0.16)">16%</button>
+                    <button type="button" class="clear-btn" style="font-size: 9px; padding: 2px 4px; border-radius: 4px; cursor: pointer;" onclick="applyQuickScholarship(0.10)">10%</button>
+                    <button type="button" class="clear-btn" style="font-size: 9px; padding: 2px 4px; border-radius: 4px; cursor: pointer;" onclick="applyQuickScholarship(1500)">1.5K₪</button>
+                    <button type="button" class="clear-btn" style="font-size: 9px; padding: 2px 4px; border-radius: 4px; cursor: pointer;" onclick="applyQuickScholarship(2500)">2.5K₪</button>
+                </div>
             </div>
         </div>
 
@@ -1337,6 +1364,15 @@
         els.tamatCode.addEventListener('input', saveCustomPreset);
         els.installments.addEventListener('change', updateInstallments);
         els.showInstallmentsOnQuote.addEventListener('change', updatePreview);
+
+        // Auto-check checklist items
+        const lnkDownloadIshur = document.getElementById('lnkDownloadIshur');
+        if (lnkDownloadIshur) {
+            lnkDownloadIshur.addEventListener('click', () => {
+                const chk = document.getElementById('chkIshurDownloaded');
+                if (chk) chk.checked = true;
+            });
+        }
 
         // Helper: Expand single letters representing days to full names
         function expandDayLetter(str) {
@@ -2181,7 +2217,7 @@
 
         function saveToHistory(silent = false) {
             const clientName = els.clientName.value.trim();
-            if (!clientName || clientName === "ולד גודין" && !els.clientPhone.value) {
+            if (!clientName) {
                 if (!silent) alert("נא להזין שם לקוח תקין לשמירה.");
                 return;
             }
@@ -2417,6 +2453,10 @@
 
         // Print function for Form H2
         function printTofesHe2() {
+            // Check off checklist item
+            const chkTofes = document.getElementById('chkTofesPrinted');
+            if (chkTofes) chkTofes.checked = true;
+
             // Fill the form fields before printing
             document.getElementById('tofesClientName').innerText = els.clientName.value || '______________';
             document.getElementById('tofesClientId').innerText = els.clientId.value || '______________';
@@ -2453,6 +2493,10 @@
 
         // Print function for Quote
         function printQuote() {
+            // Check off checklist item
+            const chkQuote = document.getElementById('chkQuotePrinted');
+            if (chkQuote) chkQuote.checked = true;
+
             document.body.classList.remove('print-tofes');
             window.print();
         }
