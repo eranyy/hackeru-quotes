@@ -749,7 +749,11 @@
         <div class="import-box" style="margin-top: 20px; border-color: #A5B4FC; background-color: rgba(245, 243, 255, 0.5);">
             <label style="color: #6366F1; font-weight: 700; display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                 <span>📂 הצעות אחרונות (CRM מקומי)</span>
-                <button class="clear-btn" style="color: #6366F1; border-color: #C7D2FE; font-size: 10px; padding: 1px 4px;" onclick="clearHistory()">נקה הכל</button>
+                <div style="display: flex; gap: 4px;">
+                    <button class="clear-btn" style="color: #6366F1; border-color: #C7D2FE; font-size: 9px; padding: 2px 4px; border-radius: 4px; cursor: pointer;" onclick="exportCRMData()">גיבוי</button>
+                    <button class="clear-btn" style="color: #6366F1; border-color: #C7D2FE; font-size: 9px; padding: 2px 4px; border-radius: 4px; cursor: pointer;" onclick="importCRMData()">שחזור</button>
+                    <button class="clear-btn" style="color: #EF4444; border-color: #FCA5A5; font-size: 9px; padding: 2px 4px; border-radius: 4px; cursor: pointer;" onclick="clearHistory()">נקה</button>
+                </div>
             </label>
             <div id="historyListContainer" style="max-height: 200px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; font-size: 12px; padding: 5px;">
                 <!-- Populated dynamically -->
@@ -2272,6 +2276,59 @@
                 localStorage.removeItem('hackeru_quote_history');
                 loadHistoryList();
             }
+        }
+
+        // Export all local database (schedules and custom history) to a JSON backup file
+        function exportCRMData() {
+            const data = {
+                schedules: savedSchedules,
+                history: []
+            };
+            try {
+                const historyData = localStorage.getItem('hackeru_quote_history');
+                if (historyData) data.history = JSON.parse(historyData);
+            } catch(e) {}
+            
+            const jsonString = `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(data))}`;
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", jsonString);
+            downloadAnchor.setAttribute("download", `hackeru_quotes_backup_${new Date().toISOString().split('T')[0]}.json`);
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        }
+
+        // Import local database from a JSON backup file
+        function importCRMData() {
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = '.json';
+            fileInput.onchange = (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                const reader = new FileReader();
+                reader.onload = (evt) => {
+                    try {
+                        const data = JSON.parse(evt.target.result);
+                        if (data.schedules) {
+                            savedSchedules = data.schedules;
+                            localStorage.setItem('hackeru_schedules', JSON.stringify(savedSchedules));
+                            updateBadgeCount();
+                        }
+                        if (data.history) {
+                            localStorage.setItem('hackeru_quote_history', JSON.stringify(data.history));
+                        }
+                        loadHistoryList();
+                        handleCoursePresetChange();
+                        alert("שחזור הנתונים בוצע בהצלחה!");
+                    } catch(err) {
+                        alert("שגיאה בטעינת קובץ הגיבוי.");
+                    }
+                };
+                reader.readAsText(file);
+            };
+            fileInput.click();
         }
 
         // Initialize preview
