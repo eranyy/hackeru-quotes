@@ -497,9 +497,95 @@
             min-width: 120px;
             text-align: center;
         }
+
+        /* Mobile Navigation Tabs */
+        .mobile-tabs {
+            display: none;
+            width: 100%;
+            background-color: var(--panel-bg);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .mobile-tab-btn {
+            flex: 1;
+            padding: 14px;
+            font-size: 15px;
+            font-weight: 700;
+            background: none;
+            border: none;
+            color: #94A3B8;
+            cursor: pointer;
+            text-align: center;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s;
+            outline: none;
+        }
+
+        .mobile-tab-btn.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+            background-color: rgba(0, 210, 122, 0.05);
+        }
+
+        @media (max-width: 1024px) {
+            body {
+                flex-direction: column;
+                height: 100vh;
+                overflow: hidden;
+            }
+
+            .mobile-tabs {
+                display: flex;
+            }
+
+            .sidebar {
+                width: 100% !important;
+                flex: 1;
+                border-left: none;
+                padding: 16px;
+            }
+
+            .preview-area {
+                width: 100% !important;
+                flex: 1;
+                padding: 16px;
+                display: none;
+                align-items: flex-start;
+                justify-content: center;
+                overflow-x: hidden;
+                position: relative;
+            }
+
+            .letterhead-container {
+                box-shadow: none;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+            .sidebar {
+                padding: 12px;
+                gap: 12px;
+            }
+            h2 {
+                font-size: 16px;
+            }
+        }
     </style>
 </head>
 <body>
+
+    <!-- Mobile Navigation Tabs -->
+    <div class="mobile-tabs no-print">
+        <button class="mobile-tab-btn active" id="tabEdit" onclick="switchMobileTab('edit')">✍️ עריכת הצעה</button>
+        <button class="mobile-tab-btn" id="tabPreview" onclick="switchMobileTab('preview')">👁️ תצוגה מקדימה</button>
+    </div>
 
     <!-- Sidebar controls -->
     <div class="sidebar no-print">
@@ -2510,11 +2596,103 @@
         window.printTofesHe2 = printTofesHe2;
         window.printQuote = printQuote;
 
+        // Mobile responsive UI interactions and scaling
+        function switchMobileTab(tab) {
+            const sidebar = document.querySelector('.sidebar');
+            const previewArea = document.querySelector('.preview-area');
+            const tabEdit = document.getElementById('tabEdit');
+            const tabPreview = document.getElementById('tabPreview');
+
+            if (tab === 'edit') {
+                sidebar.style.display = 'flex';
+                previewArea.style.display = 'none';
+                tabEdit.classList.add('active');
+                tabPreview.classList.remove('active');
+            } else {
+                sidebar.style.display = 'none';
+                previewArea.style.display = 'flex';
+                tabEdit.classList.remove('active');
+                tabPreview.classList.add('active');
+                setTimeout(adjustMobileScale, 50);
+            }
+        }
+
+        function adjustMobileScale() {
+            if (window.innerWidth > 1024) {
+                const previewEl = document.getElementById('printableQuote');
+                if (previewEl) {
+                    previewEl.style.transform = '';
+                    previewEl.style.margin = '';
+                }
+                const tofesEl = document.getElementById('printableTofesHe2');
+                if (tofesEl) {
+                    tofesEl.style.transform = '';
+                    tofesEl.style.margin = '';
+                }
+                const previewArea = document.querySelector('.preview-area');
+                if (previewArea) {
+                    previewArea.style.height = '';
+                }
+                return;
+            }
+
+            const previewArea = document.querySelector('.preview-area');
+            if (!previewArea) return;
+
+            const padding = 32; // 16px padding on each side
+            const availableWidth = window.innerWidth - padding;
+            
+            // Adjust the quote preview (794px wide)
+            const quoteEl = document.getElementById('printableQuote');
+            if (quoteEl && quoteEl.style.display !== 'none') {
+                const scale = availableWidth / 794;
+                if (scale < 1) {
+                    quoteEl.style.transform = `scale(${scale})`;
+                    quoteEl.style.transformOrigin = 'top center';
+                    const scaledHeight = 1123 * scale;
+                    previewArea.style.height = `${scaledHeight + 40}px`;
+                } else {
+                    quoteEl.style.transform = '';
+                    previewArea.style.height = '';
+                }
+            }
+
+            // Adjust the tofes preview (800px wide)
+            const tofesEl = document.getElementById('printableTofesHe2');
+            if (tofesEl && tofesEl.style.display !== 'none') {
+                const scale = availableWidth / 800;
+                if (scale < 1) {
+                    tofesEl.style.transform = `scale(${scale})`;
+                    tofesEl.style.transformOrigin = 'top center';
+                    const originalHeight = tofesEl.offsetHeight || 1000;
+                    const scaledHeight = originalHeight * scale;
+                    previewArea.style.height = `${scaledHeight + 40}px`;
+                } else {
+                    tofesEl.style.transform = '';
+                    previewArea.style.height = '';
+                }
+            }
+        }
+
+        window.addEventListener('resize', adjustMobileScale);
+        window.switchMobileTab = switchMobileTab;
+        window.adjustMobileScale = adjustMobileScale;
+
+        // Also scale when switching between quote templates or updates
+        const originalUpdatePreview = updatePreview;
+        updatePreview = function() {
+            originalUpdatePreview();
+            setTimeout(adjustMobileScale, 50);
+        };
+
         // Register Service Worker for PWA installation support
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js')
-                    .then(reg => console.log('Service Worker registered successfully!', reg))
+                    .then(reg => {
+                        console.log('Service Worker registered successfully!', reg);
+                        reg.update();
+                    })
                     .catch(err => console.log('Service Worker registration failed:', err));
             });
         }
