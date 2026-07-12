@@ -2728,13 +2728,35 @@
         // ==========================================
         // Firebase Real-time Sync Integration
         // ==========================================
+        const DEFAULT_FIREBASE_CONFIG = {
+            apiKey: "AIzaSyC4v0mxykA-VyCI6de4fr1yaVHj9zVxaL4",
+            authDomain: "hackeru-quotes.firebaseapp.com",
+            databaseURL: "https://hackeru-quotes-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "hackeru-quotes",
+            storageBucket: "hackeru-quotes.firebasestorage.app",
+            messagingSenderId: "695367652858",
+            appId: "1:695367652858:web:72b9a70310e2ff27668043",
+            measurementId: "G-864W6N0X0N"
+        };
+        const DEFAULT_SYNC_KEY = "eran";
+
         let db = null;
         let isFirebaseInitialized = false;
         let isSyncingFromRemote = false;
 
         function initFirebase() {
-            const configStr = localStorage.getItem('hackeru_fb_config');
-            const syncKey = localStorage.getItem('hackeru_fb_synckey');
+            let configStr = localStorage.getItem('hackeru_fb_config');
+            let syncKey = localStorage.getItem('hackeru_fb_synckey');
+            
+            // If not custom configured, automatically seed defaults
+            if (!configStr) {
+                configStr = JSON.stringify(DEFAULT_FIREBASE_CONFIG);
+                localStorage.setItem('hackeru_fb_config', configStr);
+            }
+            if (!syncKey) {
+                syncKey = DEFAULT_SYNC_KEY;
+                localStorage.setItem('hackeru_fb_synckey', syncKey);
+            }
             
             const statusEl = document.getElementById('firebaseStatus');
             const connectedFields = document.getElementById('firebaseConnectedFields');
