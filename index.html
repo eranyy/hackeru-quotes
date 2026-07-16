@@ -647,6 +647,122 @@
             color: var(--primary-color);
             background-color: rgba(0, 210, 122, 0.05);
         }
+
+        /* Collapsible Accordion Styles */
+        .sidebar-accordion {
+            background-color: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            margin-top: 12px;
+            overflow: hidden;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        
+        .sidebar-accordion[open] {
+            border-color: var(--primary-color);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .sidebar-accordion summary {
+            padding: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            list-style: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+            outline: none;
+            font-size: 13px;
+        }
+
+        .sidebar-accordion summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .sidebar-accordion summary::after {
+            content: "▼";
+            font-size: 10px;
+            transition: transform 0.2s;
+            color: #64748B;
+        }
+
+        .sidebar-accordion[open] summary::after {
+            transform: rotate(180deg);
+            color: var(--primary-color);
+        }
+
+        .accordion-content {
+            padding: 12px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        /* 2x2 Action Buttons Grid */
+        .action-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        
+        .action-grid .btn {
+            font-size: 13px;
+            padding: 10px 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            text-align: center;
+            border-radius: 6px;
+            min-height: 52px;
+            margin-top: 0;
+            width: 100%;
+        }
+
+        .action-grid .btn span {
+            font-size: 10.5px;
+            font-weight: 500;
+            opacity: 0.9;
+        }
+
+        /* Specific Action Button Colors */
+        .btn-pdf {
+            background-color: #3B82F6;
+            color: white;
+        }
+        .btn-pdf:hover {
+            background-color: #2563EB;
+        }
+        .btn-whatsapp {
+            background-color: #25D366;
+            color: white;
+        }
+        .btn-whatsapp:hover {
+            background-color: #22C55E;
+        }
+        .btn-clipboard {
+            background-color: #8B5CF6;
+            color: white;
+        }
+        .btn-clipboard:hover {
+            background-color: #7C3AED;
+        }
+        .btn-word {
+            background-color: #64748B;
+            color: white;
+        }
+        .btn-word:hover {
+            background-color: #475569;
+        }
+
+        /* Light Theme Overrides for details accordions */
+        body.light-theme .sidebar-accordion {
+            background-color: #F8FAFC;
+        }
     </style>
 </head>
 <body>
@@ -665,16 +781,23 @@
             <button id="themeToggleBtn" onclick="toggleTheme()" style="background: none; border: none; font-size: 20px; cursor: pointer; padding: 4px; border-radius: 4px; display: flex; align-items: center; justify-content: center; transition: background-color 0.2s;" title="החלף מצב צבע">🌙</button>
         </div>
         
-        <!-- Clipboard importer -->
-        <div class="import-box">
-            <label>
-                <span>ייבוא מועדים מ-Priza-Net</span>
-                <span class="import-badge" id="importCount">0 מועדים שמורים</span>
-            </label>
-            <textarea id="prizaImport" placeholder="העתק את דף הקורסים מפריזה (כולל הטבלה) והדבק כאן..." rows="3" style="width: 100%; margin-top: 5px; font-size: 12px; resize: none;"></textarea>
-            <button id="btnManualImport" style="width: 100%; margin-top: 6px; padding: 8px; font-size: 13px; font-weight: 700; background-color: var(--primary-color); color: white; border: none; border-radius: 6px; cursor: pointer; transition: opacity 0.2s;" onmouseover="this.style.opacity=0.9" onmouseout="this.style.opacity=1">ייבוא נתונים מפריזה</button>
-            <div id="importSuccessMsg" class="badge-success" style="margin-top: 8px;">מועדים יובאו ונשמרו בהצלחה!</div>
-        </div>
+        <!-- Collapsible Importer & Manager -->
+        <details class="sidebar-accordion" style="margin-bottom: 10px;">
+            <summary>
+                <span>📥 ייבוא וניהול מועדים</span>
+                <span class="import-badge" id="importCount" style="font-size: 10px; font-weight: normal; background-color: var(--primary-color); color: var(--text-dark); padding: 2px 6px; border-radius: 4px;">0 מועדים</span>
+            </summary>
+            <div class="accordion-content">
+                <textarea id="prizaImport" placeholder="העתק את דף הקורסים מפריזה (כולל הטבלה) והדבק כאן..." rows="3" style="width: 100%; font-size: 12px; resize: none;"></textarea>
+                <button id="btnManualImport" style="width: 100%; padding: 8px; font-size: 13px; font-weight: 700; background-color: var(--primary-color); color: var(--text-dark); border: none; border-radius: 6px; cursor: pointer; transition: opacity 0.2s;">ייבוא נתונים מפריזה</button>
+                <div id="importSuccessMsg" class="badge-success" style="margin-top: 4px; display: none;">מועדים יובאו בהצלחה!</div>
+                
+                <div style="display: flex; justify-content: space-between; margin-top: 6px; gap: 6px;">
+                    <button class="clear-btn" style="color: #EF4444; border-color: #FCA5A5; font-size: 10.5px; padding: 4px 8px; flex: 1;" onclick="clearSavedSchedules()">נקה מועדים</button>
+                    <button class="clear-btn" id="btnDeleteActive" style="display: none; color: #EF4444; border-color: #FCA5A5; font-size: 10.5px; padding: 4px 8px; flex: 1;" onclick="deleteActiveSchedule()">מחק מועד פעיל</button>
+                </div>
+            </div>
+        </details>
 
         <div class="form-group">
             <label for="courseSelect">בחר קורס (תבנית)</label>
@@ -942,67 +1065,82 @@
             </select>
         </div>
 
-        <div class="button-group">
-            <button class="btn" onclick="printQuote()">
-                הדפסה ושמירה כ-PDF
+        <div class="action-grid">
+            <button class="btn btn-pdf" onclick="printQuote()">
+                🖨️ הדפסה כ-PDF
+                <span>שמור והדפס הצעה</span>
             </button>
-            <button class="btn" onclick="shareOnWhatsApp()" style="background-color: #25D366; color: white; display: flex; align-items: center; justify-content: center; gap: 6px;">
-                <span>💬 שלח הצעה ופרטים בוואטסאפ</span>
+            <button class="btn btn-whatsapp" onclick="shareOnWhatsApp()">
+                💬 שלח בוואטסאפ
+                <span>נוסח לפי תבנית</span>
             </button>
-            <button class="btn btn-outline" onclick="saveToHistory()">
-                💾 שמור הצעה בלקוחות אחרונים
+            <button class="btn btn-clipboard" onclick="copyToClipboard()">
+                📋 העתק טקסט
+                <span>חיבור והדבקה ידנית</span>
             </button>
-            <button class="btn btn-outline" onclick="copyToClipboard()">
-                העתק טקסט להודעה
-            </button>
-            <button class="btn btn-outline" onclick="exportWordHtml()">
-                הורד כקובץ Word (.doc)
+            <button class="btn btn-word" onclick="exportWordHtml()">
+                📝 קובץ Word
+                <span>עריכה מלאה ב-Word</span>
             </button>
         </div>
-        <!-- Local CRM Client History Drawer -->
-        <div class="import-box" style="margin-top: 20px; border-color: #A5B4FC; background-color: rgba(245, 243, 255, 0.5);">
-            <label style="color: #6366F1; font-weight: 700; display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                <span>📂 הצעות אחרונות (CRM מקומי)</span>
-                <div style="display: flex; gap: 4px;">
-                    <button class="clear-btn" style="color: #6366F1; border-color: #C7D2FE; font-size: 9px; padding: 2px 4px; border-radius: 4px; cursor: pointer;" onclick="exportCRMData()">גיבוי</button>
-                    <button class="clear-btn" style="color: #6366F1; border-color: #C7D2FE; font-size: 9px; padding: 2px 4px; border-radius: 4px; cursor: pointer;" onclick="importCRMData()">שחזור</button>
-                    <button class="clear-btn" style="color: #EF4444; border-color: #FCA5A5; font-size: 9px; padding: 2px 4px; border-radius: 4px; cursor: pointer;" onclick="clearHistory()">נקה</button>
-                </div>
-            </label>
-            <div id="historyListContainer" style="max-height: 200px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; font-size: 12px; padding: 5px;">
-                <!-- Populated dynamically -->
-            </div>
-        </div>
+        
+        <button class="btn btn-outline" onclick="saveToHistory()" style="margin-top: 8px; font-size: 12px; padding: 8px; width: 100%; display: flex; align-items: center; justify-content: center; gap: 4px;">
+            💾 שמור לקוח בהיסטוריית הצעות אחרונות
+        </button>
 
-        <!-- Firebase Sync Panel -->
-        <div class="import-box" style="margin-top: 15px; border-color: #34D399; background-color: rgba(52, 211, 153, 0.05);">
-            <label style="color: #34D399; font-weight: 700; display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                <span>☁️ סנכרון ענן (Real-time Sync)</span>
-                <span id="firebaseStatus" style="font-size: 10px; color: #EF4444;">🔴 לא מחובר</span>
-            </label>
-            
-            <div id="firebaseSetupFields" style="display: none; flex-direction: column; gap: 8px; margin-bottom: 8px;">
-                <div class="form-group" style="margin-bottom: 5px;">
-                    <label for="fbConfigInput" style="font-size: 11px; color: #94A3B8;">קונפיגורציית Firebase (JSON):</label>
-                    <textarea id="fbConfigInput" placeholder='{"apiKey": "...", "databaseURL": "...", ...}' rows="4" style="width: 100%; font-size: 11px; font-family: monospace;"></textarea>
+        <!-- Collapsible CRM & Firebase Sync Panel -->
+        <details class="sidebar-accordion" id="syncHistoryAccordion" style="margin-top: 15px;">
+            <summary style="border-color: #A5B4FC;">
+                <span>📂 היסטוריה וסנכרון ענן</span>
+                <span id="accordionSyncStatus" style="font-size: 10px; font-weight: normal; background-color: #64748B; color: white; padding: 2px 6px; border-radius: 4px;">🔴 לא מחובר</span>
+            </summary>
+            <div class="accordion-content">
+                <!-- Local CRM Header / Actions -->
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed var(--border-color); padding-bottom: 6px; margin-bottom: 6px;">
+                    <span style="font-weight: bold; font-size: 12px; color: #6366F1;">📂 הצעות אחרונות (CRM)</span>
+                    <div style="display: flex; gap: 4px;">
+                        <button class="clear-btn" style="color: #6366F1; border-color: #C7D2FE; font-size: 9px; padding: 2px 4px; border-radius: 4px; cursor: pointer;" onclick="exportCRMData()">גיבוי</button>
+                        <button class="clear-btn" style="color: #6366F1; border-color: #C7D2FE; font-size: 9px; padding: 2px 4px; border-radius: 4px; cursor: pointer;" onclick="importCRMData()">שחזור</button>
+                        <button class="clear-btn" style="color: #EF4444; border-color: #FCA5A5; font-size: 9px; padding: 2px 4px; border-radius: 4px; cursor: pointer;" onclick="clearHistory()">נקה</button>
+                    </div>
                 </div>
-                <div class="form-group" style="margin-bottom: 5px;">
-                    <label for="fbSyncKey" style="font-size: 11px; color: #94A3B8;">מפתח סנכרון (Sync Key):</label>
-                    <input type="text" id="fbSyncKey" placeholder="למשל: eran-quotes" style="width: 100%; padding: 6px;">
+                
+                <!-- History Container -->
+                <div id="historyListContainer" style="max-height: 150px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; font-size: 12px; padding: 2px;">
+                    <!-- Populated dynamically -->
                 </div>
-                <button class="btn" id="btnSaveFirebase" style="padding: 6px; font-size: 12px; background-color: #10B981; color: white;">שמור והתחבר</button>
+                
+                <!-- Cloud Sync Header / Setup -->
+                <div style="border-top: 1px solid var(--border-color); margin-top: 8px; padding-top: 8px;">
+                    <div style="font-weight: bold; font-size: 12px; color: #10B981; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center;">
+                        <span>☁️ סנכרון בזמן אמת (Firebase)</span>
+                        <span id="fbAccordionIndicator" style="font-size: 9px; color: #EF4444; font-weight: normal;">🔴 לא מחובר</span>
+                    </div>
+                    
+                    <div id="firebaseSetupFields" style="display: none; flex-direction: column; gap: 6px; margin-bottom: 6px;">
+                        <div class="form-group" style="margin-bottom: 4px;">
+                            <label for="fbConfigInput" style="font-size: 10px; color: #94A3B8;">קונפיגורציית Firebase (JSON):</label>
+                            <textarea id="fbConfigInput" placeholder='{"apiKey": "...", "databaseURL": "...", ...}' rows="3" style="width: 100%; font-size: 10px; font-family: monospace;"></textarea>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 4px;">
+                            <label for="fbSyncKey" style="font-size: 10px; color: #94A3B8;">מפתח סנכרון (Sync Key):</label>
+                            <input type="text" id="fbSyncKey" placeholder="eran-quotes" style="width: 100%; padding: 4px; font-size: 11px;">
+                        </div>
+                        <button class="btn" id="btnSaveFirebase" style="padding: 4px; font-size: 11px; background-color: #10B981; color: white;">שמור והתחבר</button>
+                    </div>
+                    
+                    <div id="firebaseConnectedFields" style="display: none; flex-direction: column; gap: 4px; font-size: 11px;">
+                        <div>מפתח פעיל: <strong id="lblActiveSyncKey" style="color: #10B981;">-</strong></div>
+                        <div style="display: flex; gap: 6px; margin-top: 4px;">
+                            <button class="clear-btn" style="color: #EF4444; border-color: #FCA5A5; font-size: 10px; padding: 2px 6px;" onclick="disconnectFirebase()">נתק סנכרון</button>
+                            <button class="clear-btn" style="color: #10B981; border-color: #A7F3D0; font-size: 10px; padding: 2px 6px;" onclick="syncNowFirebase()">סנכרן כעת</button>
+                        </div>
+                    </div>
+                    
+                    <button class="clear-btn" id="btnToggleFirebaseSetup" style="font-size: 10px; margin-top: 4px; display: block; text-decoration: underline; color: #10B981; border: none; background: none; padding: 0; cursor: pointer;">הגדרות חיבור לענן...</button>
+                </div>
             </div>
-            
-            <div id="firebaseConnectedFields" style="display: none; flex-direction: column; gap: 6px; font-size: 12px;">
-                <div>מפתח סנכרון פעיל: <strong id="lblActiveSyncKey" style="color: #34D399;">-</strong></div>
-                <div style="display: flex; gap: 6px; margin-top: 4px;">
-                    <button class="clear-btn" style="color: #EF4444; border-color: #FCA5A5; font-size: 10px; padding: 2px 6px;" onclick="disconnectFirebase()">נתק סנכרון</button>
-                    <button class="clear-btn" style="color: #34D399; border-color: #34D399; font-size: 10px; padding: 2px 6px;" onclick="syncNowFirebase()">סנכרן כעת</button>
-                </div>
-            </div>
-            
-            <button class="clear-btn" id="btnToggleFirebaseSetup" style="font-size: 11px; margin-top: 4px; display: block; text-decoration: underline; color: #34D399;">הגדרות חיבור לענן...</button>
-        </div>
+        </details>
     </div>
 
     <!-- Live preview area -->
@@ -2967,14 +3105,25 @@
             }
             
             const statusEl = document.getElementById('firebaseStatus');
+            const accSyncStatus = document.getElementById('accordionSyncStatus');
+            const fbIndicator = document.getElementById('fbAccordionIndicator');
             const connectedFields = document.getElementById('firebaseConnectedFields');
             const setupFields = document.getElementById('firebaseSetupFields');
             const activeKeyEl = document.getElementById('lblActiveSyncKey');
 
             if (!configStr || !syncKey) {
+                const text = "🔴 לא מחובר";
                 if (statusEl) {
-                    statusEl.innerText = "🔴 לא מחובר";
+                    statusEl.innerText = text;
                     statusEl.style.color = "#EF4444";
+                }
+                if (fbIndicator) {
+                    fbIndicator.innerText = text;
+                    fbIndicator.style.color = "#EF4444";
+                }
+                if (accSyncStatus) {
+                    accSyncStatus.innerText = text;
+                    accSyncStatus.style.backgroundColor = "#64748B";
                 }
                 if (connectedFields) connectedFields.style.display = 'none';
                 return;
@@ -2995,6 +3144,14 @@
                     statusEl.innerText = "🟢 מחובר ומסונכרן";
                     statusEl.style.color = "#10B981";
                 }
+                if (fbIndicator) {
+                    fbIndicator.innerText = "🟢 מחובר ומסונכרן";
+                    fbIndicator.style.color = "#10B981";
+                }
+                if (accSyncStatus) {
+                    accSyncStatus.innerText = "🟢 מחובר";
+                    accSyncStatus.style.backgroundColor = "#10B981";
+                }
                 if (connectedFields) {
                     connectedFields.style.display = 'flex';
                     activeKeyEl.innerText = syncKey;
@@ -3005,9 +3162,18 @@
                 setupFirebaseListeners(syncKey);
             } catch(e) {
                 console.error("Firebase init failed:", e);
+                const text = "⚠️ שגיאה";
                 if (statusEl) {
                     statusEl.innerText = "⚠️ שגיאת חיבור";
                     statusEl.style.color = "#F59E0B";
+                }
+                if (fbIndicator) {
+                    fbIndicator.innerText = "⚠️ שגיאת חיבור";
+                    fbIndicator.style.color = "#F59E0B";
+                }
+                if (accSyncStatus) {
+                    accSyncStatus.innerText = text;
+                    accSyncStatus.style.backgroundColor = "#F59E0B";
                 }
             }
         }
