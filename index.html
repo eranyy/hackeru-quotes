@@ -580,6 +580,73 @@
                 font-size: 16px;
             }
         }
+
+        /* Light Theme Color Overrides */
+        body.light-theme {
+            --bg-color: #F1F5F9;
+            --panel-bg: #FFFFFF;
+            --text-light: #0F172A;
+            --text-dark: #FFFFFF;
+            --border-color: #E2E8F0;
+        }
+
+        body.light-theme input, 
+        body.light-theme select, 
+        body.light-theme textarea {
+            background-color: #F8FAFC;
+            color: #0F172A;
+            border-color: #CBD5E1;
+        }
+
+        body.light-theme input:focus, 
+        body.light-theme select:focus, 
+        body.light-theme textarea:focus {
+            background-color: #FFFFFF;
+            border-color: var(--primary-color);
+        }
+
+        body.light-theme label {
+            color: #475569;
+        }
+
+        body.light-theme .import-box {
+            background-color: #F8FAFC;
+            border-color: #E2E8F0;
+        }
+
+        body.light-theme .date-btn {
+            background-color: #E2E8F0;
+            border-color: #CBD5E1;
+            color: #0F172A;
+        }
+
+        body.light-theme .date-btn.active {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            color: var(--text-dark);
+        }
+
+        body.light-theme .clear-btn {
+            color: #4F46E5;
+        }
+        
+        body.light-theme .clear-btn:hover {
+            color: #312E81;
+        }
+
+        body.light-theme #monthlyPaymentDisplay {
+            background-color: #E2E8F0;
+            color: #0F172A;
+        }
+
+        body.light-theme .mobile-tab-btn {
+            color: #64748B;
+        }
+        
+        body.light-theme .mobile-tab-btn.active {
+            color: var(--primary-color);
+            background-color: rgba(0, 210, 122, 0.05);
+        }
     </style>
 </head>
 <body>
@@ -588,11 +655,15 @@
     <div class="mobile-tabs no-print">
         <button class="mobile-tab-btn active" id="tabEdit" onclick="switchMobileTab('edit')">✍️ עריכת הצעה</button>
         <button class="mobile-tab-btn" id="tabPreview" onclick="switchMobileTab('preview')">👁️ תצוגה מקדימה</button>
+        <button onclick="toggleTheme()" style="background: none; border: none; font-size: 18px; padding: 0 16px; cursor: pointer; color: #94A3B8; display: flex; align-items: center; justify-content: center;" id="mobileThemeToggleBtn" title="החלף מצב צבע">🌙</button>
     </div>
 
     <!-- Sidebar controls -->
     <div class="sidebar no-print">
-        <h2>הגדרות הצעת מחיר (v1.3)</h2>
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 6px; margin-bottom: 8px;">
+            <h2 style="border-bottom: none; margin-bottom: 0; padding-bottom: 0;">הגדרות הצעת מחיר (v1.4)</h2>
+            <button id="themeToggleBtn" onclick="toggleTheme()" style="background: none; border: none; font-size: 20px; cursor: pointer; padding: 4px; border-radius: 4px; display: flex; align-items: center; justify-content: center; transition: background-color 0.2s;" title="החלף מצב צבע">🌙</button>
+        </div>
         
         <!-- Clipboard importer -->
         <div class="import-box">
@@ -686,6 +757,22 @@
             <div class="form-group">
                 <label for="endDate">מועד סיום משוער</label>
                 <input type="text" id="endDate" value="22/08/2027">
+            </div>
+        </div>
+
+        <!-- Urgency Countdown Display & Toggle -->
+        <div class="import-box" style="margin-top: -6px; padding: 10px; border-color: #F59E0B; background-color: rgba(245, 158, 11, 0.05); display: flex; flex-direction: column; gap: 6px; border-style: dashed;">
+            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 12px;">
+                <span style="color: #F59E0B; font-weight: bold;">⏳ ימים לפתיחת הקורס:</span>
+                <span id="countdownDisplay" style="font-weight: bold; background-color: #F59E0B; color: #0F172A; padding: 2px 6px; border-radius: 4px; font-size: 11px;">מחשב...</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 6px; font-size: 11px;">
+                <input type="checkbox" id="chkIncludeUrgency" checked style="width: auto; cursor: pointer;">
+                <label for="chkIncludeUrgency" style="margin-bottom: 0; cursor: pointer; color: #94A3B8;">שלב משפט דחיפות בהודעת הוואטסאפ</label>
+            </div>
+            <div style="display: flex; align-items: center; gap: 6px; font-size: 11px;">
+                <input type="checkbox" id="chkShowUrgencyOnQuote" style="width: auto; cursor: pointer;">
+                <label for="chkShowUrgencyOnQuote" style="margin-bottom: 0; cursor: pointer; color: #94A3B8;">הצג משפט דחיפות בהצעה המודפסת</label>
             </div>
         </div>
 
@@ -844,6 +931,17 @@
             </div>
         </div>
 
+        <div class="form-group" style="margin-bottom: 15px; border-top: 1px solid var(--border-color); padding-top: 15px;">
+            <label for="whatsappTemplateSelect" style="color: #25D366; font-weight: 700; display: flex; align-items: center; gap: 6px;">
+                <span>💬 תבנית הודעה לוואטסאפ (וחיבור ללוח)</span>
+            </label>
+            <select id="whatsappTemplateSelect" style="border-color: #25D366; background-color: rgba(37, 211, 102, 0.05);">
+                <option value="full_quote" selected>תבנית 1: הצעת מחיר מלאה (הנוסח המלא)</option>
+                <option value="follow_up">תבנית 2: הודעת תזכורת ומעקב (Follow-up)</option>
+                <option value="vouchers_deposit">תבנית 3: פרטי שוברים ופיקדון בלבד</option>
+            </select>
+        </div>
+
         <div class="button-group">
             <button class="btn" onclick="printQuote()">
                 הדפסה ושמירה כ-PDF
@@ -934,6 +1032,11 @@
                 <!-- Intro -->
                 <div class="intro-text">
                     בהתאם לבקשתך, להלן הצעת המחיר עבור קורס – <span id="lblIntroCourse">סייבר ואבטחת מידע</span>
+                </div>
+
+                <!-- Urgency Print Badge -->
+                <div id="lblUrgencyPrint" style="display: none; background-color: #FEF3C7; border: 1px solid #F59E0B; color: #D97706; padding: 6px 12px; border-radius: 6px; font-weight: 700; margin-bottom: 15px; font-size: 13.5px; text-align: right;">
+                    ⏳ הקורס נפתח בעוד 12 ימים!
                 </div>
 
                 <!-- Details List -->
@@ -1205,6 +1308,9 @@
             advisorName: document.getElementById('advisorName'),
             advisorTitle: document.getElementById('advisorTitle'),
             prizaImport: document.getElementById('prizaImport'),
+            whatsappTemplateSelect: document.getElementById('whatsappTemplateSelect'),
+            chkIncludeUrgency: document.getElementById('chkIncludeUrgency'),
+            chkShowUrgencyOnQuote: document.getElementById('chkShowUrgencyOnQuote'),
             btnManualImport: document.getElementById('btnManualImport'),
             scheduleDropdown: document.getElementById('scheduleDropdown'),
             tamatDatesSubgroup: document.getElementById('tamatDatesSubgroup'),
@@ -1368,6 +1474,20 @@
                 els.lblGovernmentDetails.style.display = 'none';
                 els.voucherWarning.style.display = 'none';
             }
+
+            // Update urgency countdown print badge
+            if (typeof calculateCountdown === 'function') {
+                const urgency = calculateCountdown();
+                const lblUrgencyPrint = document.getElementById('lblUrgencyPrint');
+                if (lblUrgencyPrint && els.chkShowUrgencyOnQuote) {
+                    if (els.chkShowUrgencyOnQuote.checked && urgency.days !== null) {
+                        lblUrgencyPrint.innerText = "⏳ " + urgency.text;
+                        lblUrgencyPrint.style.display = 'block';
+                    } else {
+                        lblUrgencyPrint.style.display = 'none';
+                    }
+                }
+            }
         }
 
         // Update document title dynamically to pre-fill PDF filename
@@ -1397,6 +1517,15 @@
         });
         els.clientName.addEventListener('input', updateDocumentTitle);
         els.clientName.addEventListener('change', updateDocumentTitle);
+
+        // Bind new inputs to update the countdown and preview
+        if (els.startDate) {
+            els.startDate.addEventListener('input', updatePreview);
+            els.startDate.addEventListener('change', updatePreview);
+        }
+        if (els.chkShowUrgencyOnQuote) {
+            els.chkShowUrgencyOnQuote.addEventListener('change', updatePreview);
+        }
         els.templateStyle.addEventListener('change', updatePreview);
         els.scheduleDropdown.addEventListener('change', handleScheduleSelection);
         els.scheduleDays.addEventListener('input', (e) => {
@@ -2166,10 +2295,77 @@
             }
         }
 
-        // WhatsApp sharing constructor
-        function shareOnWhatsApp() {
+        // ==========================================
+        // Urgency Countdown & WhatsApp Templates Helper Functions
+        // ==========================================
+        function getUrgencyText(days) {
+            if (days > 30) {
+                return `הקורס נפתח בעוד ${days} ימים.`;
+            } else if (days > 7) {
+                return `ההרשמה נסגרת בקרוב! הקורס נפתח בעוד ${days} ימים.`;
+            } else if (days > 1) {
+                return `🔥 הרשמה מיידית! נותרו ${days} ימים בלבד לפתיחת הקורס.`;
+            } else if (days === 1) {
+                return `🚨 הרשמה ברגע האחרון! הקורס נפתח מחר!`;
+            } else if (days === 0) {
+                return `🚨 הקורס נפתח היום!`;
+            } else {
+                return `הקורס כבר החל (לפני ${Math.abs(days)} ימים).`;
+            }
+        }
+
+        function calculateCountdown() {
+            const startDateStr = els.startDate.value.trim();
+            const countdownEl = document.getElementById('countdownDisplay');
+            if (!countdownEl) return { days: null, text: "" };
+
+            if (!startDateStr || !startDateStr.includes('/')) {
+                countdownEl.innerText = "תאריך לא תקין";
+                return { days: null, text: "" };
+            }
+
+            const parts = startDateStr.split('/');
+            if (parts.length !== 3) {
+                countdownEl.innerText = "תאריך לא תקין";
+                return { days: null, text: "" };
+            }
+
+            const day = parseInt(parts[0], 10);
+            const month = parseInt(parts[1], 10) - 1; // 0-indexed months
+            const year = parseInt(parts[2], 10);
+
+            const startDateObj = new Date(year, month, day);
+            if (isNaN(startDateObj.getTime())) {
+                countdownEl.innerText = "תאריך לא תקין";
+                return { days: null, text: "" };
+            }
+
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            startDateObj.setHours(0, 0, 0, 0);
+
+            const diffTime = startDateObj.getTime() - today.getTime();
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+            let displayStr = "";
+            if (diffDays > 0) {
+                displayStr = `בעוד ${diffDays} ימים`;
+                countdownEl.style.backgroundColor = diffDays <= 7 ? "#EF4444" : "#F59E0B";
+            } else if (diffDays === 0) {
+                displayStr = "היום!";
+                countdownEl.style.backgroundColor = "#EF4444";
+            } else {
+                displayStr = `החל לפני ${Math.abs(diffDays)} ימים`;
+                countdownEl.style.backgroundColor = "#64748B";
+            }
+
+            countdownEl.innerText = displayStr;
+            return { days: diffDays, text: getUrgencyText(diffDays) };
+        }
+
+        function buildMessageText(templateType) {
             const clientName = els.clientName.value.trim() || 'מועמד';
-            const phone = els.clientPhone.value.trim().replace(/\D/g, '');
+            const clientId = els.clientId.value.trim();
             const courseSelectText = els.courseSelect.options[els.courseSelect.selectedIndex].text;
             const courseKey = els.courseSelect.value;
             const preset = coursePresets[courseKey] || {};
@@ -2193,45 +2389,86 @@
             let fundName = "מימון עצמי / הסדר שכר לימוד";
             if (fund === 'vouchers') fundName = "תוכנית השוברים של לשכת התעסוקה / משרד הקליטה";
             else if (fund === 'deposit') fundName = "פיקדון לחיילים משוחררים";
-            
-            let message = `שלום ${clientName},\n`;
-            message += `מצורף סיכום הצעת המחיר שלך למסלול ${courseName} במכללת האקריו:\n\n`;
-            message += `• היקף שעות: ${hours} שעות אקדמיות\n`;
-            message += `• מועדי הקורס: ${start} עד ${end}\n`;
-            message += `• מתכונת וימי לימוד: קורס ${formatText} - ${schedule}\n`;
-            message += `• מסלול הסדר ומימון: ${fundName}\n\n`;
-            
-            if (style === "scholarship") {
-                message += `• מחיר מלא: ₪${orig.toLocaleString()}\n`;
-                message += `• גובה מלגה: ₪${schol.toLocaleString()}\n`;
-                message += `• מחיר סופי לאחר מלגות: ₪${actualFinal.toLocaleString()}\n\n`;
-            } else if (style === "discount") {
-                message += `• מחיר מקורי: ₪${orig.toLocaleString()}\n`;
-                message += `• מחיר סופי לאחר הנחה: ₪${actualFinal.toLocaleString()}\n\n`;
-            } else if (style === "idf") {
-                message += `• מחיר מקורי: ₪${orig.toLocaleString()}\n`;
-                message += `• עלות מיוחדת לחיילים משוחררים/פורשי צה"ל: ₪${actualFinal.toLocaleString()}\n\n`;
-            } else {
-                message += `• עלות קורס: ₪${orig.toLocaleString()}\n\n`;
-            }
-            
-            const pmts = parseInt(els.installments.value, 10);
-            if (pmts > 1) {
-                const monthly = Math.round(actualFinal / pmts);
-                message += `💳 אפשרות פריסת תשלומים מוצעת:\n`;
-                message += `• ${pmts} תשלומים שווים של ₪${monthly.toLocaleString()} בחודש.\n\n`;
-            }
-            
-            if (fund === 'vouchers') {
-                message += `📌 לצורך הגשת הבקשה ללשכת התעסוקה/משרד הקליטה הועברו אליך:\n`;
-                message += `1. הצעת מחיר רשמית ומודפסת\n`;
-                message += `2. טופס ה'2 (נספח ה'2) חתום\n`;
-                message += `3. אישור ההכרה הממשלתי הרשמי לשנת 2026\n\n`;
-                message += `קישור ישיר להורדת אישור ההכרה הממשלתי (PDF):\n`;
+
+            const urgencyInfo = calculateCountdown();
+            const urgencyText = (els.chkIncludeUrgency && els.chkIncludeUrgency.checked && urgencyInfo.days !== null) ? `\n⏳ שימו לב: ${urgencyInfo.text}\n` : '';
+
+            let message = "";
+
+            if (templateType === 'follow_up') {
+                let validityText = els.quoteValidity.value === "custom" ? els.quoteValidityCustom.value : els.quoteValidity.value;
+                
+                message = `היי ${clientName},\n`;
+                message += `רק רציתי להזכיר שהצעת המחיר ששלחתי לך למסלול ${courseName} בתוקף לזמן מוגבל (תוקף ההצעה: ${validityText}).\n`;
+                if (urgencyText) message += `${urgencyText}`;
+                message += `\nנשמח לראות אותך איתנו! אשמח לענות על כל שאלה ולעזור לך להתקדם ברישום.\n\n`;
+                message += `בברכה,\n${els.advisorName.value}\n${els.advisorTitle.value}\nמכללת האקריו`;
+            } 
+            else if (templateType === 'vouchers_deposit') {
+                message = `שלום ${clientName},\n`;
+                message += `מצורפים הפרטים והקישורים הרלוונטיים להגשת השובר/הפיקדון עבור מסלול ${courseName}:\n\n`;
+                message += `• סמל מוסד מוכר: 40043 (האקריו בע"מ)\n`;
+                if (preset.tamatSymbol) message += `• סמל מגמה מאושרת: ${preset.tamatSymbol}\n`;
+                if (fund === 'deposit' && preset.depositCode) message += `• קוד מוטב (פיקדון): ${preset.depositCode}\n`;
+                message += `• עלות סופית: ₪${actualFinal.toLocaleString()}\n\n`;
+                
+                message += `📄 להורדת אישור ההכרה הממשלתי הרשמי לשנת 2026 (PDF):\n`;
                 message += `https://eranyy.github.io/hackeru-quotes/ishur_hakara_2026.pdf\n\n`;
+                
+                message += `טופס ה'2 מלא וחתום מצורף להצעת המחיר הכתובה ששלחתי לך.\n`;
+                message += `אני זמין כאן לכל שאלה ועזרה בהגשת הטפסים!\n\n`;
+                message += `בברכה,\n${els.advisorName.value}\n${els.advisorTitle.value}\nמכללת האקריו`;
+            } 
+            else {
+                // Default full quote template
+                const formattedSchedule = formatScheduleHtmlAndText(schedule);
+                const idBlock = clientId ? `ת.ז: ${clientId}\n` : '';
+                
+                message = `הצעת מחיר לקורס - ${courseName}\n\nלכבוד: ${clientName}\n${idBlock}\nפרטי הקורס:\n• מועד פתיחה: ${start}\n• מועד סיום משוער: ${end}\n• ${formattedSchedule.text}\n• מתכונת לימודים: ${els.studyFormat.value}\n• שעות לימוד: ${hours} שעות אקדמיות\n`;
+                if (urgencyText) message += `${urgencyText}`;
+                message += `\nתמחור:\n`;
+                
+                if (style === "scholarship") {
+                    message += `• מחיר מלא: ₪${orig.toLocaleString()}\n`;
+                    message += `• גובה מלגה: ₪${schol.toLocaleString()}\n`;
+                    message += `• מחיר סופי לאחר מלגות: ₪${actualFinal.toLocaleString()}\n\n`;
+                } else if (style === "discount") {
+                    message += `• מחיר מקורי: ₪${orig.toLocaleString()}\n`;
+                    message += `• מחיר סופי לאחר הנחה: ₪${actualFinal.toLocaleString()}\n\n`;
+                } else if (style === "idf") {
+                    message += `• מחיר מקורי: ₪${orig.toLocaleString()}\n`;
+                    message += `• עלות מיוחדת לחיילים משוחררים/פורשי צה"ל: ₪${actualFinal.toLocaleString()}\n\n`;
+                } else {
+                    message += `• עלות קורס: ₪${orig.toLocaleString()}\n\n`;
+                }
+                
+                const pmts = parseInt(els.installments.value, 10);
+                if (pmts > 1) {
+                    const monthly = Math.round(actualFinal / pmts);
+                    message += `💳 אפשרות פריסת תשלומים מוצעת:\n`;
+                    message += `• ${pmts} תשלומים שווים של ₪${monthly.toLocaleString()} בחודש.\n\n`;
+                }
+                
+                if (fund === 'vouchers') {
+                    message += `📌 לצורך הגשת הבקשה ללשכת התעסוקה/משרד הקליטה הועברו אליך:\n`;
+                    message += `1. הצעת מחיר רשמית ומודפסת\n`;
+                    message += `2. טופס ה'2 (נספח ה'2) חתום\n`;
+                    message += `3. אישור ההכרה הממשלתי הרשמי לשנת 2026\n\n`;
+                    message += `קישור ישיר להורדת אישור ההכרה הממשלתי (PDF):\n`;
+                    message += `https://eranyy.github.io/hackeru-quotes/ishur_hakara_2026.pdf\n\n`;
+                }
+                
+                message += `בברכה,\n${els.advisorName.value}\n${els.advisorTitle.value}\nמכללת האקריו`;
             }
             
-            message += `בברכה,\n${els.advisorName.value}\n${els.advisorTitle.value}\nמכללת האקריו`;
+            return message;
+        }
+
+        // WhatsApp sharing constructor
+        function shareOnWhatsApp() {
+            const phone = els.clientPhone.value.trim().replace(/\D/g, '');
+            const templateType = els.whatsappTemplateSelect.value;
+            const message = buildMessageText(templateType);
             
             let cleanedPhone = phone;
             if (cleanedPhone.startsWith('0')) {
@@ -2501,39 +2738,10 @@
 
         // Copy plain text to clipboard
         function copyToClipboard() {
-            const client = els.clientName.value;
-            const id = els.clientId.value;
-            const course = els.lblSubjectCourse.innerText;
-            const start = els.startDate.value;
-            const end = els.endDate.value;
-            const format = els.courseFormat.options[els.courseFormat.selectedIndex].text;
-            const schedule = els.scheduleDays.value;
-            const hours = els.academicHours.value;
-            const style = els.templateStyle.value;
-            const orig = Number(els.originalPrice.value) || 0;
-            const schol = Number(els.scholarshipAmount.value) || 0;
-            const final = Number(els.finalPrice.value) || 0;
-            const idf = Number(els.idfPrice.value) || 0;
-            
-            let validityText = els.quoteValidity.value === "custom" ? els.quoteValidityCustom.value : els.quoteValidity.value;
+            const templateType = els.whatsappTemplateSelect.value;
+            const message = buildMessageText(templateType);
 
-            let priceText = "";
-            if (style === "scholarship") {
-                priceText = `מחיר קורס מקורי: ${orig.toLocaleString()} ₪\nסה"כ מלגות: ${schol.toLocaleString()} ₪\nמחיר אחרי מלגות: ${final.toLocaleString()} ₪ (${validityText})`;
-            } else if (style === "discount") {
-                priceText = `עלות: ${orig.toLocaleString()} ₪ כולל מע"מ\nעלות לאחר הנחה: ${final.toLocaleString()} ₪ כולל מע"מ`;
-            } else if (style === "idf") {
-                priceText = `עלות: ${orig.toLocaleString()} ₪\nעלות עבור פורשי צה"ל: ${idf.toLocaleString()} ₪`;
-            } else {
-                priceText = `עלות: ${orig.toLocaleString()} ₪`;
-            }
-
-            const formattedSchedule = formatScheduleHtmlAndText(schedule);
-            const idBlock = id ? `ת.ז: ${id}\n` : '';
-
-            const text = `הצעת מחיר לקורס - ${course}\n\nלכבוד: ${client}\n${idBlock}\nפרטי הקורס:\n• מועד פתיחה: ${start}\n• מועד סיום משוער: ${end}\n• ${formattedSchedule.text}\n• מתכונת לימודים: ${els.studyFormat.value}\n• שעות לימוד: ${hours} שעות אקדמיות\n\nתמחור:\n${priceText}\n\nבברכה,\n${els.advisorName.value}\n${els.advisorTitle.value}`;
-
-            navigator.clipboard.writeText(text).then(() => {
+            navigator.clipboard.writeText(message).then(() => {
                 alert("הטקסט הועתק ללוח בהצלחה!");
             });
         }
@@ -2949,6 +3157,38 @@
 
         // Initialize Firebase on startup if configuration exists
         initFirebase();
+
+        // ==========================================
+        // Theme Switcher (Dark/Light mode) Logic
+        // ==========================================
+        function toggleTheme() {
+            const isLight = document.body.classList.toggle('light-theme');
+            localStorage.setItem('hackeru_theme', isLight ? 'light' : 'dark');
+            updateThemeUI(isLight);
+        }
+
+        function updateThemeUI(isLight) {
+            const themeBtn = document.getElementById('themeToggleBtn');
+            const mobileThemeBtn = document.getElementById('mobileThemeToggleBtn');
+            const icon = isLight ? '☀️' : '🌙';
+            
+            if (themeBtn) themeBtn.innerText = icon;
+            if (mobileThemeBtn) mobileThemeBtn.innerText = icon;
+        }
+
+        // Apply saved theme on startup
+        const savedTheme = localStorage.getItem('hackeru_theme');
+        if (savedTheme === 'light') {
+            document.body.classList.add('light-theme');
+            updateThemeUI(true);
+        } else {
+            updateThemeUI(false);
+        }
+
+        window.toggleTheme = toggleTheme;
+
+        // Trigger initial countdown update
+        calculateCountdown();
 
         // Register Service Worker for PWA installation support
         if ('serviceWorker' in navigator) {
