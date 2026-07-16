@@ -2809,6 +2809,23 @@
 
             const safeKey = encodeURIComponent(syncKey).replace(/\./g, '%2E');
 
+            // Safe auto-seed: If the cloud workspace is empty, upload local data to it
+            // ONLY if this device actually contains saved schedules or customer history.
+            db.ref(`workspaces/${safeKey}`).once('value').then((snapshot) => {
+                if (!snapshot.exists()) {
+                    let history = [];
+                    try {
+                        const historyData = localStorage.getItem('hackeru_quote_history');
+                        if (historyData) history = JSON.parse(historyData);
+                    } catch(e) {}
+                    
+                    if ((savedSchedules && savedSchedules.length > 0) || (history && history.length > 0)) {
+                        uploadToFirebase();
+                        console.log("Seeding Firebase with local data on startup.");
+                    }
+                }
+            });
+
             // Listen for changes in schedules
             db.ref(`workspaces/${safeKey}/schedules`).on('value', (snapshot) => {
                 const remoteSchedules = snapshot.val();
