@@ -374,27 +374,36 @@
         }
 
         /* Print Media Styles */
+        /* Print Media Styles */
         @media print {
-            body {
-                background: white;
-                color: black;
-                overflow: visible;
-                height: auto;
+            html, body {
+                background: white !important;
+                color: black !important;
+                overflow: visible !important;
+                height: auto !important;
+                margin: 0 !important;
+                padding: 0 !important;
             }
-            .sidebar {
+            .sidebar, .mobile-tabs, .no-print, #mobileThemeToggleBtn, #themeToggleBtn {
                 display: none !important;
             }
             .preview-area {
-                background: white;
-                padding: 0;
-                overflow: visible;
+                display: block !important;
+                background: white !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                overflow: visible !important;
+                width: 100% !important;
+                height: auto !important;
+                position: static !important;
             }
             .letterhead-container {
-                box-shadow: none;
-                width: 100%;
-                min-height: auto;
-                padding: 0;
-                margin: 0;
+                box-shadow: none !important;
+                width: 100% !important;
+                min-height: auto !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                transform: none !important; /* Reset mobile scale transform during print */
             }
             
             /* Tofes printing toggles */
@@ -1741,6 +1750,7 @@
         els.idfPrice.addEventListener('input', () => {
             updatePreview();
             updateInstallments();
+            saveCustomPreset();
         });
         els.fundingType.addEventListener('change', () => {
             updatePreview();
@@ -1771,7 +1781,7 @@
 
         // Helper: dynamic splitter that builds HTML and plain text for comma separated days
         function formatScheduleHtmlAndText(scheduleStr) {
-            const formatText = els.courseFormat.options[els.courseFormat.selectedIndex].text;
+            const formatText = els.courseFormat.options[els.courseFormat.selectedIndex].text.trim();
             let formatClean = formatText.replace("קורס ", "").trim();
 
             if (!scheduleStr) return { html: `<span class="bold-text">ימי לימוד ושעות (${formatClean}):</span> <span>לא צוין</span>`, text: `ימי לימוד ושעות (${formatClean}): לא צוין` };
@@ -1948,6 +1958,9 @@
             
             coursePresets[courseKey].hours = els.academicHours.value;
             coursePresets[courseKey].originalPrice = Number(els.originalPrice.value) || 0;
+            coursePresets[courseKey].scholarshipAmount = Number(els.scholarshipAmount.value) || 0;
+            coursePresets[courseKey].finalPrice = Number(els.finalPrice.value) || 0;
+            coursePresets[courseKey].idfPrice = Number(els.idfPrice.value) || 0;
             coursePresets[courseKey].code = els.syllabusCode.value;
             
             const fund = els.fundingType.value;
@@ -1958,6 +1971,7 @@
             }
             
             localStorage.setItem('hackeru_custom_presets', JSON.stringify(coursePresets));
+            if (typeof uploadToFirebase === 'function') uploadToFirebase();
         }
 
         // Populate Dropdown from Imported schedules
@@ -2885,38 +2899,184 @@
         }
 
         // Export as HTML file that opens in MS Word as a document (extremely simple and robust client-side trick)
+        // Export as clean Microsoft Word document
         function exportWordHtml() {
-            const client = els.clientName.value;
-            const htmlContent = document.getElementById('printableQuote').outerHTML;
-            
-            const header = `
+            const clientName = els.clientName.value.trim() || 'מועמד';
+            const clientId = els.clientId.value.trim();
+            const courseSelectText = els.courseSelect.options[els.courseSelect.selectedIndex].text;
+            const courseKey = els.courseSelect.value;
+            const preset = coursePresets[courseKey] || {};
+            const courseName = preset.name || courseSelectText;
+
+            const start = els.startDate.value;
+            const end = els.endDate.value;
+            const formatText = els.courseFormat.options[els.courseFormat.selectedIndex].text;
+            const studyFormatText = els.studyFormat.value;
+            const schedule = els.scheduleDays.value;
+            const hours = els.academicHours.value;
+
+            const orig = Number(els.originalPrice.value) || 0;
+            const schol = Number(els.scholarshipAmount.value) || 0;
+            const finalVal = Number(els.finalPrice.value) || 0;
+            const idfVal = Number(els.idfPrice.value) || 0;
+
+            const style = els.templateStyle.value;
+            const actualFinal = (style === "idf") ? idfVal : finalVal;
+
+            const fund = els.fundingType.value;
+            let fundName = "מימון עצמי / הסדר שכר לימוד";
+            if (fund === 'vouchers') fundName = "תוכנית השוברים של לשכת התעסוקה / משרד הקליטה";
+            else if (fund === 'deposit') fundName = "פיקדון לחיילים משוחררים";
+
+            const todayStr = els.lblDate.innerText;
+            const advisorName = els.advisorName.value;
+            const advisorTitle = els.advisorTitle.value;
+
+            const formattedSchedule = formatScheduleHtmlAndText(schedule);
+
+            let priceRowsHtml = '';
+            if (style === "scholarship") {
+                priceRowsHtml = `
+                    <tr><td style="padding: 6px; border-bottom: 1px solid #E2E8F0; width: 35%;"><strong>מחיר מלא:</strong></td><td style="padding: 6px; border-bottom: 1px solid #E2E8F0; text-decoration: line-through; color: #64748B;">₪${orig.toLocaleString()}</td></tr>
+                    <tr><td style="padding: 6px; border-bottom: 1px solid #E2E8F0;"><strong>גובה מלגה:</strong></td><td style="padding: 6px; border-bottom: 1px solid #E2E8F0; color: #00D27A; font-weight: bold;">₪${schol.toLocaleString()}</td></tr>
+                    <tr style="background-color: #FEF08A;"><td style="padding: 8px; font-size: 12pt;"><strong>סה"כ לתשלום לאחר מלגות:</strong></td><td style="padding: 8px; font-size: 12pt; color: #0F172A; font-weight: bold;">₪${actualFinal.toLocaleString()}</td></tr>
+                `;
+            } else if (style === "discount") {
+                priceRowsHtml = `
+                    <tr><td style="padding: 6px; border-bottom: 1px solid #E2E8F0; width: 35%;"><strong>מחיר מקורי:</strong></td><td style="padding: 6px; border-bottom: 1px solid #E2E8F0; text-decoration: line-through; color: #64748B;">₪${orig.toLocaleString()}</td></tr>
+                    <tr style="background-color: #FEF08A;"><td style="padding: 8px; font-size: 12pt;"><strong>מחיר סופי לאחר הנחה:</strong></td><td style="padding: 8px; font-size: 12pt; color: #0F172A; font-weight: bold;">₪${actualFinal.toLocaleString()}</td></tr>
+                `;
+            } else if (style === "idf") {
+                priceRowsHtml = `
+                    <tr><td style="padding: 6px; border-bottom: 1px solid #E2E8F0; width: 35%;"><strong>מחיר מקורי:</strong></td><td style="padding: 6px; border-bottom: 1px solid #E2E8F0; text-decoration: line-through; color: #64748B;">₪${orig.toLocaleString()}</td></tr>
+                    <tr style="background-color: #FEF08A;"><td style="padding: 8px; font-size: 12pt;"><strong>עלות מיוחדת לפורשי צה"ל:</strong></td><td style="padding: 8px; font-size: 12pt; color: #0F172A; font-weight: bold;">₪${actualFinal.toLocaleString()}</td></tr>
+                `;
+            } else {
+                priceRowsHtml = `
+                    <tr style="background-color: #F8FAFC;"><td style="padding: 8px; font-size: 12pt; width: 35%;"><strong>עלות הקורס:</strong></td><td style="padding: 8px; font-size: 12pt; color: #0F172A; font-weight: bold;">₪${orig.toLocaleString()}</td></tr>
+                `;
+            }
+
+            const pmts = parseInt(els.installments.value, 10);
+            let installmentsHtml = '';
+            if (pmts > 1) {
+                const monthly = Math.round(actualFinal / pmts);
+                installmentsHtml = `
+                    <div style="margin-top: 12px; padding: 10px; background-color: #F8FAFC; border-right: 4px solid #00D27A; border-top: 1px solid #E2E8F0; border-left: 1px solid #E2E8F0; border-bottom: 1px solid #E2E8F0;">
+                        <strong>אפשרות פריסת תשלומים מוצעת:</strong><br>
+                        ${pmts} תשלומים שווים של <strong>₪${monthly.toLocaleString()}</strong> בחודש.
+                    </div>
+                `;
+            }
+
+            let govDetailsHtml = '';
+            if (fund === 'vouchers' || fund === 'deposit') {
+                govDetailsHtml = `
+                    <div style="margin-top: 18px; padding: 12px; border: 1px dashed #CBD5E1; background-color: #F8FAFC;">
+                        <strong style="color: #0F172A; font-size: 11pt;">פרטי הכרה ופיקוח ממשלתי:</strong>
+                        <ul style="margin-top: 6px; margin-bottom: 0; padding-right: 20px;">
+                            <li>סמל מוסד מוכר: <strong>40043</strong> (האקריו בע"מ)</li>
+                            <li>סמל מגמה מאושרת: <strong>${preset.tamatSymbol || 'טרם אושר סופית'}</strong></li>
+                            ${fund === 'deposit' ? `<li>קוד מוטב (לפיקדון): <strong>${preset.depositCode || 'טרם אושר סופית'}</strong></li>` : ''}
+                        </ul>
+                    </div>
+                `;
+            }
+
+            const wordDocumentHtml = `
                 <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
                 <head>
-                    <title>הצעת מחיר</title>
+                    <meta charset="utf-8">
+                    <title>הצעת מחיר - ${clientName}</title>
                     <style>
-                        body { font-family: 'Segoe UI', Arial; direction: rtl; }
-                        .letterhead-container { width: 100%; padding: 40px; }
-                        .doc-header { display: table; width: 100%; margin-bottom: 40px; }
-                        .logo-main { font-size: 24px; font-weight: bold; }
-                        .doc-date { text-align: left; }
-                        .subject-title { text-align: center; font-size: 18px; font-weight: bold; text-decoration: underline; margin-bottom: 20px; }
-                        .details-list { margin-bottom: 20px; }
-                        .details-list li { margin-bottom: 8px; font-size: 14px; }
-                        .highlight-yellow { background-color: yellow; }
-                        .strike-through { text-decoration: line-through; color: #666; }
-                        .doc-footer { margin-top: 50px; border-top: 1px solid #ccc; padding-top: 10px; font-size: 10px; color: #666; }
+                        @page Section1 {
+                            size: 595.3pt 841.9pt;
+                            margin: 2.0cm 2.0cm 2.0cm 2.0cm;
+                            mso-header-margin: 36.0pt;
+                            mso-footer-margin: 36.0pt;
+                            mso-paper-source: 0;
+                        }
+                        div.Section1 { page: Section1; }
+                        body {
+                            font-family: 'Segoe UI', 'David', Arial, sans-serif;
+                            direction: rtl;
+                            text-align: right;
+                            color: #0F172A;
+                            font-size: 11pt;
+                            line-height: 1.5;
+                        }
+                        table { border-collapse: collapse; width: 100%; }
+                        td { vertical-align: top; }
                     </style>
                 </head>
                 <body>
-            `;
-            const footer = "</body></html>";
-            const fullHtml = header + htmlContent + footer;
+                    <div class="Section1">
+                        <!-- Header -->
+                        <table style="width: 100%; border-bottom: 3px solid #00D27A; margin-bottom: 25px; padding-bottom: 10px;">
+                            <tr>
+                                <td style="font-size: 22pt; font-weight: bold; color: #0F172A;">
+                                    Hacker<span style="color: #00D27A;">.</span>U
+                                    <div style="font-size: 9pt; color: #64748B; letter-spacing: 2px;">TECHDX</div>
+                                </td>
+                                <td style="text-align: left; vertical-align: bottom; font-size: 10pt; color: #64748B;">
+                                    תאריך: ${todayStr}
+                                </td>
+                            </tr>
+                        </table>
 
-            const blob = new Blob([fullHtml], { type: 'application/msword' });
+                        <!-- Recipient -->
+                        <div style="margin-bottom: 20px; font-size: 12pt;">
+                            <strong>לכבוד:</strong> ${clientName}<br>
+                            ${clientId ? `<strong>ת.ז:</strong> ${clientId}` : ''}
+                        </div>
+
+                        <!-- Title -->
+                        <div style="text-align: center; font-size: 16pt; font-weight: bold; text-decoration: underline; margin-bottom: 20px; color: #0F172A;">
+                            הצעת מחיר לקורס - ${courseName}
+                        </div>
+
+                        <!-- Intro -->
+                        <div style="margin-bottom: 20px;">
+                            בהתאם לבקשתך, להלן הצעת המחיר עבור קורס – <strong>${courseName}</strong>:
+                        </div>
+
+                        <!-- Details Table -->
+                        <table style="width: 100%; margin-bottom: 20px; border: 1px solid #E2E8F0; background-color: #FFFFFF;">
+                            <tr style="background-color: #F8FAFC;"><td style="padding: 8px; border-bottom: 1px solid #E2E8F0; width: 30%;"><strong>מועד פתיחה:</strong></td><td style="padding: 8px; border-bottom: 1px solid #E2E8F0;">${start}</td></tr>
+                            <tr><td style="padding: 8px; border-bottom: 1px solid #E2E8F0;"><strong>מועד סיום משוער:</strong></td><td style="padding: 8px; border-bottom: 1px solid #E2E8F0;">${end}</td></tr>
+                            <tr style="background-color: #F8FAFC;"><td style="padding: 8px; border-bottom: 1px solid #E2E8F0;"><strong>ימי לימוד ושעות:</strong></td><td style="padding: 8px; border-bottom: 1px solid #E2E8F0;">${formattedSchedule.text}</td></tr>
+                            <tr><td style="padding: 8px; border-bottom: 1px solid #E2E8F0;"><strong>מתכונת לימודים:</strong></td><td style="padding: 8px; border-bottom: 1px solid #E2E8F0;">${studyFormatText} (${formatText})</td></tr>
+                            <tr style="background-color: #F8FAFC;"><td style="padding: 8px; border-bottom: 1px solid #E2E8F0;"><strong>שעות לימוד אקדמיות:</strong></td><td style="padding: 8px; border-bottom: 1px solid #E2E8F0;">${hours} שעות</td></tr>
+                            <tr><td style="padding: 8px;"><strong>מסלול הסדר ומימון:</strong></td><td style="padding: 8px;">${fundName}</td></tr>
+                        </table>
+
+                        <!-- Pricing Table -->
+                        <div style="margin-top: 20px; font-weight: bold; font-size: 12pt; margin-bottom: 8px; color: #0F172A;">תמחור והסדר שכר לימוד:</div>
+                        <table style="width: 100%; margin-bottom: 15px; border: 1px solid #CBD5E1; background-color: #FFFFFF;">
+                            ${priceRowsHtml}
+                        </table>
+
+                        ${installmentsHtml}
+                        ${govDetailsHtml}
+
+                        <!-- Signature -->
+                        <div style="margin-top: 40px; padding-top: 15px; border-top: 1px solid #E2E8F0;">
+                            נשמח לעמוד לרשותך לכל שאלה או הבהרה. ניתן לפנות אלינו בטלפון 03-6135565.<br><br>
+                            <strong>בברכה,</strong><br>
+                            <strong>${advisorName}</strong><br>
+                            ${advisorTitle}<br>
+                            מכללת האקריו
+                        </div>
+                    </div>
+                </body>
+                </html>
+            `;
+
+            const blob = new Blob([wordDocumentHtml], { type: 'application/msword;charset=utf-8' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `הצעת מחיר - ${client}.doc`;
+            a.download = `הצעת מחיר - ${clientName}.doc`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
@@ -2970,7 +3130,22 @@
             if (chkQuote) chkQuote.checked = true;
 
             document.body.classList.remove('print-tofes');
+
+            // Force preview area visible for print window even if currently on mobile edit tab
+            const previewArea = document.querySelector('.preview-area');
+            if (previewArea) {
+                previewArea.style.display = 'block';
+            }
+
             window.print();
+
+            // Restore inline style after print dialog
+            setTimeout(() => {
+                const tabEdit = document.getElementById('tabEdit');
+                if (previewArea && window.innerWidth <= 1024 && tabEdit && tabEdit.classList.contains('active')) {
+                    previewArea.style.display = 'none';
+                }
+            }, 500);
         }
 
         // Restore layout after print dialog closes
