@@ -1096,11 +1096,6 @@
                 <span>עריכה מלאה ב-Word</span>
             </button>
         </div>
-        
-        <button class="btn btn-outline" onclick="saveToHistory()" style="margin-top: 8px; font-size: 12px; padding: 8px; width: 100%; display: flex; align-items: center; justify-content: center; gap: 4px;">
-            💾 שמור לקוח בהיסטוריית הצעות אחרונות
-        </button>
-
         <!-- Collapsible CRM & Firebase Sync Panel -->
         <details class="sidebar-accordion" id="syncHistoryAccordion" style="margin-top: 15px;">
             <summary style="border-color: #A5B4FC;">
@@ -2655,7 +2650,32 @@
         }
 
         // CRM Client History functions
+        function pruneOldHistory(days = 60) {
+            let history = [];
+            try {
+                const data = localStorage.getItem('hackeru_quote_history');
+                if (data) history = JSON.parse(data);
+            } catch(e) {}
+
+            if (Array.isArray(history) && history.length > 0) {
+                const now = Date.now();
+                const cutoff = days * 24 * 60 * 60 * 1000;
+                
+                const filtered = history.filter(item => {
+                    if (!item.savedAt) return true;
+                    const itemTime = new Date(item.savedAt).getTime();
+                    return (now - itemTime) < cutoff;
+                });
+
+                if (filtered.length !== history.length) {
+                    localStorage.setItem('hackeru_quote_history', JSON.stringify(filtered));
+                    if (typeof uploadToFirebase === 'function') uploadToFirebase();
+                }
+            }
+        }
+
         function loadHistoryList() {
+            pruneOldHistory(60);
             let history = [];
             try {
                 const data = localStorage.getItem('hackeru_quote_history');
@@ -3129,6 +3149,9 @@
 
         // Print function for Quote
         function printQuote() {
+            // Automatically save quote to CRM history & Firebase upon printing
+            saveToHistory(true);
+
             // Check off checklist item
             const chkQuote = document.getElementById('chkQuotePrinted');
             if (chkQuote) chkQuote.checked = true;
