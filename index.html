@@ -374,8 +374,11 @@
         }
 
         /* Print Media Styles */
-        /* Print Media Styles */
         @media print {
+            @page {
+                size: A4 portrait;
+                margin: 0;
+            }
             html, body {
                 background: white !important;
                 color: black !important;
@@ -401,9 +404,10 @@
                 box-shadow: none !important;
                 width: 100% !important;
                 min-height: auto !important;
-                padding: 0 !important;
+                padding: 1.5cm 2cm !important;
                 margin: 0 !important;
                 transform: none !important; /* Reset mobile scale transform during print */
+                box-sizing: border-box !important;
             }
             
             /* Tofes printing toggles */
