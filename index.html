@@ -857,7 +857,13 @@
                 <input type="text" id="clientName" value="ולד גודין">
             </div>
             <div class="form-group">
-                <label for="clientId">תעודת זהות</label>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <label for="clientId">תעודת זהות</label>
+                    <div style="display: flex; align-items: center; gap: 4px;">
+                        <input type="checkbox" id="chkShowClientId" checked style="width: auto; cursor: pointer;">
+                        <label for="chkShowClientId" style="margin-bottom: 0; font-size: 10px; cursor: pointer; color: #94A3B8;">הצג ת.ז</label>
+                    </div>
+                </div>
                 <input type="text" id="clientId" value="308687136">
             </div>
             <div class="form-group">
@@ -1705,7 +1711,7 @@
             const handler = (e) => {
                 document.getElementById(labelId).innerText = e.target.value;
                 if(inputId === 'clientId') {
-                    els.lblClientIdBlock.style.display = e.target.value ? 'block' : 'none';
+                    updateClientIdDisplay();
                 }
                 
                 // Save customized values back to the active cycle in savedSchedules
@@ -1717,9 +1723,11 @@
                 }
                 
                 // Save customized presets details if general preset fields are edited
-                if (inputId === 'academicHours') {
+                if (inputId === 'academicHours' || inputId === 'endDate') {
                     saveCustomPreset();
                 }
+
+                saveActiveFormDraft();
             };
             inputEl.addEventListener('input', handler);
             inputEl.addEventListener('change', handler);
@@ -1735,30 +1743,55 @@
             recalculateFromOriginal();
             updateInstallments();
             saveCustomPreset();
+            saveActiveFormDraft();
         });
         els.scholarshipAmount.addEventListener('input', () => {
             recalculateFromScholarship();
             updateInstallments();
             saveCustomPreset();
+            saveActiveFormDraft();
         });
         els.finalPrice.addEventListener('input', () => {
             recalculateFromFinal();
             updateInstallments();
             saveCustomPreset();
+            saveActiveFormDraft();
         });
         els.idfPrice.addEventListener('input', () => {
             updatePreview();
             updateInstallments();
             saveCustomPreset();
+            saveActiveFormDraft();
         });
         els.fundingType.addEventListener('change', () => {
             updatePreview();
             updateInstallments();
+            saveActiveFormDraft();
         });
-        els.syllabusCode.addEventListener('input', saveCustomPreset);
-        els.tamatCode.addEventListener('input', saveCustomPreset);
-        els.installments.addEventListener('change', updateInstallments);
-        els.showInstallmentsOnQuote.addEventListener('change', updatePreview);
+        els.syllabusCode.addEventListener('input', () => {
+            saveCustomPreset();
+            saveActiveFormDraft();
+        });
+        els.tamatCode.addEventListener('input', () => {
+            saveCustomPreset();
+            saveActiveFormDraft();
+        });
+        els.installments.addEventListener('change', () => {
+            updateInstallments();
+            saveActiveFormDraft();
+        });
+        els.showInstallmentsOnQuote.addEventListener('change', () => {
+            updatePreview();
+            saveActiveFormDraft();
+        });
+        
+        const chkShowClientId = document.getElementById('chkShowClientId');
+        if (chkShowClientId) {
+            chkShowClientId.addEventListener('change', () => {
+                updateClientIdDisplay();
+                saveActiveFormDraft();
+            });
+        }
 
         // Auto-check checklist items
         const lnkDownloadIshur = document.getElementById('lnkDownloadIshur');
@@ -1956,6 +1989,7 @@
             }
             
             coursePresets[courseKey].hours = els.academicHours.value;
+            coursePresets[courseKey].endDate = els.endDate.value;
             coursePresets[courseKey].originalPrice = Number(els.originalPrice.value) || 0;
             coursePresets[courseKey].scholarshipAmount = Number(els.scholarshipAmount.value) || 0;
             coursePresets[courseKey].finalPrice = Number(els.finalPrice.value) || 0;
@@ -1971,6 +2005,102 @@
             
             localStorage.setItem('hackeru_custom_presets', JSON.stringify(coursePresets));
             if (typeof uploadToFirebase === 'function') uploadToFirebase();
+        }
+
+        function updateClientIdDisplay() {
+            const chk = document.getElementById('chkShowClientId');
+            const show = chk ? chk.checked : true;
+            const val = els.clientId ? els.clientId.value.trim() : '';
+            
+            if (els.lblClientIdBlock) {
+                els.lblClientIdBlock.style.display = (show && val) ? 'block' : 'none';
+            }
+        }
+
+        function saveActiveFormDraft() {
+            const draft = {
+                clientName: els.clientName.value,
+                clientId: els.clientId.value,
+                chkShowClientId: document.getElementById('chkShowClientId') ? document.getElementById('chkShowClientId').checked : true,
+                clientPhone: els.clientPhone.value,
+                courseKey: els.courseSelect.value,
+                courseFormat: els.courseFormat.value,
+                studyFormat: els.studyFormat.value,
+                startDate: els.startDate.value,
+                endDate: els.endDate.value,
+                scheduleDays: els.scheduleDays.value,
+                academicHours: els.academicHours.value,
+                syllabusCode: els.syllabusCode.value,
+                tamatCode: els.tamatCode.value,
+                templateStyle: els.templateStyle.value,
+                quoteValidity: els.quoteValidity.value,
+                quoteValidityCustom: els.quoteValidityCustom.value,
+                fundingType: els.fundingType.value,
+                originalPrice: els.originalPrice.value,
+                scholarshipAmount: els.scholarshipAmount.value,
+                finalPrice: els.finalPrice.value,
+                idfPrice: els.idfPrice.value,
+                installments: els.installments.value,
+                showInstallmentsOnQuote: els.showInstallmentsOnQuote ? els.showInstallmentsOnQuote.checked : true,
+                advisorName: els.advisorName.value,
+                advisorTitle: els.advisorTitle.value,
+                whatsappTemplateSelect: els.whatsappTemplateSelect ? els.whatsappTemplateSelect.value : 'full_quote',
+                chkIncludeUrgency: els.chkIncludeUrgency ? els.chkIncludeUrgency.checked : true,
+                chkShowUrgencyOnQuote: els.chkShowUrgencyOnQuote ? els.chkShowUrgencyOnQuote.checked : false
+            };
+            localStorage.setItem('hackeru_current_draft', JSON.stringify(draft));
+        }
+
+        function restoreActiveFormDraft() {
+            try {
+                const data = localStorage.getItem('hackeru_current_draft');
+                if (!data) return false;
+                const draft = JSON.parse(data);
+                if (!draft || typeof draft !== 'object') return false;
+
+                if (draft.courseKey) els.courseSelect.value = draft.courseKey;
+                if (draft.clientName !== undefined) els.clientName.value = draft.clientName;
+                if (draft.clientId !== undefined) els.clientId.value = draft.clientId;
+                if (draft.clientPhone !== undefined) els.clientPhone.value = draft.clientPhone;
+                if (draft.courseFormat !== undefined) els.courseFormat.value = draft.courseFormat;
+                if (draft.studyFormat !== undefined) els.studyFormat.value = draft.studyFormat;
+                if (draft.startDate !== undefined) els.startDate.value = draft.startDate;
+                if (draft.endDate !== undefined) els.endDate.value = draft.endDate;
+                if (draft.scheduleDays !== undefined) els.scheduleDays.value = draft.scheduleDays;
+                if (draft.academicHours !== undefined) els.academicHours.value = draft.academicHours;
+                if (draft.syllabusCode !== undefined) els.syllabusCode.value = draft.syllabusCode;
+                if (draft.tamatCode !== undefined) els.tamatCode.value = draft.tamatCode;
+                if (draft.templateStyle !== undefined) els.templateStyle.value = draft.templateStyle;
+                if (draft.quoteValidity !== undefined) els.quoteValidity.value = draft.quoteValidity;
+                if (draft.quoteValidityCustom !== undefined) els.quoteValidityCustom.value = draft.quoteValidityCustom;
+                if (draft.fundingType !== undefined) els.fundingType.value = draft.fundingType;
+                if (draft.originalPrice !== undefined) els.originalPrice.value = draft.originalPrice;
+                if (draft.scholarshipAmount !== undefined) els.scholarshipAmount.value = draft.scholarshipAmount;
+                if (draft.finalPrice !== undefined) els.finalPrice.value = draft.finalPrice;
+                if (draft.idfPrice !== undefined) els.idfPrice.value = draft.idfPrice;
+                if (draft.installments !== undefined) els.installments.value = draft.installments;
+                if (draft.showInstallmentsOnQuote !== undefined && els.showInstallmentsOnQuote) els.showInstallmentsOnQuote.checked = draft.showInstallmentsOnQuote;
+                if (draft.advisorName !== undefined) els.advisorName.value = draft.advisorName;
+                if (draft.advisorTitle !== undefined) els.advisorTitle.value = draft.advisorTitle;
+                if (draft.whatsappTemplateSelect !== undefined && els.whatsappTemplateSelect) els.whatsappTemplateSelect.value = draft.whatsappTemplateSelect;
+                if (draft.chkIncludeUrgency !== undefined && els.chkIncludeUrgency) els.chkIncludeUrgency.checked = draft.chkIncludeUrgency;
+                if (draft.chkShowUrgencyOnQuote !== undefined && els.chkShowUrgencyOnQuote) els.chkShowUrgencyOnQuote.checked = draft.chkShowUrgencyOnQuote;
+                
+                const chkShowClientId = document.getElementById('chkShowClientId');
+                if (chkShowClientId && draft.chkShowClientId !== undefined) {
+                    chkShowClientId.checked = draft.chkShowClientId;
+                }
+
+                if (els.quoteValidity.value === 'custom') {
+                    els.quoteValidityCustom.style.display = 'block';
+                }
+
+                updateClientIdDisplay();
+                return true;
+            } catch(e) {
+                console.error("Error restoring active draft", e);
+                return false;
+            }
         }
 
         // Populate Dropdown from Imported schedules
@@ -2573,7 +2703,9 @@
             else {
                 // Default full quote template
                 const formattedSchedule = formatScheduleHtmlAndText(schedule);
-                const idBlock = clientId ? `ת.ז: ${clientId}\n` : '';
+                const chkShowClientId = document.getElementById('chkShowClientId');
+                const showId = chkShowClientId ? chkShowClientId.checked : true;
+                const idBlock = (showId && clientId) ? `ת.ז: ${clientId}\n` : '';
                 
                 message = `הצעת מחיר לקורס - ${courseName}\n\nלכבוד: ${clientName}\n${idBlock}\nפרטי הקורס:\n• מועד פתיחה: ${start}\n• מועד סיום משוער: ${end}\n• ${formattedSchedule.text}\n• מתכונת לימודים: ${els.studyFormat.value}\n• שעות לימוד: ${hours} שעות אקדמיות\n`;
                 if (urgencyText) message += `${urgencyText}`;
@@ -2907,7 +3039,10 @@
         }
 
         // Initialize preview
-        handleCoursePresetChange();
+        if (!restoreActiveFormDraft()) {
+            handleCoursePresetChange();
+        }
+        updateClientIdDisplay();
         updateDocumentTitle();
         loadHistoryList();
         updateInstallments();
