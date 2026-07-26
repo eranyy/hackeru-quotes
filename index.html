@@ -853,7 +853,7 @@
 
         <div class="form-row">
             <div class="form-group">
-                <label for="clientName">שם הלקוח (לכבוד)</label>
+                <label for="clientName">שם הלקוח (לכבוד) <span style="color: #EF4444; font-weight: bold;">*</span></label>
                 <input type="text" id="clientName" value="ולד גודין">
             </div>
             <div class="form-group">
@@ -1035,7 +1035,7 @@
 
         <div class="form-row">
             <div class="form-group">
-                <label for="finalPrice">מחיר סופי (לתשלום)</label>
+                <label for="finalPrice">מחיר סופי (לתשלום) <span style="color: #EF4444; font-weight: bold;">*</span></label>
                 <input type="number" id="finalPrice" value="21760">
             </div>
             <div class="form-row" style="display:none;">
@@ -2796,8 +2796,35 @@
             return message;
         }
 
+        function validateQuoteForm() {
+            const clientName = els.clientName.value.trim();
+            const finalPrice = Number(els.finalPrice.value) || 0;
+            
+            if (!clientName || clientName === "ולד גודין" || clientName === "") {
+                alert("⚠️ שגיאה: נא להזין שם לקוח חדש ותקין (שם מלא או שם חברה) לפני הפקת/שליחת הצעת המחיר.");
+                els.clientName.focus();
+                els.clientName.style.borderColor = "#EF4444";
+                return false;
+            } else {
+                els.clientName.style.borderColor = "";
+            }
+            
+            if (finalPrice <= 0) {
+                alert("⚠️ שגיאה: נא להזין מחיר סופי תקין (גבוה מ-0) לפני הפקת/שליחת הצעת המחיר.");
+                els.finalPrice.focus();
+                els.finalPrice.style.borderColor = "#EF4444";
+                return false;
+            } else {
+                els.finalPrice.style.borderColor = "";
+            }
+            
+            return true;
+        }
+
         // WhatsApp sharing constructor
         function shareOnWhatsApp() {
+            if (!validateQuoteForm()) return;
+
             const phone = els.clientPhone.value.trim().replace(/\D/g, '');
             const templateType = els.whatsappTemplateSelect.value;
             const message = buildMessageText(templateType);
@@ -3110,6 +3137,8 @@
         // Export as HTML file that opens in MS Word as a document (extremely simple and robust client-side trick)
         // Export as clean Microsoft Word document
         function exportWordHtml() {
+            if (!validateQuoteForm()) return;
+
             // Automatically save to history when exporting to Word
             saveToHistory(true);
 
@@ -3306,6 +3335,8 @@
 
         // Print function for Form H2
         function printTofesHe2() {
+            if (!validateQuoteForm()) return;
+
             // Check off checklist item
             const chkTofes = document.getElementById('chkTofesPrinted');
             if (chkTofes) chkTofes.checked = true;
@@ -3346,6 +3377,8 @@
 
         // Print function for Quote
         function printQuote() {
+            if (!validateQuoteForm()) return;
+
             // Automatically save quote to CRM history & Firebase upon printing
             saveToHistory(true);
 
