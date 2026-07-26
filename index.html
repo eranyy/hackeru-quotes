@@ -776,6 +776,39 @@
         body.light-theme .sidebar-accordion {
             background-color: #F8FAFC;
         }
+
+        /* Prominent Toggle Checkboxes Styled as Badges */
+        .toggle-badge-container {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background-color: rgba(129, 140, 248, 0.15) !important; /* Soft Indigo background */
+            border: 1px solid rgba(129, 140, 248, 0.4) !important;
+            padding: 3px 8px !important;
+            border-radius: 12px !important;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: none;
+            margin: 0 !important;
+        }
+        .toggle-badge-container:hover {
+            background-color: rgba(129, 140, 248, 0.25) !important;
+            border-color: rgba(129, 140, 248, 0.8) !important;
+        }
+        .toggle-badge-container input[type="checkbox"] {
+            width: 13px !important;
+            height: 13px !important;
+            accent-color: #4F46E5 !important;
+            cursor: pointer;
+            margin: 0 !important;
+        }
+        .toggle-badge-container label {
+            margin-bottom: 0 !important;
+            font-size: 10px !important;
+            font-weight: 700 !important;
+            color: #4F46E5 !important;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -854,21 +887,21 @@
         <div class="form-row">
             <div class="form-group">
                 <label for="clientName">שם הלקוח (לכבוד) <span style="color: #EF4444; font-weight: bold;">*</span></label>
-                <input type="text" id="clientName" value="ולד גודין">
+                <input type="text" id="clientName" value="">
             </div>
             <div class="form-group">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <label for="clientId">תעודת זהות</label>
-                    <div style="display: flex; align-items: center; gap: 4px;">
-                        <input type="checkbox" id="chkShowClientId" checked style="width: auto; cursor: pointer;">
-                        <label for="chkShowClientId" style="margin-bottom: 0; font-size: 10px; cursor: pointer; color: #94A3B8;">הצג ת.ז</label>
+                    <div class="toggle-badge-container">
+                        <input type="checkbox" id="chkShowClientId" checked>
+                        <label for="chkShowClientId">הצג ת.ז</label>
                     </div>
                 </div>
-                <input type="text" id="clientId" value="308687136">
+                <input type="text" id="clientId" value="">
             </div>
             <div class="form-group">
                 <label for="clientPhone">מספר טלפון</label>
-                <input type="text" id="clientPhone" value="0501234567" placeholder="למשל: 0501234567">
+                <input type="text" id="clientPhone" value="" placeholder="למשל: 0501234567">
             </div>
         </div>
 
@@ -998,9 +1031,9 @@
         <div class="form-group">
             <div style="display: flex; justify-content: space-between; align-items: center;">
                 <label for="quoteValidity">תוקף ההצעה (בסוגריים)</label>
-                <div style="display: flex; align-items: center; gap: 4px;">
-                    <input type="checkbox" id="chkShowValidity" checked style="width: auto; cursor: pointer;">
-                    <label for="chkShowValidity" style="margin-bottom: 0; font-size: 10px; cursor: pointer; color: #94A3B8;">הצג תוקף בהצעה</label>
+                <div class="toggle-badge-container">
+                    <input type="checkbox" id="chkShowValidity" checked>
+                    <label for="chkShowValidity">הצג תוקף</label>
                 </div>
             </div>
             <select id="quoteValidity">
@@ -1019,9 +1052,15 @@
                 <input type="number" id="originalPrice" value="25900">
             </div>
             <div class="form-group">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <label for="scholarshipAmount">גובה המלגה / הנחה</label>
-                    <a href="https://scholarships.hackeru.co.il/simulation" target="_blank" style="font-size: 10px; color: var(--primary-color); text-decoration: underline;">🔗 סימולטור מלגות</a>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                    <label for="scholarshipAmount" style="margin-bottom: 0;">גובה המלגה / הנחה</label>
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        <a href="https://scholarships.hackeru.co.il/simulation" target="_blank" style="font-size: 10px; color: var(--primary-color); text-decoration: underline;">🔗 סימולטור</a>
+                        <div class="toggle-badge-container">
+                            <input type="checkbox" id="chkShowScholarship" checked>
+                            <label for="chkShowScholarship">הצג מלגה</label>
+                        </div>
+                    </div>
                 </div>
                 <input type="number" id="scholarshipAmount" value="4140">
                 <div style="display: flex; gap: 4px; margin-top: 4px;">
@@ -1554,6 +1593,9 @@
             const final = Number(els.finalPrice.value) || 0;
             const idf = Number(els.idfPrice.value) || 0;
 
+            const chkShowScholarship = document.getElementById('chkShowScholarship');
+            const showSchol = chkShowScholarship ? chkShowScholarship.checked : true;
+
             const chkShowValidity = document.getElementById('chkShowValidity');
             const showValidity = chkShowValidity ? chkShowValidity.checked : true;
             let validityText = "";
@@ -1566,13 +1608,13 @@
 
             let html = "";
 
-            if (style === "scholarship") {
+            if (style === "scholarship" && showSchol) {
                 html = `
                     <li><span class="bold-text">מחיר קורס מקורי:</span> ${formatILS(orig)}</li>
                     <li><span class="bold-text">סה"כ מלגות:</span> ${formatILS(schol)}</li>
                     <li><span class="bold-text">מחיר אחרי מלגות:</span> <span class="highlight-yellow">${formatILS(final)}</span> ${validityText ? `<span class="bold-text">${validityText}</span>` : ''}</li>
                 `;
-            } else if (style === "discount") {
+            } else if (style === "discount" && showSchol) {
                 html = `
                     <li><span class="bold-text">עלות:</span> <span class="strike-through">${formatILS(orig)}</span> כולל מע"מ פר משתתף</li>
                     <li><span class="bold-text">עלות קורס לאחר הנחה:</span> <span class="highlight-yellow">${formatILS(final)}</span> כולל מע"מ פר משתתף</li>
@@ -1582,9 +1624,9 @@
                     <li><span class="bold-text">עלות:</span> ${formatILS(orig)} כולל מע"מ פר משתתף</li>
                     <li><span class="bold-text">עלות קורס עבור פורשי צה"ל:</span> <span class="highlight-yellow">${formatILS(idf)}</span> כולל מע"מ פר משתתף</li>
                 `;
-            } else { // standard
+            } else { // standard or hidden details
                 html = `
-                    <li><span class="bold-text">עלות:</span> <span class="highlight-yellow">${formatILS(orig)}</span> כולל מע"מ פר משתתף</li>
+                    <li><span class="bold-text">עלות הקורס:</span> <span class="highlight-yellow">${formatILS(final || orig)}</span> כולל מע"מ פר משתתף ${validityText ? `<span class="bold-text">${validityText}</span>` : ''}</li>
                 `;
             }
 
@@ -1700,6 +1742,8 @@
         els.scheduleDropdown.addEventListener('change', handleScheduleSelection);
         els.scheduleDays.addEventListener('input', (e) => {
             updateSchedulePreview(e.target.value);
+            saveCustomPreset();
+            saveActiveFormDraft();
         });
         
         els.quoteValidity.addEventListener('change', (e) => {
@@ -1822,6 +1866,14 @@
             });
         }
 
+        const chkShowScholarship = document.getElementById('chkShowScholarship');
+        if (chkShowScholarship) {
+            chkShowScholarship.addEventListener('change', () => {
+                updatePreview();
+                saveActiveFormDraft();
+            });
+        }
+
         els.clientName.addEventListener('change', () => {
             saveToHistory(true);
         });
@@ -1918,10 +1970,9 @@
             
             const preset = coursePresets[code];
             if (preset) {
-                els.clientName.value = "ולד גודין";
-                els.clientId.value = "308687136";
+                // Keep the client name, ID and phone as is from active state to avoid resetting to defaults
                 els.studyFormat.value = preset.study;
-                els.scheduleDays.value = preset.schedule;
+                if (preset.schedule) els.scheduleDays.value = preset.schedule;
                 els.academicHours.value = preset.hours;
                 els.syllabusCode.value = preset.code;
                 els.tamatCode.value = preset.tamat;
@@ -2026,6 +2077,7 @@
             
             coursePresets[courseKey].hours = els.academicHours.value;
             coursePresets[courseKey].endDate = els.endDate.value;
+            coursePresets[courseKey].schedule = els.scheduleDays.value;
             coursePresets[courseKey].originalPrice = Number(els.originalPrice.value) || 0;
             coursePresets[courseKey].scholarshipAmount = Number(els.scholarshipAmount.value) || 0;
             coursePresets[courseKey].finalPrice = Number(els.finalPrice.value) || 0;
@@ -2054,10 +2106,13 @@
         }
 
         function saveActiveFormDraft() {
+            if (isRestoringDraft) return;
             const draft = {
                 clientName: els.clientName.value,
                 clientId: els.clientId.value,
                 chkShowClientId: document.getElementById('chkShowClientId') ? document.getElementById('chkShowClientId').checked : true,
+                chkShowValidity: document.getElementById('chkShowValidity') ? document.getElementById('chkShowValidity').checked : true,
+                chkShowScholarship: document.getElementById('chkShowScholarship') ? document.getElementById('chkShowScholarship').checked : true,
                 clientPhone: els.clientPhone.value,
                 courseKey: els.courseSelect.value,
                 courseFormat: els.courseFormat.value,
@@ -2088,6 +2143,7 @@
         }
 
         function restoreActiveFormDraft() {
+            isRestoringDraft = true;
             try {
                 const data = localStorage.getItem('hackeru_current_draft');
                 if (!data) return false;
@@ -2125,6 +2181,16 @@
                 const chkShowClientId = document.getElementById('chkShowClientId');
                 if (chkShowClientId && draft.chkShowClientId !== undefined) {
                     chkShowClientId.checked = draft.chkShowClientId;
+                }
+                
+                const chkShowValidity = document.getElementById('chkShowValidity');
+                if (chkShowValidity && draft.chkShowValidity !== undefined) {
+                    chkShowValidity.checked = draft.chkShowValidity;
+                }
+
+                const chkShowScholarship = document.getElementById('chkShowScholarship');
+                if (chkShowScholarship && draft.chkShowScholarship !== undefined) {
+                    chkShowScholarship.checked = draft.chkShowScholarship;
                 }
 
                 if (els.quoteValidity.value === 'custom') {
@@ -2710,6 +2776,9 @@
             const urgencyInfo = calculateCountdown();
             const urgencyText = (els.chkIncludeUrgency && els.chkIncludeUrgency.checked && urgencyInfo.days !== null) ? `\n⏳ שימו לב: ${urgencyInfo.text}\n` : '';
 
+            const chkShowScholarship = document.getElementById('chkShowScholarship');
+            const showSchol = chkShowScholarship ? chkShowScholarship.checked : true;
+
             const chkShowValidity = document.getElementById('chkShowValidity');
             const showValidity = chkShowValidity ? chkShowValidity.checked : true;
             let validityText = "";
@@ -2753,13 +2822,13 @@
                 if (urgencyText) message += `${urgencyText}`;
                 message += `\nתמחור:\n`;
                 
-                if (style === "scholarship") {
+                if (style === "scholarship" && showSchol) {
                     message += `• מחיר מלא: ₪${orig.toLocaleString()}\n`;
                     message += `• גובה מלגה: ₪${schol.toLocaleString()}\n`;
                     message += `• מחיר סופי לאחר מלגות: ₪${actualFinal.toLocaleString()}`;
                     if (validityText) message += ` (תוקף ההצעה: ${validityText})`;
                     message += `\n\n`;
-                } else if (style === "discount") {
+                } else if (style === "discount" && showSchol) {
                     message += `• מחיר מקורי: ₪${orig.toLocaleString()}\n`;
                     message += `• מחיר סופי לאחר הנחה: ₪${actualFinal.toLocaleString()}`;
                     if (validityText) message += ` (תוקף ההצעה: ${validityText})`;
@@ -2770,7 +2839,9 @@
                     if (validityText) message += ` (תוקף ההצעה: ${validityText})`;
                     message += `\n\n`;
                 } else {
-                    message += `• עלות קורס: ₪${orig.toLocaleString()}\n\n`;
+                    message += `• עלות קורס: ₪${actualFinal.toLocaleString()}`;
+                    if (validityText) message += ` (תוקף ההצעה: ${validityText})`;
+                    message += `\n\n`;
                 }
                 
                 const showInstallments = els.showInstallmentsOnQuote.checked;
@@ -2841,6 +2912,7 @@
             
             const waUrl = `https://wa.me/${cleanedPhone}?text=${encodeURIComponent(message)}`;
             window.open(waUrl, '_blank');
+            clearClientForm();
         }
 
         // Installment Calculator Updater
@@ -3131,6 +3203,7 @@
 
             navigator.clipboard.writeText(message).then(() => {
                 alert("הטקסט הועתק ללוח בהצלחה!");
+                clearClientForm();
             });
         }
 
@@ -3175,6 +3248,9 @@
 
             const formattedSchedule = formatScheduleHtmlAndText(schedule);
 
+            const chkShowScholarship = document.getElementById('chkShowScholarship');
+            const showSchol = chkShowScholarship ? chkShowScholarship.checked : true;
+
             const chkShowValidity = document.getElementById('chkShowValidity');
             const showValidity = chkShowValidity ? chkShowValidity.checked : true;
             let validityText = '';
@@ -3184,13 +3260,13 @@
             }
 
             let priceRowsHtml = '';
-            if (style === "scholarship") {
+            if (style === "scholarship" && showSchol) {
                 priceRowsHtml = `
                     <tr><td style="padding: 6px; border-bottom: 1px solid #E2E8F0; width: 35%;"><strong>מחיר מלא:</strong></td><td style="padding: 6px; border-bottom: 1px solid #E2E8F0; text-decoration: line-through; color: #64748B;">₪${orig.toLocaleString()}</td></tr>
                     <tr><td style="padding: 6px; border-bottom: 1px solid #E2E8F0;"><strong>גובה מלגה:</strong></td><td style="padding: 6px; border-bottom: 1px solid #E2E8F0; color: #00D27A; font-weight: bold;">₪${schol.toLocaleString()}</td></tr>
                     <tr style="background-color: #FEF08A;"><td style="padding: 8px; font-size: 12pt;"><strong>סה"כ לתשלום לאחר מלגות:</strong></td><td style="padding: 8px; font-size: 12pt; color: #0F172A; font-weight: bold;">₪${actualFinal.toLocaleString()}${validityText}</td></tr>
                 `;
-            } else if (style === "discount") {
+            } else if (style === "discount" && showSchol) {
                 priceRowsHtml = `
                     <tr><td style="padding: 6px; border-bottom: 1px solid #E2E8F0; width: 35%;"><strong>מחיר מקורי:</strong></td><td style="padding: 6px; border-bottom: 1px solid #E2E8F0; text-decoration: line-through; color: #64748B;">₪${orig.toLocaleString()}</td></tr>
                     <tr style="background-color: #FEF08A;"><td style="padding: 8px; font-size: 12pt;"><strong>מחיר סופי לאחר הנחה:</strong></td><td style="padding: 8px; font-size: 12pt; color: #0F172A; font-weight: bold;">₪${actualFinal.toLocaleString()}${validityText}</td></tr>
@@ -3202,7 +3278,7 @@
                 `;
             } else {
                 priceRowsHtml = `
-                    <tr style="background-color: #F8FAFC;"><td style="padding: 8px; font-size: 12pt; width: 35%;"><strong>עלות הקורס:</strong></td><td style="padding: 8px; font-size: 12pt; color: #0F172A; font-weight: bold;">₪${orig.toLocaleString()}</td></tr>
+                    <tr style="background-color: #F8FAFC;"><td style="padding: 8px; font-size: 12pt; width: 35%;"><strong>עלות הקורס:</strong></td><td style="padding: 8px; font-size: 12pt; color: #0F172A; font-weight: bold;">₪${actualFinal.toLocaleString()}${validityText}</td></tr>
                 `;
             }
 
@@ -3331,6 +3407,7 @@
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
+            clearClientForm();
         }
 
         // Print function for Form H2
@@ -3373,6 +3450,10 @@
 
             document.body.classList.add('print-tofes');
             window.print();
+            
+            setTimeout(() => {
+                clearClientForm();
+            }, 500);
         }
 
         // Print function for Quote
@@ -3402,6 +3483,7 @@
                 if (previewArea && window.innerWidth <= 1024 && tabEdit && tabEdit.classList.contains('active')) {
                     previewArea.style.display = 'none';
                 }
+                clearClientForm();
             }, 500);
         }
 
