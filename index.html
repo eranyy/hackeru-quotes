@@ -891,7 +891,7 @@
             </div>
             <div class="form-group">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <label for="clientId">תעודת זהות</label>
+                    <label for="clientId">תעודת זהות <span class="gov-req-star" style="color: #EF4444; font-weight: bold; display: none;">*</span></label>
                     <div class="toggle-badge-container">
                         <input type="checkbox" id="chkShowClientId" checked>
                         <label for="chkShowClientId">הצג ת.ז</label>
@@ -926,11 +926,11 @@
 
         <div class="form-row">
             <div class="form-group">
-                <label for="startDate">מועד פתיחה</label>
+                <label for="startDate">מועד פתיחה <span class="gov-req-star" style="color: #EF4444; font-weight: bold; display: none;">*</span></label>
                 <input type="text" id="startDate" value="18/10/2026">
             </div>
             <div class="form-group">
-                <label for="endDate">מועד סיום משוער</label>
+                <label for="endDate">מועד סיום משוער <span class="gov-req-star" style="color: #EF4444; font-weight: bold; display: none;">*</span></label>
                 <input type="text" id="endDate" value="22/08/2027">
             </div>
         </div>
@@ -1586,6 +1586,7 @@
 
         // Render dynamic preview fields based on style templates
         function updatePreview() {
+            if (typeof updateGovAsterisks === 'function') updateGovAsterisks();
             if (!els.templateStyle) return;
             const style = els.templateStyle.value;
             const orig = Number(els.originalPrice.value) || 0;
@@ -2105,6 +2106,7 @@
             }
         }
 
+        let isRestoringDraft = false;
         function saveActiveFormDraft() {
             if (isRestoringDraft) return;
             const draft = {
@@ -2202,7 +2204,36 @@
             } catch(e) {
                 console.error("Error restoring active draft", e);
                 return false;
+            } finally {
+                isRestoringDraft = false;
             }
+        }
+
+        function updateGovAsterisks() {
+            if (!els.fundingType) return;
+            const fund = els.fundingType.value;
+            const isGov = (fund === 'vouchers' || fund === 'deposit');
+            const stars = document.querySelectorAll('.gov-req-star');
+            stars.forEach(star => {
+                star.style.display = isGov ? 'inline' : 'none';
+            });
+        }
+
+        function clearClientForm() {
+            els.clientName.value = "";
+            els.clientId.value = "";
+            els.clientPhone.value = "";
+            
+            bindings.forEach(([inputId, labelId]) => {
+                const el = document.getElementById(inputId);
+                const lbl = document.getElementById(labelId);
+                if (el && lbl && (inputId === 'clientName' || inputId === 'clientId')) {
+                    lbl.innerText = inputId === 'clientName' ? 'שם הלקוח' : '';
+                }
+            });
+            
+            updateClientIdDisplay();
+            saveActiveFormDraft();
         }
 
         // Populate Dropdown from Imported schedules
@@ -2870,6 +2901,8 @@
         function validateQuoteForm() {
             const clientName = els.clientName.value.trim();
             const finalPrice = Number(els.finalPrice.value) || 0;
+            const fund = els.fundingType.value;
+            const isGov = (fund === 'vouchers' || fund === 'deposit');
             
             if (!clientName || clientName === "ולד גודין" || clientName === "") {
                 alert("⚠️ שגיאה: נא להזין שם לקוח חדש ותקין (שם מלא או שם חברה) לפני הפקת/שליחת הצעת המחיר.");
@@ -2878,6 +2911,39 @@
                 return false;
             } else {
                 els.clientName.style.borderColor = "";
+            }
+
+            if (isGov) {
+                const clientId = els.clientId.value.trim();
+                const startDate = els.startDate.value.trim();
+                const endDate = els.endDate.value.trim();
+
+                if (!clientId) {
+                    alert("⚠️ שגיאה: בהצעת מחיר עבור מוסד ממשלתי (שוברים / פיקדון) חובה להזין מספר תעודת זהות.");
+                    els.clientId.focus();
+                    els.clientId.style.borderColor = "#EF4444";
+                    return false;
+                } else {
+                    els.clientId.style.borderColor = "";
+                }
+
+                if (!startDate) {
+                    alert("⚠️ שגיאה: בהצעת מחיר עבור מוסד ממשלתי (שוברים / פיקדון) חובה להזין תאריך פתיחת קורס.");
+                    els.startDate.focus();
+                    els.startDate.style.borderColor = "#EF4444";
+                    return false;
+                } else {
+                    els.startDate.style.borderColor = "";
+                }
+
+                if (!endDate) {
+                    alert("⚠️ שגיאה: בהצעת מחיר עבור מוסד ממשלתי (שוברים / פיקדון) חובה להזין תאריך סיום משוער.");
+                    els.endDate.focus();
+                    els.endDate.style.borderColor = "#EF4444";
+                    return false;
+                } else {
+                    els.endDate.style.borderColor = "";
+                }
             }
             
             if (finalPrice <= 0) {
