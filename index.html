@@ -996,7 +996,13 @@
         </div>
 
         <div class="form-group">
-            <label for="quoteValidity">תוקף ההצעה (בסוגריים)</label>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <label for="quoteValidity">תוקף ההצעה (בסוגריים)</label>
+                <div style="display: flex; align-items: center; gap: 4px;">
+                    <input type="checkbox" id="chkShowValidity" checked style="width: auto; cursor: pointer;">
+                    <label for="chkShowValidity" style="margin-bottom: 0; font-size: 10px; cursor: pointer; color: #94A3B8;">הצג תוקף בהצעה</label>
+                </div>
+            </div>
             <select id="quoteValidity">
                 <option value="תקף לחודש זה בלבד" selected>תקף לחודש זה בלבד</option>
                 <option value="תקף לשבוע זה בלבד">תקף לשבוע זה בלבד</option>
@@ -1548,7 +1554,15 @@
             const final = Number(els.finalPrice.value) || 0;
             const idf = Number(els.idfPrice.value) || 0;
 
-            let validityText = els.quoteValidity.value === "custom" ? els.quoteValidityCustom.value : els.quoteValidity.value;
+            const chkShowValidity = document.getElementById('chkShowValidity');
+            const showValidity = chkShowValidity ? chkShowValidity.checked : true;
+            let validityText = "";
+            if (showValidity) {
+                const text = els.quoteValidity.value === "custom" ? els.quoteValidityCustom.value : els.quoteValidity.value;
+                if (text) {
+                    validityText = `( ${text} )`;
+                }
+            }
 
             let html = "";
 
@@ -1556,7 +1570,7 @@
                 html = `
                     <li><span class="bold-text">מחיר קורס מקורי:</span> ${formatILS(orig)}</li>
                     <li><span class="bold-text">סה"כ מלגות:</span> ${formatILS(schol)}</li>
-                    <li><span class="bold-text">מחיר אחרי מלגות:</span> <span class="highlight-yellow">${formatILS(final)}</span> <span class="bold-text">( ${validityText} )</span></li>
+                    <li><span class="bold-text">מחיר אחרי מלגות:</span> <span class="highlight-yellow">${formatILS(final)}</span> ${validityText ? `<span class="bold-text">${validityText}</span>` : ''}</li>
                 `;
             } else if (style === "discount") {
                 html = `
@@ -1640,6 +1654,10 @@
                     }
                 }
             }
+            
+            if (typeof saveActiveFormDraft === 'function') {
+                saveActiveFormDraft();
+            }
         }
 
         // Update document title dynamically to pre-fill PDF filename
@@ -1692,7 +1710,10 @@
             }
             updatePreview();
         });
-        els.quoteValidityCustom.addEventListener('input', updatePreview);
+        els.quoteValidityCustom.addEventListener('input', () => {
+            updatePreview();
+            saveActiveFormDraft();
+        });
 
         // Input bindings to preview labels
         const bindings = [
@@ -1792,6 +1813,21 @@
                 saveActiveFormDraft();
             });
         }
+
+        const chkShowValidity = document.getElementById('chkShowValidity');
+        if (chkShowValidity) {
+            chkShowValidity.addEventListener('change', () => {
+                updatePreview();
+                saveActiveFormDraft();
+            });
+        }
+
+        els.clientName.addEventListener('change', () => {
+            saveToHistory(true);
+        });
+        els.clientPhone.addEventListener('change', () => {
+            saveToHistory(true);
+        });
 
         // Auto-check checklist items
         const lnkDownloadIshur = document.getElementById('lnkDownloadIshur');
@@ -2674,13 +2710,19 @@
             const urgencyInfo = calculateCountdown();
             const urgencyText = (els.chkIncludeUrgency && els.chkIncludeUrgency.checked && urgencyInfo.days !== null) ? `\n⏳ שימו לב: ${urgencyInfo.text}\n` : '';
 
+            const chkShowValidity = document.getElementById('chkShowValidity');
+            const showValidity = chkShowValidity ? chkShowValidity.checked : true;
+            let validityText = "";
+            if (showValidity) {
+                validityText = els.quoteValidity.value === "custom" ? els.quoteValidityCustom.value : els.quoteValidity.value;
+            }
+
             let message = "";
 
             if (templateType === 'follow_up') {
-                let validityText = els.quoteValidity.value === "custom" ? els.quoteValidityCustom.value : els.quoteValidity.value;
-                
+                const valText = validityText ? ` (תוקף ההצעה: ${validityText})` : '';
                 message = `היי ${clientName},\n`;
-                message += `רק רציתי להזכיר שהצעת המחיר ששלחתי לך למסלול ${courseName} בתוקף לזמן מוגבל (תוקף ההצעה: ${validityText}).\n`;
+                message += `רק רציתי להזכיר שהצעת המחיר ששלחתי לך למסלול ${courseName} בתוקף לזמן מוגבל${valText}.\n`;
                 if (urgencyText) message += `${urgencyText}`;
                 message += `\nנשמח לראות אותך איתנו! אשמח לענות על כל שאלה ולעזור לך להתקדם ברישום.\n\n`;
                 message += `בברכה,\n${els.advisorName.value}\n${els.advisorTitle.value}\nמכללת האקריו`;
@@ -2714,19 +2756,26 @@
                 if (style === "scholarship") {
                     message += `• מחיר מלא: ₪${orig.toLocaleString()}\n`;
                     message += `• גובה מלגה: ₪${schol.toLocaleString()}\n`;
-                    message += `• מחיר סופי לאחר מלגות: ₪${actualFinal.toLocaleString()}\n\n`;
+                    message += `• מחיר סופי לאחר מלגות: ₪${actualFinal.toLocaleString()}`;
+                    if (validityText) message += ` (תוקף ההצעה: ${validityText})`;
+                    message += `\n\n`;
                 } else if (style === "discount") {
                     message += `• מחיר מקורי: ₪${orig.toLocaleString()}\n`;
-                    message += `• מחיר סופי לאחר הנחה: ₪${actualFinal.toLocaleString()}\n\n`;
+                    message += `• מחיר סופי לאחר הנחה: ₪${actualFinal.toLocaleString()}`;
+                    if (validityText) message += ` (תוקף ההצעה: ${validityText})`;
+                    message += `\n\n`;
                 } else if (style === "idf") {
                     message += `• מחיר מקורי: ₪${orig.toLocaleString()}\n`;
-                    message += `• עלות מיוחדת לחיילים משוחררים/פורשי צה"ל: ₪${actualFinal.toLocaleString()}\n\n`;
+                    message += `• עלות מיוחדת לחיילים משוחררים/פורשי צה"ל: ₪${actualFinal.toLocaleString()}`;
+                    if (validityText) message += ` (תוקף ההצעה: ${validityText})`;
+                    message += `\n\n`;
                 } else {
                     message += `• עלות קורס: ₪${orig.toLocaleString()}\n\n`;
                 }
                 
+                const showInstallments = els.showInstallmentsOnQuote.checked;
                 const pmts = parseInt(els.installments.value, 10);
-                if (pmts > 1) {
+                if (showInstallments && pmts > 1) {
                     const monthly = Math.round(actualFinal / pmts);
                     message += `💳 אפשרות פריסת תשלומים מוצעת:\n`;
                     message += `• ${pmts} תשלומים שווים של ₪${monthly.toLocaleString()} בחודש.\n\n`;
@@ -2794,8 +2843,9 @@
                 const cutoff = days * 24 * 60 * 60 * 1000;
                 
                 const filtered = history.filter(item => {
-                    if (!item.savedAt) return true;
-                    const itemTime = new Date(item.savedAt).getTime();
+                    const savedTime = item.timestamp || item.savedAt;
+                    if (!savedTime) return true;
+                    const itemTime = new Date(savedTime).getTime();
                     return (now - itemTime) < cutoff;
                 });
 
@@ -3060,6 +3110,9 @@
         // Export as HTML file that opens in MS Word as a document (extremely simple and robust client-side trick)
         // Export as clean Microsoft Word document
         function exportWordHtml() {
+            // Automatically save to history when exporting to Word
+            saveToHistory(true);
+
             const clientName = els.clientName.value.trim() || 'מועמד';
             const clientId = els.clientId.value.trim();
             const courseSelectText = els.courseSelect.options[els.courseSelect.selectedIndex].text;
@@ -3093,22 +3146,30 @@
 
             const formattedSchedule = formatScheduleHtmlAndText(schedule);
 
+            const chkShowValidity = document.getElementById('chkShowValidity');
+            const showValidity = chkShowValidity ? chkShowValidity.checked : true;
+            let validityText = '';
+            if (showValidity) {
+                const valText = els.quoteValidity.value === "custom" ? els.quoteValidityCustom.value : els.quoteValidity.value;
+                if (valText) validityText = ` (תוקף ההצעה: ${valText})`;
+            }
+
             let priceRowsHtml = '';
             if (style === "scholarship") {
                 priceRowsHtml = `
                     <tr><td style="padding: 6px; border-bottom: 1px solid #E2E8F0; width: 35%;"><strong>מחיר מלא:</strong></td><td style="padding: 6px; border-bottom: 1px solid #E2E8F0; text-decoration: line-through; color: #64748B;">₪${orig.toLocaleString()}</td></tr>
                     <tr><td style="padding: 6px; border-bottom: 1px solid #E2E8F0;"><strong>גובה מלגה:</strong></td><td style="padding: 6px; border-bottom: 1px solid #E2E8F0; color: #00D27A; font-weight: bold;">₪${schol.toLocaleString()}</td></tr>
-                    <tr style="background-color: #FEF08A;"><td style="padding: 8px; font-size: 12pt;"><strong>סה"כ לתשלום לאחר מלגות:</strong></td><td style="padding: 8px; font-size: 12pt; color: #0F172A; font-weight: bold;">₪${actualFinal.toLocaleString()}</td></tr>
+                    <tr style="background-color: #FEF08A;"><td style="padding: 8px; font-size: 12pt;"><strong>סה"כ לתשלום לאחר מלגות:</strong></td><td style="padding: 8px; font-size: 12pt; color: #0F172A; font-weight: bold;">₪${actualFinal.toLocaleString()}${validityText}</td></tr>
                 `;
             } else if (style === "discount") {
                 priceRowsHtml = `
                     <tr><td style="padding: 6px; border-bottom: 1px solid #E2E8F0; width: 35%;"><strong>מחיר מקורי:</strong></td><td style="padding: 6px; border-bottom: 1px solid #E2E8F0; text-decoration: line-through; color: #64748B;">₪${orig.toLocaleString()}</td></tr>
-                    <tr style="background-color: #FEF08A;"><td style="padding: 8px; font-size: 12pt;"><strong>מחיר סופי לאחר הנחה:</strong></td><td style="padding: 8px; font-size: 12pt; color: #0F172A; font-weight: bold;">₪${actualFinal.toLocaleString()}</td></tr>
+                    <tr style="background-color: #FEF08A;"><td style="padding: 8px; font-size: 12pt;"><strong>מחיר סופי לאחר הנחה:</strong></td><td style="padding: 8px; font-size: 12pt; color: #0F172A; font-weight: bold;">₪${actualFinal.toLocaleString()}${validityText}</td></tr>
                 `;
             } else if (style === "idf") {
                 priceRowsHtml = `
                     <tr><td style="padding: 6px; border-bottom: 1px solid #E2E8F0; width: 35%;"><strong>מחיר מקורי:</strong></td><td style="padding: 6px; border-bottom: 1px solid #E2E8F0; text-decoration: line-through; color: #64748B;">₪${orig.toLocaleString()}</td></tr>
-                    <tr style="background-color: #FEF08A;"><td style="padding: 8px; font-size: 12pt;"><strong>עלות מיוחדת לפורשי צה"ל:</strong></td><td style="padding: 8px; font-size: 12pt; color: #0F172A; font-weight: bold;">₪${actualFinal.toLocaleString()}</td></tr>
+                    <tr style="background-color: #FEF08A;"><td style="padding: 8px; font-size: 12pt;"><strong>עלות מיוחדת לפורשי צה"ל:</strong></td><td style="padding: 8px; font-size: 12pt; color: #0F172A; font-weight: bold;">₪${actualFinal.toLocaleString()}${validityText}</td></tr>
                 `;
             } else {
                 priceRowsHtml = `
@@ -3116,9 +3177,10 @@
                 `;
             }
 
+            const showInstallments = els.showInstallmentsOnQuote.checked;
             const pmts = parseInt(els.installments.value, 10);
             let installmentsHtml = '';
-            if (pmts > 1) {
+            if (showInstallments && pmts > 1) {
                 const monthly = Math.round(actualFinal / pmts);
                 installmentsHtml = `
                     <div style="margin-top: 12px; padding: 10px; background-color: #F8FAFC; border-right: 4px solid #00D27A; border-top: 1px solid #E2E8F0; border-left: 1px solid #E2E8F0; border-bottom: 1px solid #E2E8F0;">
