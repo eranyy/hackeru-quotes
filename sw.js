@@ -1,4 +1,4 @@
-const CACHE_NAME = 'hackeru-quotes-v2';
+const CACHE_NAME = 'hackeru-quotes-v3';
 const ASSETS = [
   './',
   './index.html',
@@ -33,6 +33,11 @@ self.addEventListener('activate', (e) => {
 });
 
 self.addEventListener('fetch', (e) => {
+  // Only process http/https requests
+  if (!e.request.url.startsWith('http')) {
+    return;
+  }
+
   // Network-First strategy for HTML/navigational requests to prevent stale caching
   if (e.request.mode === 'navigate' || e.request.url.includes('index.html')) {
     e.respondWith(
