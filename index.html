@@ -858,6 +858,8 @@
                 <option value="devops">Devops Engineer</option>
                 <option value="aimanager">AI Management EXPERT</option>
                 <option value="datamaster">Data Master - Data Analyst + BI</option>
+                <option value="cyberdefense">מגן סייבר (Cyber Defense)</option>
+                <option value="webapps">פיתוח אתרי אינטרנט ואפליקציות</option>
                 <option value="custom">מותאם אישית...</option>
             </select>
         </div>
@@ -1118,6 +1120,61 @@
             </div>
         </div>
 
+        <!-- Collapsible Tuition Payment Policy Helper -->
+        <details class="sidebar-accordion" id="paymentPolicyAccordion" style="margin-top: 15px; border-color: #34D399; margin-bottom: 10px;">
+            <summary style="border-color: #34D399;">
+                <span>💳 הסדרי תשלום והנחות (מדיניות מוסדרת)</span>
+            </summary>
+            <div class="accordion-content" style="gap: 10px;">
+                <div style="font-size: 11px; color: #64748B; line-height: 1.4;">
+                    בחר הסדר תשלום כדי לעדכן אוטומטית את אחוז ההנחה ומספר התשלומים בטופס:
+                </div>
+                
+                <div class="payment-method-grid" style="display: grid; grid-template-columns: 1fr; gap: 6px;">
+                    <button type="button" class="clear-btn" style="text-align: right; padding: 6px 10px; font-size: 11px; justify-content: flex-start; display: flex; align-items: center; gap: 6px;" onclick="applyPaymentMethod('cash_full')">
+                        💵 <strong>מזומן / העברה (תשלום מלא):</strong> 10% הנחה + 1 תשלום
+                    </button>
+                    <button type="button" class="clear-btn" style="text-align: right; padding: 6px 10px; font-size: 11px; justify-content: flex-start; display: flex; align-items: center; gap: 6px;" onclick="applyPaymentMethod('credit_full')">
+                        💳 <strong>אשראי - תשלום מלא:</strong> 5% הנחה + 1 תשלום
+                    </button>
+                    <button type="button" class="clear-btn" style="text-align: right; padding: 6px 10px; font-size: 11px; justify-content: flex-start; display: flex; align-items: center; gap: 6px;" onclick="applyPaymentMethod('credit_installments')">
+                        💳 <strong>אשראי - פריסה:</strong> עד 12 תשלומים ללא ריבית
+                    </button>
+                    <button type="button" class="clear-btn" style="text-align: right; padding: 6px 10px; font-size: 11px; justify-content: flex-start; display: flex; align-items: center; gap: 6px;" onclick="applyPaymentMethod('hk_installments_12')">
+                        📝 <strong>הוראת קבע (12 תשלומים):</strong> ללא ריבית
+                    </button>
+                    <button type="button" class="clear-btn" style="text-align: right; padding: 6px 10px; font-size: 11px; justify-content: flex-start; display: flex; align-items: center; gap: 6px;" onclick="applyPaymentMethod('hk_installments_36')">
+                        📝 <strong>הוראת קבע רחבה (36 תשלומים):</strong> כולל ריבית
+                    </button>
+                    <button type="button" class="clear-btn" style="text-align: right; padding: 6px 10px; font-size: 11px; justify-content: flex-start; display: flex; align-items: center; gap: 6px;" onclick="applyPaymentMethod('tution_fund_36')">
+                        🏛️ <strong>קרן שכ"ל (36 תשלומים):</strong> 5% הנחה (ללא ריבית)
+                    </button>
+                    <button type="button" class="clear-btn" style="text-align: right; padding: 6px 10px; font-size: 11px; justify-content: flex-start; display: flex; align-items: center; gap: 6px;" onclick="applyPaymentMethod('tution_fund_60')">
+                        🏛️ <strong>קרן שכ"ל רחבה (60 תשלומים):</strong> ללא ריבית
+                    </button>
+                    <button type="button" class="clear-btn" style="text-align: right; padding: 6px 10px; font-size: 11px; justify-content: flex-start; display: flex; align-items: center; gap: 6px;" onclick="applyPaymentMethod('mercantil_36')">
+                        🏦 <strong>בנק מרכנתיל (36 תשלומים):</strong> 15% הנחה + פריים+1.25%
+                    </button>
+                    <button type="button" class="clear-btn" style="text-align: right; padding: 6px 10px; font-size: 11px; justify-content: flex-start; display: flex; align-items: center; gap: 6px;" onclick="applyPaymentMethod('mercantil_48_grace')">
+                        🏦 <strong>מרכנתיל גרייס (48 תשלומים):</strong> 15% הנחה + שנת גרייס
+                    </button>
+                </div>
+                
+                <div id="paymentMethodIndicator" style="display: none; background-color: rgba(52, 211, 153, 0.15); border: 1px solid rgba(52, 211, 153, 0.4); border-radius: 6px; padding: 6px 10px; font-size: 11px; font-weight: bold; color: #065F46; text-align: center;"></div>
+                
+                <div id="bankDetailsInfoBox" style="font-size: 10px; color: #475569; background: #F1F5F9; padding: 8px; border-radius: 6px; border: 1px solid #CBD5E1;">
+                    <strong>🏦 פרטי חשבון העברה בנקאית:</strong><br>
+                    מוטב: האקריו בע"מ<br>
+                    בנק: מזרחי טפחות (20), סניף: 466<br>
+                    מספר חשבון: 207746
+                    <div style="display: flex; align-items: center; gap: 4px; margin-top: 6px; border-top: 1px dashed #CBD5E1; padding-top: 6px;">
+                        <input type="checkbox" id="chkShowBankDetails" style="width: auto; cursor: pointer;">
+                        <label for="chkShowBankDetails" style="margin-bottom: 0; font-size: 10px; cursor: pointer; color: #374151; font-weight: bold;">הצג פרטי חשבון בנק בהצעת המחיר</label>
+                    </div>
+                </div>
+            </div>
+        </details>
+
         <div class="form-group" style="margin-bottom: 15px; border-top: 1px solid var(--border-color); padding-top: 15px;">
             <label for="whatsappTemplateSelect" style="color: #25D366; font-weight: 700; display: flex; align-items: center; gap: 6px;">
                 <span>💬 תבנית הודעה לוואטסאפ (וחיבור ללוח)</span>
@@ -1260,6 +1317,13 @@
                         <li style="margin-bottom: 4px; padding-right: 15px; list-style-type: none;">• סמל מגמה מאושרת: <span class="bold-text" id="lblTamatSymbol">-</span></li>
                         <li id="lblDepositCodeBlock" style="margin-bottom: 4px; padding-right: 15px; display: none; list-style-type: none;">• קוד מוטב (לפיקדון): <span class="bold-text" id="lblDepositCode">-</span></li>
                     </div>
+
+                    <!-- Bank details block (Shown conditionally if chkShowBankDetails is checked) -->
+                    <div id="lblBankDetailsBlock" style="display: none; margin-top: 15px; padding: 10px; background-color: #F8FAFC; border-right: 4px solid #3B82F6; border-top: 1px solid #E2E8F0; border-left: 1px solid #E2E8F0; border-bottom: 1px solid #E2E8F0; font-size: 11px; color: #1E293B;">
+                        <strong>🏦 פרטי חשבון העברה בנקאית:</strong><br>
+                        מוטב: <strong>האקריו בע"מ</strong><br>
+                        בנק: <strong>מזרחי טפחות (20)</strong> | סניף: <strong>466</strong> | מספר חשבון: <strong>207746</strong>
+                    </div>
                 </ul>
 
                 <div class="intro-text">
@@ -1357,6 +1421,7 @@
         const coursePresets = {
             cyber: {
                 name: "סייבר ואבטחת מידע",
+                govName: "אבטחת מידע וסייבר",
                 hours: "400",
                 originalPrice: 25900,
                 code: "02447550",
@@ -1369,6 +1434,7 @@
             },
             fullstack: {
                 name: "Full Stack Development",
+                govName: "פיתוח פתרונות דיגיטליים",
                 hours: "410",
                 originalPrice: 22900,
                 code: "02447548",
@@ -1381,6 +1447,7 @@
             },
             marketing: {
                 name: "שיווק דיגיטלי",
+                govName: "ניהול קמפיינים דיגיטליים",
                 hours: "335",
                 originalPrice: 17900,
                 code: "02447552",
@@ -1388,11 +1455,12 @@
                 tamat: "0011010148",
                 format: "evening",
                 study: "היברידי",
-                tamatSymbol: "",
-                depositCode: ""
+                tamatSymbol: "8223",
+                depositCode: "0240043108"
             },
             uiux: {
                 name: "עיצוב גרפי וחווית משתמש UI/UX",
+                govName: "עיצוב מדיה וקריאייטיב",
                 hours: "430",
                 originalPrice: 18900,
                 code: "02447547",
@@ -1405,6 +1473,7 @@
             },
             qa: {
                 name: "בדיקות תוכנה ואוטומציה (QA)",
+                govName: "בודק תוכנה בסביבות DevOps",
                 hours: "300",
                 originalPrice: 18900,
                 code: "02447549",
@@ -1417,6 +1486,7 @@
             },
             networks: {
                 name: "ניהול רשתות ואבטחת מידע",
+                govName: "ניהול תשתיות וענן היברידי",
                 hours: "400",
                 originalPrice: 19900,
                 code: "02447553",
@@ -1429,6 +1499,7 @@
             },
             aispecialist: {
                 name: "מיישם AI בארגונים",
+                govName: "",
                 hours: "160",
                 originalPrice: 11900,
                 code: "02447548",
@@ -1441,6 +1512,7 @@
             },
             devops: {
                 name: "Devops Engineer",
+                govName: "ניהול תשתיות וענן היברידי",
                 hours: "430",
                 originalPrice: 22900,
                 code: "02447551",
@@ -1448,11 +1520,12 @@
                 tamat: "0011010148",
                 format: "evening",
                 study: "היברידי",
-                tamatSymbol: "3528",
-                depositCode: "0240043105"
+                tamatSymbol: "3515",
+                depositCode: "0240043104"
             },
             aimanager: {
                 name: "AI Management EXPERT",
+                govName: "",
                 hours: "40",
                 originalPrice: 12900,
                 code: "02447548",
@@ -1465,6 +1538,7 @@
             },
             datamaster: {
                 name: "Data Master - Data Analyst + BI",
+                govName: "אנליסט נתונים (Data Analyst)",
                 hours: "255",
                 originalPrice: 19900,
                 code: "02447555",
@@ -1474,6 +1548,32 @@
                 study: "היברידי",
                 tamatSymbol: "3924",
                 depositCode: "0240043106"
+            },
+            cyberdefense: {
+                name: "מגן סייבר (Cyber Defense)",
+                govName: "מגן סייבר (Cyber Defense)",
+                hours: "400",
+                originalPrice: 25900,
+                code: "02447550",
+                schedule: "א'+ד', 17:30-21:15",
+                tamat: "0011010148",
+                format: "evening",
+                study: "היברידי",
+                tamatSymbol: "3927",
+                depositCode: "0240043107"
+            },
+            webapps: {
+                name: "פיתוח אתרי אינטרנט ואפליקציות",
+                govName: "פיתוח אתרי אינטרנט ואפליקציות",
+                hours: "400",
+                originalPrice: 21900,
+                code: "02447548",
+                schedule: "א'+ד', 17:30-21:15",
+                tamat: "0011010148",
+                format: "evening",
+                study: "היברידי",
+                tamatSymbol: "3928",
+                depositCode: "0240043103"
             }
         };
 
@@ -1593,6 +1693,25 @@
             const schol = Number(els.scholarshipAmount.value) || 0;
             const final = Number(els.finalPrice.value) || 0;
             const idf = Number(els.idfPrice.value) || 0;
+
+            const courseKey = els.courseSelect.value;
+            const preset = coursePresets[courseKey] || {};
+            const fund = els.fundingType.value;
+            const isGov = (fund === 'vouchers' || fund === 'deposit');
+
+            let courseName = preset.name || els.courseSelect.options[els.courseSelect.selectedIndex].text;
+            if (isGov && preset.govName) {
+                courseName = preset.govName;
+            }
+            if (els.lblSubjectCourse) els.lblSubjectCourse.innerText = courseName;
+            if (els.lblIntroCourse) els.lblIntroCourse.innerText = courseName;
+
+            const chkShowBankDetails = document.getElementById('chkShowBankDetails');
+            const showBank = chkShowBankDetails ? chkShowBankDetails.checked : false;
+            const bankBlock = document.getElementById('lblBankDetailsBlock');
+            if (bankBlock) {
+                bankBlock.style.display = showBank ? 'block' : 'none';
+            }
 
             const chkShowScholarship = document.getElementById('chkShowScholarship');
             const showSchol = chkShowScholarship ? chkShowScholarship.checked : true;
@@ -1875,6 +1994,14 @@
             });
         }
 
+        const chkShowBankDetails = document.getElementById('chkShowBankDetails');
+        if (chkShowBankDetails) {
+            chkShowBankDetails.addEventListener('change', () => {
+                updatePreview();
+                saveActiveFormDraft();
+            });
+        }
+
         els.clientName.addEventListener('change', () => {
             saveToHistory(true);
         });
@@ -2115,6 +2242,7 @@
                 chkShowClientId: document.getElementById('chkShowClientId') ? document.getElementById('chkShowClientId').checked : true,
                 chkShowValidity: document.getElementById('chkShowValidity') ? document.getElementById('chkShowValidity').checked : true,
                 chkShowScholarship: document.getElementById('chkShowScholarship') ? document.getElementById('chkShowScholarship').checked : true,
+                chkShowBankDetails: document.getElementById('chkShowBankDetails') ? document.getElementById('chkShowBankDetails').checked : false,
                 clientPhone: els.clientPhone.value,
                 courseKey: els.courseSelect.value,
                 courseFormat: els.courseFormat.value,
@@ -2195,6 +2323,11 @@
                     chkShowScholarship.checked = draft.chkShowScholarship;
                 }
 
+                const chkShowBankDetails = document.getElementById('chkShowBankDetails');
+                if (chkShowBankDetails && draft.chkShowBankDetails !== undefined) {
+                    chkShowBankDetails.checked = draft.chkShowBankDetails;
+                }
+
                 if (els.quoteValidity.value === 'custom') {
                     els.quoteValidityCustom.style.display = 'block';
                 }
@@ -2234,6 +2367,87 @@
             
             updateClientIdDisplay();
             saveActiveFormDraft();
+        }
+
+        function applyPaymentMethod(methodKey) {
+            const orig = Number(els.originalPrice.value) || 0;
+            let discountRate = 0;
+            let fixedInstallments = 36;
+            
+            switch (methodKey) {
+                case 'cash_full': // Cash / Transfer Full
+                    discountRate = 0.10; // 10% discount
+                    fixedInstallments = 1;
+                    break;
+                case 'credit_full': // Credit Card Full (1 payment)
+                    discountRate = 0.05; // 5% discount
+                    fixedInstallments = 1;
+                    break;
+                case 'credit_installments': // Credit Card Installments (up to 12)
+                    discountRate = 0;
+                    fixedInstallments = 12;
+                    break;
+                case 'hk_installments_12': // Standing Order up to 12
+                    discountRate = 0;
+                    fixedInstallments = 12;
+                    break;
+                case 'hk_installments_36': // Standing Order up to 36 (with interest)
+                    discountRate = 0;
+                    fixedInstallments = 36;
+                    break;
+                case 'tution_fund_36': // Tuition Fund (up to 36 payments)
+                    discountRate = 0.05; // 5% discount
+                    fixedInstallments = 36;
+                    break;
+                case 'tution_fund_60': // Tuition Fund (up to 60 payments)
+                    discountRate = 0;
+                    fixedInstallments = 60;
+                    break;
+                case 'mercantil_36': // Mercantil (36 payments)
+                    discountRate = 0.15; // 15% discount
+                    fixedInstallments = 36;
+                    break;
+                case 'mercantil_48_grace': // Mercantil Grace (48 payments)
+                    discountRate = 0.15; // 15% discount
+                    fixedInstallments = 48;
+                    break;
+            }
+            
+            // Calculate scholarship/discount
+            const discountAmount = Math.round(orig * discountRate);
+            els.scholarshipAmount.value = discountAmount;
+            els.finalPrice.value = orig - discountAmount;
+            els.idfPrice.value = Math.round(orig * 0.84); // Default B2C idf calculation
+            
+            els.installments.value = fixedInstallments.toString();
+            
+            // If cash/transfer full, automatically check "chkShowBankDetails"
+            const chkShowBankDetails = document.getElementById('chkShowBankDetails');
+            if (chkShowBankDetails) {
+                chkShowBankDetails.checked = (methodKey === 'cash_full');
+            }
+            
+            updateInstallments();
+            updatePreview();
+            saveActiveFormDraft();
+            
+            // Show feedback in UI
+            const indicator = document.getElementById('paymentMethodIndicator');
+            if (indicator) {
+                indicator.style.display = 'block';
+                const labels = {
+                    'cash_full': '💵 מזומן/העברה (10% הנחה)',
+                    'credit_full': '💳 אשראי מלא (5% הנחה)',
+                    'credit_installments': '💳 אשראי פריסה (עד 12 תשלומים)',
+                    'hk_installments_12': '📝 הוראת קבע (עד 12 תשלומים)',
+                    'hk_installments_36': '📝 הוראת קבע רחבה (עד 36 תשלומים)',
+                    'tution_fund_36': '🏛️ קרן שכ"ל עד 36 תשלומים (5% הנחה)',
+                    'tution_fund_60': '🏛️ קרן שכ"ל רחבה (עד 60 תשלומים)',
+                    'mercantil_36': '🏦 מימון מרכנתיל 36 תשלומים (15% הנחה)',
+                    'mercantil_48_grace': '🏦 מרכנתיל גרייס 48 תשלומים (15% הנחה)'
+                };
+                indicator.innerText = `הסדר פעיל: ${labels[methodKey] || ''}`;
+            }
         }
 
         // Populate Dropdown from Imported schedules
@@ -2783,7 +2997,10 @@
             const courseSelectText = els.courseSelect.options[els.courseSelect.selectedIndex].text;
             const courseKey = els.courseSelect.value;
             const preset = coursePresets[courseKey] || {};
-            const courseName = preset.name || courseSelectText;
+            
+            const fund = els.fundingType.value;
+            const isGov = (fund === 'vouchers' || fund === 'deposit');
+            let courseName = (isGov && preset.govName) ? preset.govName : (preset.name || courseSelectText);
             
             const start = els.startDate.value;
             const end = els.endDate.value;
@@ -2890,6 +3107,12 @@
                     message += `3. אישור ההכרה הממשלתי הרשמי לשנת 2026\n\n`;
                     message += `קישור ישיר להורדת אישור ההכרה הממשלתי (PDF):\n`;
                     message += `https://eranyy.github.io/hackeru-quotes/ishur_hakara_2026.pdf\n\n`;
+                }
+                
+                const chkShowBankDetails = document.getElementById('chkShowBankDetails');
+                const showBank = chkShowBankDetails ? chkShowBankDetails.checked : false;
+                if (showBank) {
+                    message += `🏦 פרטי חשבון העברה בנקאית:\n• מוטב: האקריו בע"מ\n• בנק: מזרחי טפחות (20) | סניף: 466 | מ. חשבון: 207746\n\n`;
                 }
                 
                 message += `בברכה,\n${els.advisorName.value}\n${els.advisorTitle.value}\nמכללת האקריו`;
@@ -3316,7 +3539,10 @@
             const courseSelectText = els.courseSelect.options[els.courseSelect.selectedIndex].text;
             const courseKey = els.courseSelect.value;
             const preset = coursePresets[courseKey] || {};
-            const courseName = preset.name || courseSelectText;
+            
+            const fund = els.fundingType.value;
+            const isGov = (fund === 'vouchers' || fund === 'deposit');
+            let courseName = (isGov && preset.govName) ? preset.govName : (preset.name || courseSelectText);
 
             const start = els.startDate.value;
             const end = els.endDate.value;
@@ -3333,7 +3559,6 @@
             const style = els.templateStyle.value;
             const actualFinal = (style === "idf") ? idfVal : finalVal;
 
-            const fund = els.fundingType.value;
             let fundName = "מימון עצמי / הסדר שכר לימוד";
             if (fund === 'vouchers') fundName = "תוכנית השוברים של לשכת התעסוקה / משרד הקליטה";
             else if (fund === 'deposit') fundName = "פיקדון לחיילים משוחררים";
@@ -3401,6 +3626,19 @@
                             <li>סמל מגמה מאושרת: <strong>${preset.tamatSymbol || 'טרם אושר סופית'}</strong></li>
                             ${fund === 'deposit' ? `<li>קוד מוטב (לפיקדון): <strong>${preset.depositCode || 'טרם אושר סופית'}</strong></li>` : ''}
                         </ul>
+                    </div>
+                `;
+            }
+
+            const chkShowBankDetails = document.getElementById('chkShowBankDetails');
+            const showBank = chkShowBankDetails ? chkShowBankDetails.checked : false;
+            let bankHtml = '';
+            if (showBank) {
+                bankHtml = `
+                    <div style="margin-top: 15px; padding: 10px; background-color: #F8FAFC; border-right: 4px solid #3B82F6; border-top: 1px solid #E2E8F0; border-left: 1px solid #E2E8F0; border-bottom: 1px solid #E2E8F0;">
+                        <strong>🏦 פרטי חשבון העברה בנקאית:</strong><br>
+                        מוטב: האקריו בע"מ<br>
+                        בנק: מזרחי טפחות (20) | סניף: 466 | מספר חשבון: 207746
                     </div>
                 `;
             }
@@ -3480,6 +3718,7 @@
 
                         ${installmentsHtml}
                         ${govDetailsHtml}
+                        ${bankHtml}
 
                         <!-- Signature -->
                         <div style="margin-top: 40px; padding-top: 15px; border-top: 1px solid #E2E8F0;">
