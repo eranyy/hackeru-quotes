@@ -3944,11 +3944,11 @@
             let syncKey = localStorage.getItem('hackeru_fb_synckey');
             
             // If not custom configured, automatically seed defaults
-            if (!configStr) {
+            if (!configStr || configStr === 'null' || configStr === 'undefined' || !configStr.trim()) {
                 configStr = JSON.stringify(DEFAULT_FIREBASE_CONFIG);
                 localStorage.setItem('hackeru_fb_config', configStr);
             }
-            if (!syncKey) {
+            if (!syncKey || syncKey === 'null' || syncKey === 'undefined' || !syncKey.trim()) {
                 syncKey = DEFAULT_SYNC_KEY;
                 localStorage.setItem('hackeru_fb_synckey', syncKey);
             }
