@@ -1242,7 +1242,10 @@
                             <label for="fbSyncKey" style="font-size: 10px; color: #94A3B8;">מפתח סנכרון (Sync Key):</label>
                             <input type="text" id="fbSyncKey" placeholder="eran-quotes" style="width: 100%; padding: 4px; font-size: 11px;">
                         </div>
-                        <button class="btn" id="btnSaveFirebase" style="padding: 4px; font-size: 11px; background-color: #10B981; color: white;">שמור והתחבר</button>
+                        <div style="display: flex; gap: 6px; width: 100%;">
+                            <button class="btn" id="btnSaveFirebase" style="padding: 4px; font-size: 11px; background-color: #10B981; color: white; flex: 1;">שמור והתחבר</button>
+                            <button class="btn" type="button" style="padding: 4px; font-size: 11px; background-color: #EF4444; color: white; flex: 1;" onclick="forceResetFirebase()">אפס חיבור</button>
+                        </div>
                     </div>
                     
                     <div id="firebaseConnectedFields" style="display: none; flex-direction: column; gap: 4px; font-size: 11px;">
@@ -3940,19 +3943,6 @@
         let isSyncingFromRemote = false;
 
         function initFirebase() {
-            let configStr = localStorage.getItem('hackeru_fb_config');
-            let syncKey = localStorage.getItem('hackeru_fb_synckey');
-            
-            // If not custom configured, automatically seed defaults
-            if (!configStr || configStr === 'null' || configStr === 'undefined' || !configStr.trim()) {
-                configStr = JSON.stringify(DEFAULT_FIREBASE_CONFIG);
-                localStorage.setItem('hackeru_fb_config', configStr);
-            }
-            if (!syncKey || syncKey === 'null' || syncKey === 'undefined' || !syncKey.trim()) {
-                syncKey = DEFAULT_SYNC_KEY;
-                localStorage.setItem('hackeru_fb_synckey', syncKey);
-            }
-            
             const statusEl = document.getElementById('firebaseStatus');
             const accSyncStatus = document.getElementById('accordionSyncStatus');
             const fbIndicator = document.getElementById('fbAccordionIndicator');
@@ -3960,25 +3950,49 @@
             const setupFields = document.getElementById('firebaseSetupFields');
             const activeKeyEl = document.getElementById('lblActiveSyncKey');
 
-            if (!configStr || !syncKey) {
-                const text = "🔴 לא מחובר";
-                if (statusEl) {
-                    statusEl.innerText = text;
-                    statusEl.style.color = "#EF4444";
-                }
-                if (fbIndicator) {
-                    fbIndicator.innerText = text;
-                    fbIndicator.style.color = "#EF4444";
-                }
-                if (accSyncStatus) {
-                    accSyncStatus.innerText = text;
-                    accSyncStatus.style.backgroundColor = "#64748B";
-                }
-                if (connectedFields) connectedFields.style.display = 'none';
-                return;
-            }
-
             try {
+                // Safe localStorage retrieval
+                let configStr = "";
+                let syncKey = "";
+                try {
+                    configStr = localStorage.getItem('hackeru_fb_config');
+                    syncKey = localStorage.getItem('hackeru_fb_synckey');
+                } catch(storageErr) {
+                    console.warn("localStorage is blocked or unavailable:", storageErr);
+                }
+                
+                // If not custom configured, automatically seed defaults
+                if (!configStr || configStr === 'null' || configStr === 'undefined' || (typeof configStr === 'string' && !configStr.trim())) {
+                    configStr = JSON.stringify(DEFAULT_FIREBASE_CONFIG);
+                    try {
+                        localStorage.setItem('hackeru_fb_config', configStr);
+                    } catch(e) {}
+                }
+                if (!syncKey || syncKey === 'null' || syncKey === 'undefined' || (typeof syncKey === 'string' && !syncKey.trim())) {
+                    syncKey = DEFAULT_SYNC_KEY;
+                    try {
+                        localStorage.setItem('hackeru_fb_synckey', syncKey);
+                    } catch(e) {}
+                }
+
+                if (!configStr || !syncKey || configStr === 'null' || syncKey === 'null') {
+                    const text = "🔴 לא מחובר";
+                    if (statusEl) { statusEl.innerText = text; statusEl.style.color = "#EF4444"; }
+                    if (fbIndicator) { fbIndicator.innerText = text; fbIndicator.style.color = "#EF4444"; }
+                    if (accSyncStatus) { accSyncStatus.innerText = text; accSyncStatus.style.backgroundColor = "#64748B"; }
+                    if (connectedFields) connectedFields.style.display = 'none';
+                    return;
+                }
+
+                // Check if firebase SDK is loaded
+                if (typeof firebase === 'undefined') {
+                    const text = "🔴 SDK חסום";
+                    if (statusEl) { statusEl.innerText = "🔴 שגיאה: Firebase SDK חסום/לא נטען"; statusEl.style.color = "#EF4444"; }
+                    if (fbIndicator) { fbIndicator.innerText = text; fbIndicator.style.color = "#EF4444"; }
+                    if (accSyncStatus) { accSyncStatus.innerText = text; accSyncStatus.style.backgroundColor = "#EF4444"; }
+                    return;
+                }
+
                 const config = JSON.parse(configStr);
                 
                 // Avoid double initialization
@@ -4011,13 +4025,13 @@
                 setupFirebaseListeners(syncKey);
             } catch(e) {
                 console.error("Firebase init failed:", e);
-                const text = "⚠️ שגיאה";
+                const text = "⚠️ שגיאת חיבור";
                 if (statusEl) {
-                    statusEl.innerText = "⚠️ שגיאת חיבור";
+                    statusEl.innerText = "⚠️ שגיאת חיבור: " + e.message;
                     statusEl.style.color = "#F59E0B";
                 }
                 if (fbIndicator) {
-                    fbIndicator.innerText = "⚠️ שגיאת חיבור";
+                    fbIndicator.innerText = text;
                     fbIndicator.style.color = "#F59E0B";
                 }
                 if (accSyncStatus) {
@@ -4120,9 +4134,23 @@
             alert("הסנכרון בוצע בהצלחה! הנתונים עלו לענן.");
         }
 
+        function forceResetFirebase() {
+            if (confirm("האם ברצונך לאפס את הגדרות ה-Firebase להגדרות הדיפולט של המערכת ולהתחבר מחדש?")) {
+                localStorage.removeItem('hackeru_fb_config');
+                localStorage.removeItem('hackeru_fb_synckey');
+                
+                db = null;
+                isFirebaseInitialized = false;
+                
+                initFirebase();
+                alert("ההגדרות אופסו בהצלחה והחיבור הופעל מחדש!");
+            }
+        }
+
         window.disconnectFirebase = disconnectFirebase;
         window.syncNowFirebase = syncNowFirebase;
         window.uploadToFirebase = uploadToFirebase;
+        window.forceResetFirebase = forceResetFirebase;
 
         // Bind Setup UI toggles and button events
         document.getElementById('btnToggleFirebaseSetup').addEventListener('click', () => {
