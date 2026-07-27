@@ -827,6 +827,33 @@
             <button id="themeToggleBtn" onclick="toggleTheme()" style="background: none; border: none; font-size: 20px; cursor: pointer; padding: 4px; border-radius: 4px; display: flex; align-items: center; justify-content: center; transition: background-color 0.2s;" title="החלף מצב צבע">🌙</button>
         </div>
         
+        <!-- Top Priority Controls: Templates & Funding -->
+        <div style="background-color: rgba(37, 211, 102, 0.08); border: 1px solid rgba(37, 211, 102, 0.3); border-radius: 8px; padding: 10px; margin-bottom: 12px; display: flex; flex-direction: column; gap: 8px;">
+            <div class="form-group" style="margin-bottom: 0;">
+                <label for="whatsappTemplateSelect" style="color: #25D366; font-weight: 700; display: flex; align-items: center; gap: 6px; margin-bottom: 4px;">
+                    <span>💬 תבנית הודעה לוואטסאפ (1-4)</span>
+                </label>
+                <select id="whatsappTemplateSelect" style="border-color: #25D366; background-color: white; font-size: 13px; padding: 6px; width: 100%;">
+                    <option value="full_quote" selected>תבנית 1: הצעת מחיר מלאה (הנוסח המלא)</option>
+                    <option value="follow_up">תבנית 2: הודעת תזכורת ומעקב (Follow-up)</option>
+                    <option value="vouchers_deposit">תבנית 3: פרטי שוברים ופיקדון בלבד</option>
+                    <option value="quick_comparison">תבנית 4: הצעה מקוצרת + זמני בוקר וערב</option>
+                </select>
+            </div>
+            
+            <div class="form-group" style="margin-bottom: 0;">
+                <label for="fundingType" style="color: #4F46E5; font-weight: 700; display: flex; align-items: center; gap: 6px; margin-bottom: 4px;">
+                    <span>מסלול מימון / זכאות</span>
+                </label>
+                <select id="fundingType" style="border-color: #4F46E5; background-color: white; font-size: 13px; padding: 6px; width: 100%;">
+                    <option value="standard" selected>מסלול רגיל</option>
+                    <option value="vouchers">תוכנית השוברים (משרד העבודה/הקליטה)</option>
+                    <option value="deposit">פיקדון לחיילים משוחררים</option>
+                </select>
+                <div id="voucherWarning" style="display: none; padding: 10px; margin-top: 8px; text-align: right; line-height: 1.4; border: 1px solid; border-radius: 6px; font-size: 12px;"></div>
+            </div>
+        </div>
+        
         <!-- Collapsible Importer & Manager -->
         <details class="sidebar-accordion" style="margin-bottom: 10px;">
             <summary>
@@ -1003,16 +1030,7 @@
                 <option value="standard">שבלונה רגילה (מחיר אחד)</option>
             </select>
         </div>
-        
-        <div class="form-group">
-            <label for="fundingType">מסלול מימון / זכאות</label>
-            <select id="fundingType">
-                <option value="standard" selected>מסלול רגיל</option>
-                <option value="vouchers">תוכנית השוברים (משרד העבודה/הקליטה)</option>
-                <option value="deposit">פיקדון לחיילים משוחררים</option>
-            </select>
-            <div id="voucherWarning" style="display: none; padding: 10px; margin-top: 8px; text-align: right; line-height: 1.4; border: 1px solid; border-radius: 6px; font-size: 12px;"></div>
-        </div>
+
 
         <!-- Voucher Documents Package -->
         <div class="import-box" id="voucherDocsPanel" style="display: none; border-color: var(--primary-color); background-color: rgba(0, 210, 122, 0.05);">
@@ -1192,17 +1210,6 @@
             </div>
         </details>
 
-        <div class="form-group" style="margin-bottom: 15px; border-top: 1px solid var(--border-color); padding-top: 15px;">
-            <label for="whatsappTemplateSelect" style="color: #25D366; font-weight: 700; display: flex; align-items: center; gap: 6px;">
-                <span>💬 תבנית הודעה לוואטסאפ (וחיבור ללוח)</span>
-            </label>
-            <select id="whatsappTemplateSelect" style="border-color: #25D366; background-color: rgba(37, 211, 102, 0.05);">
-                <option value="full_quote" selected>תבנית 1: הצעת מחיר מלאה (הנוסח המלא)</option>
-                <option value="follow_up">תבנית 2: הודעת תזכורת ומעקב (Follow-up)</option>
-                <option value="vouchers_deposit">תבנית 3: פרטי שוברים ופיקדון בלבד</option>
-                <option value="quick_comparison">תבנית 4: הצעה מקוצרת + זמני בוקר וערב</option>
-            </select>
-        </div>
 
         <div class="action-grid">
             <button class="btn btn-pdf" onclick="printQuote()">
