@@ -1766,11 +1766,6 @@
 
             els.dynamicPriceArea.innerHTML = html;
 
-            // Vouchers / Deposit recognition logic
-            const fund = els.fundingType.value;
-            const courseKey = els.courseSelect.value;
-            const preset = coursePresets[courseKey] || {};
-
             if (fund === 'vouchers' || fund === 'deposit') {
                 els.voucherDocsPanel.style.display = 'block';
                 els.lblGovernmentDetails.style.display = 'block';
