@@ -3141,41 +3141,71 @@
         }
 
         function loadHistoryItem(item) {
-            els.clientName.value = item.clientName || '';
-            els.clientId.value = item.clientId || '';
-            els.clientPhone.value = item.clientPhone || '';
-            els.courseSelect.value = item.courseKey || 'custom';
-            els.startDate.value = item.startDate || '';
-            els.endDate.value = item.endDate || '';
-            els.scheduleDays.value = item.scheduleDays || '';
-            els.academicHours.value = item.academicHours || '';
-            els.originalPrice.value = item.originalPrice || '';
-            els.scholarshipAmount.value = item.scholarshipAmount || '';
-            els.finalPrice.value = item.finalPrice || '';
-            if (item.idfPrice) els.idfPrice.value = item.idfPrice;
-            els.fundingType.value = item.fundingType || 'standard';
-            els.installments.value = item.installments || '36';
-            if (item.templateStyle) els.templateStyle.value = item.templateStyle;
-            
-            bindings.forEach(([inputId, labelId]) => {
-                const el = document.getElementById(inputId);
-                const lbl = document.getElementById(labelId);
-                if (el && lbl) lbl.innerText = el.value;
-            });
-            
-            const presetName = coursePresets[item.courseKey]?.name || els.courseSelect.options[els.courseSelect.selectedIndex].text;
-            els.lblSubjectCourse.innerText = presetName;
-            els.lblIntroCourse.innerText = presetName;
-            
-            els.scheduleDropdown.value = "";
-            els.tamatDatesSubgroup.style.display = "none";
-            activeScheduleItem = null;
-            activeScheduleIndex = -1;
-            
-            populateScheduleDropdown(presetName);
-            updateInstallments();
-            updatePreview();
-            alert(`הצעת המחיר של ${item.clientName} נטענה בהצלחה.`);
+            try {
+                if (!item) return;
+                
+                // Temporarily disable saveActiveFormDraft to avoid saving partial states during load
+                isRestoringDraft = true;
+
+                els.clientName.value = item.clientName || '';
+                els.clientId.value = item.clientId || '';
+                els.clientPhone.value = item.clientPhone || '';
+                
+                // Ensure value exists in options before selecting, otherwise default to custom
+                let hasOption = false;
+                for (let i = 0; i < els.courseSelect.options.length; i++) {
+                    if (els.courseSelect.options[i].value === item.courseKey) {
+                        hasOption = true;
+                        break;
+                    }
+                }
+                els.courseSelect.value = hasOption ? (item.courseKey || 'custom') : 'custom';
+                
+                els.startDate.value = item.startDate || '';
+                els.endDate.value = item.endDate || '';
+                els.scheduleDays.value = item.scheduleDays || '';
+                els.academicHours.value = item.academicHours || '';
+                els.originalPrice.value = item.originalPrice || '';
+                els.scholarshipAmount.value = item.scholarshipAmount || '';
+                els.finalPrice.value = item.finalPrice || '';
+                if (item.idfPrice) els.idfPrice.value = item.idfPrice;
+                els.fundingType.value = item.fundingType || 'standard';
+                els.installments.value = item.installments || '36';
+                if (item.templateStyle) els.templateStyle.value = item.templateStyle;
+                
+                bindings.forEach(([inputId, labelId]) => {
+                    const el = document.getElementById(inputId);
+                    const lbl = document.getElementById(labelId);
+                    if (el && lbl) lbl.innerText = el.value;
+                });
+                
+                const selectedOpt = els.courseSelect.options[els.courseSelect.selectedIndex];
+                const presetName = coursePresets[item.courseKey]?.name || (selectedOpt ? selectedOpt.text : 'מותאם אישית');
+                els.lblSubjectCourse.innerText = presetName;
+                els.lblIntroCourse.innerText = presetName;
+                
+                els.scheduleDropdown.value = "";
+                els.tamatDatesSubgroup.style.display = "none";
+                activeScheduleItem = null;
+                activeScheduleIndex = -1;
+                
+                populateScheduleDropdown(presetName);
+                updateInstallments();
+                updatePreview();
+                updateClientIdDisplay();
+
+                // Re-enable and save draft of loaded state
+                isRestoringDraft = false;
+                saveActiveFormDraft();
+
+                // Smooth scroll to top of form so Eran sees it loaded on mobile
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } catch(err) {
+                console.error("Failed to load history item", err);
+                alert("שגיאה בטעינת הצעת המחיר מההיסטוריה.");
+            } finally {
+                isRestoringDraft = false;
+            }
         }
 
         function deleteHistoryItem(index) {
