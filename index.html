@@ -975,6 +975,23 @@
             </div>
         </div>
 
+        <div class="form-row">
+            <div class="form-group">
+                <label for="syllabusLink">🔗 קישור ישיר לסילבוס</label>
+                <input type="text" id="syllabusLink" placeholder="https://www.hackeru.co.il/courses/..." style="font-size: 11px;">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="morningSchedule">☀️ זמני מסלול בוקר</label>
+                <input type="text" id="morningSchedule" placeholder="ג'+ו', 09:00-16:30">
+            </div>
+            <div class="form-group">
+                <label for="eveningSchedule">🌙 זמני מסלול ערב</label>
+                <input type="text" id="eveningSchedule" placeholder="א'+ד', 17:30-21:15">
+            </div>
+        </div>
+
         <h2>סוג שבלונה ותמחור</h2>
 
         <div class="form-group">
@@ -1183,6 +1200,7 @@
                 <option value="full_quote" selected>תבנית 1: הצעת מחיר מלאה (הנוסח המלא)</option>
                 <option value="follow_up">תבנית 2: הודעת תזכורת ומעקב (Follow-up)</option>
                 <option value="vouchers_deposit">תבנית 3: פרטי שוברים ופיקדון בלבד</option>
+                <option value="quick_comparison">תבנית 4: הצעה מקוצרת + זמני בוקר וערב</option>
             </select>
         </div>
 
@@ -1433,7 +1451,10 @@
                 format: "evening",
                 study: "היברידי",
                 tamatSymbol: "3923",
-                depositCode: "0240043101"
+                depositCode: "0240043101",
+                syllabusUrl: "https://www.hackeru.co.il/courses/cyber-security",
+                morningSchedule: "ב'+ה', 09:00-16:30",
+                eveningSchedule: "א'+ד', 17:30-21:15"
             },
             fullstack: {
                 name: "Full Stack Development",
@@ -1446,7 +1467,10 @@
                 format: "evening",
                 study: "אונליין",
                 tamatSymbol: "3925",
-                depositCode: "0240043102"
+                depositCode: "0240043102",
+                syllabusUrl: "https://www.hackeru.co.il/courses/fullstack",
+                morningSchedule: "ג'+ו', 09:00-16:30",
+                eveningSchedule: "א'+ד', 17:30-21:15"
             },
             marketing: {
                 name: "שיווק דיגיטלי",
@@ -1459,7 +1483,10 @@
                 format: "evening",
                 study: "היברידי",
                 tamatSymbol: "8223",
-                depositCode: "0240043108"
+                depositCode: "0240043108",
+                syllabusUrl: "https://www.hackeru.co.il/courses/digital-marketing",
+                morningSchedule: "א'+ד', 09:00-16:30",
+                eveningSchedule: "ב'+ה', 17:30-21:15"
             },
             uiux: {
                 name: "עיצוב גרפי וחווית משתמש UI/UX",
@@ -1472,7 +1499,10 @@
                 format: "evening",
                 study: "היברידי",
                 tamatSymbol: "573",
-                depositCode: "0240043100"
+                depositCode: "0240043100",
+                syllabusUrl: "https://www.hackeru.co.il/courses/uiux-design",
+                morningSchedule: "א'+ד', 09:00-16:30",
+                eveningSchedule: "ב'+ה', 17:30-21:15"
             },
             qa: {
                 name: "בדיקות תוכנה ואוטומציה (QA)",
@@ -1485,7 +1515,10 @@
                 format: "evening",
                 study: "היברידי",
                 tamatSymbol: "3528",
-                depositCode: "0240043105"
+                depositCode: "0240043105",
+                syllabusUrl: "https://www.hackeru.co.il/courses/qa",
+                morningSchedule: "ב'+ה', 09:00-16:30",
+                eveningSchedule: "א'+ד', 17:30-21:15"
             },
             networks: {
                 name: "ניהול רשתות ואבטחת מידע",
@@ -1498,7 +1531,10 @@
                 format: "evening",
                 study: "היברידי",
                 tamatSymbol: "3515",
-                depositCode: "0240043104"
+                depositCode: "0240043104",
+                syllabusUrl: "https://www.hackeru.co.il/courses/network-administration",
+                morningSchedule: "ב'+ה', 09:00-16:30",
+                eveningSchedule: "א'+ד', 17:30-21:15"
             },
             aispecialist: {
                 name: "מיישם AI בארגונים",
@@ -1511,7 +1547,10 @@
                 format: "evening",
                 study: "אונליין",
                 tamatSymbol: "",
-                depositCode: ""
+                depositCode: "",
+                syllabusUrl: "https://www.hackeru.co.il/courses/ai-specialist",
+                morningSchedule: "ג'+ו', 09:00-16:30",
+                eveningSchedule: "א'+ד', 17:30-21:15"
             },
             devops: {
                 name: "Devops Engineer",
@@ -1524,7 +1563,10 @@
                 format: "evening",
                 study: "היברידי",
                 tamatSymbol: "3515",
-                depositCode: "0240043104"
+                depositCode: "0240043104",
+                syllabusUrl: "https://www.hackeru.co.il/courses/devops",
+                morningSchedule: "ב'+ה', 09:00-16:30",
+                eveningSchedule: "א'+ד', 17:30-21:15"
             },
             aimanager: {
                 name: "AI Management EXPERT",
@@ -1537,7 +1579,10 @@
                 format: "evening",
                 study: "אונליין",
                 tamatSymbol: "",
-                depositCode: ""
+                depositCode: "",
+                syllabusUrl: "https://www.hackeru.co.il/courses/ai-management",
+                morningSchedule: "א'+ד', 09:00-16:30",
+                eveningSchedule: "ב'+ה', 17:30-21:15"
             },
             datamaster: {
                 name: "Data Master - Data Analyst + BI",
@@ -1550,7 +1595,10 @@
                 format: "evening",
                 study: "היברידי",
                 tamatSymbol: "3924",
-                depositCode: "0240043106"
+                depositCode: "0240043106",
+                syllabusUrl: "https://www.hackeru.co.il/courses/data-analyst",
+                morningSchedule: "א'+ד', 09:00-16:30",
+                eveningSchedule: "ב'+ה', 17:30-21:15"
             },
             cyberdefense: {
                 name: "מגן סייבר (Cyber Defense)",
@@ -1563,7 +1611,10 @@
                 format: "evening",
                 study: "היברידי",
                 tamatSymbol: "3927",
-                depositCode: "0240043107"
+                depositCode: "0240043107",
+                syllabusUrl: "https://www.hackeru.co.il/courses/cyber-security",
+                morningSchedule: "ב'+ה', 09:00-16:30",
+                eveningSchedule: "א'+ד', 17:30-21:15"
             },
             webapps: {
                 name: "פיתוח אתרי אינטרנט ואפליקציות",
@@ -1576,7 +1627,10 @@
                 format: "evening",
                 study: "היברידי",
                 tamatSymbol: "3928",
-                depositCode: "0240043103"
+                depositCode: "0240043103",
+                syllabusUrl: "https://www.hackeru.co.il/courses/fullstack",
+                morningSchedule: "ג'+ו', 09:00-16:30",
+                eveningSchedule: "א'+ד', 17:30-21:15"
             }
         };
 
@@ -1617,6 +1671,9 @@
             dateButtonsContainer: document.getElementById('dateButtonsContainer'),
             importCount: document.getElementById('importCount'),
             importSuccessMsg: document.getElementById('importSuccessMsg'),
+            syllabusLink: document.getElementById('syllabusLink'),
+            morningSchedule: document.getElementById('morningSchedule'),
+            eveningSchedule: document.getElementById('eveningSchedule'),
             
             // Voucher controls
             fundingType: document.getElementById('fundingType'),
@@ -1959,6 +2016,15 @@
             saveCustomPreset();
             saveActiveFormDraft();
         });
+        els.syllabusLink.addEventListener('input', () => {
+            saveActiveFormDraft();
+        });
+        els.morningSchedule.addEventListener('input', () => {
+            saveActiveFormDraft();
+        });
+        els.eveningSchedule.addEventListener('input', () => {
+            saveActiveFormDraft();
+        });
         els.installments.addEventListener('change', () => {
             updateInstallments();
             saveActiveFormDraft();
@@ -2103,6 +2169,10 @@
                 els.syllabusCode.value = preset.code;
                 els.tamatCode.value = preset.tamat;
                 els.originalPrice.value = preset.originalPrice;
+                
+                if (preset.syllabusUrl) els.syllabusLink.value = preset.syllabusUrl;
+                if (preset.morningSchedule) els.morningSchedule.value = preset.morningSchedule;
+                if (preset.eveningSchedule) els.eveningSchedule.value = preset.eveningSchedule;
                 
                 // Select course format
                 els.courseFormat.value = preset.format;
@@ -2265,7 +2335,10 @@
                 advisorTitle: els.advisorTitle.value,
                 whatsappTemplateSelect: els.whatsappTemplateSelect ? els.whatsappTemplateSelect.value : 'full_quote',
                 chkIncludeUrgency: els.chkIncludeUrgency ? els.chkIncludeUrgency.checked : true,
-                chkShowUrgencyOnQuote: els.chkShowUrgencyOnQuote ? els.chkShowUrgencyOnQuote.checked : false
+                chkShowUrgencyOnQuote: els.chkShowUrgencyOnQuote ? els.chkShowUrgencyOnQuote.checked : false,
+                syllabusLink: els.syllabusLink.value,
+                morningSchedule: els.morningSchedule.value,
+                eveningSchedule: els.eveningSchedule.value
             };
             localStorage.setItem('hackeru_current_draft', JSON.stringify(draft));
         }
@@ -2305,6 +2378,9 @@
                 if (draft.whatsappTemplateSelect !== undefined && els.whatsappTemplateSelect) els.whatsappTemplateSelect.value = draft.whatsappTemplateSelect;
                 if (draft.chkIncludeUrgency !== undefined && els.chkIncludeUrgency) els.chkIncludeUrgency.checked = draft.chkIncludeUrgency;
                 if (draft.chkShowUrgencyOnQuote !== undefined && els.chkShowUrgencyOnQuote) els.chkShowUrgencyOnQuote.checked = draft.chkShowUrgencyOnQuote;
+                if (draft.syllabusLink !== undefined) els.syllabusLink.value = draft.syllabusLink;
+                if (draft.morningSchedule !== undefined) els.morningSchedule.value = draft.morningSchedule;
+                if (draft.eveningSchedule !== undefined) els.eveningSchedule.value = draft.eveningSchedule;
                 
                 const chkShowClientId = document.getElementById('chkShowClientId');
                 if (chkShowClientId && draft.chkShowClientId !== undefined) {
@@ -3055,7 +3131,57 @@
                 message += `טופס ה'2 מלא וחתום מצורף להצעת המחיר הכתובה ששלחתי לך.\n`;
                 message += `אני זמין כאן לכל שאלה ועזרה בהגשת הטפסים!\n\n`;
                 message += `בברכה,\n${els.advisorName.value}\n${els.advisorTitle.value}\nמכללת האקריו`;
-            } 
+            }
+            else if (templateType === 'quick_comparison') {
+                const syllabusUrl = els.syllabusLink.value.trim();
+                const morningTimes = els.morningSchedule.value.trim();
+                const eveningTimes = els.eveningSchedule.value.trim();
+                
+                message = `שלום ${clientName},\n`;
+                message += `מצורפים הפרטים המקוצרים עבור מסלול ${courseName}:\n\n`;
+                
+                if (syllabusUrl) {
+                    message += `📄 סילבוס ותוכנית הלימודים המלאה:\n${syllabusUrl}\n\n`;
+                }
+                
+                message += `⏰ זמני לימוד לבחירה:\n`;
+                if (morningTimes) message += `• ☀️ מסלול בוקר: ${morningTimes}\n`;
+                if (eveningTimes) message += `• 🌙 מסלול ערב: ${eveningTimes}\n`;
+                message += `\n`;
+                
+                message += `💰 תמחור והסדר שכר לימוד:\n`;
+                if (style === "scholarship" && showSchol) {
+                    message += `• מחיר מלא: ₪${orig.toLocaleString()}\n`;
+                    message += `• גובה מלגה: ₪${schol.toLocaleString()}\n`;
+                    message += `• עלות סופית: ₪${actualFinal.toLocaleString()}\n`;
+                } else if (style === "discount" && showSchol) {
+                    message += `• מחיר מקורי: ₪${orig.toLocaleString()}\n`;
+                    message += `• עלות סופית לאחר הנחה: ₪${actualFinal.toLocaleString()}\n`;
+                } else {
+                    message += `• עלות סופית: ₪${actualFinal.toLocaleString()}\n`;
+                }
+                
+                if (validityText) {
+                    message += `(תוקף ההצעה: ${validityText})\n`;
+                }
+                message += `\n`;
+                
+                const showInstallments = els.showInstallmentsOnQuote.checked;
+                const pmts = parseInt(els.installments.value, 10);
+                if (showInstallments && pmts > 1) {
+                    const monthly = Math.round(actualFinal / pmts);
+                    message += `💳 אפשרות פריסת תשלומים מוצעת:\n`;
+                    message += `• ${pmts} תשלומים שווים של ₪${monthly.toLocaleString()} בחודש.\n\n`;
+                }
+                
+                const chkShowBankDetails = document.getElementById('chkShowBankDetails');
+                const showBank = chkShowBankDetails ? chkShowBankDetails.checked : false;
+                if (showBank) {
+                    message += `🏦 פרטי חשבון העברה בנקאית:\n• מוטב: האקריו בע"מ\n• בנק: מזרחי טפחות (20) | סניף: 466 | מ. חשבון: 207746\n\n`;
+                }
+
+                message += `בברכה,\n${els.advisorName.value}\n${els.advisorTitle.value}\nמכללת האקריו`;
+            }
             else {
                 // Default full quote template
                 const formattedSchedule = formatScheduleHtmlAndText(schedule);
