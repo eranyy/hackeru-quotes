@@ -1130,13 +1130,7 @@
                         </div>
                     </div>
                 </div>
-                <input type="number" id="scholarshipAmount" value="4140">
-                <div style="display: flex; gap: 4px; margin-top: 4px;">
-                    <button type="button" class="clear-btn" style="font-size: 9px; padding: 2px 4px; border-radius: 4px; cursor: pointer;" onclick="applyQuickScholarship(0.16)">16%</button>
-                    <button type="button" class="clear-btn" style="font-size: 9px; padding: 2px 4px; border-radius: 4px; cursor: pointer;" onclick="applyQuickScholarship(0.10)">10%</button>
-                    <button type="button" class="clear-btn" style="font-size: 9px; padding: 2px 4px; border-radius: 4px; cursor: pointer;" onclick="applyQuickScholarship(1500)">1.5K₪</button>
-                    <button type="button" class="clear-btn" style="font-size: 9px; padding: 2px 4px; border-radius: 4px; cursor: pointer;" onclick="applyQuickScholarship(2500)">2.5K₪</button>
-                </div>
+                <input type="number" id="scholarshipAmount" value="0" placeholder="0">
             </div>
         </div>
 
@@ -2282,9 +2276,10 @@
                 els.courseFormat.value = preset.format;
 
                 // Sync pricing
-                els.scholarshipAmount.value = Math.round(preset.originalPrice * 0.16); 
-                els.finalPrice.value = preset.originalPrice - els.scholarshipAmount.value;
-                els.idfPrice.value = Math.round(preset.originalPrice * 0.84); 
+                const defaultSchol = (preset.scholarshipAmount !== undefined) ? preset.scholarshipAmount : 0;
+                els.scholarshipAmount.value = defaultSchol;
+                els.finalPrice.value = preset.finalPrice || (preset.originalPrice - defaultSchol);
+                els.idfPrice.value = preset.idfPrice || Math.round(preset.originalPrice * 0.84); 
 
                 // Trigger inputs event to update preview
                 bindings.forEach(([inputId, labelId]) => {
