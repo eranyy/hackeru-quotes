@@ -1147,27 +1147,35 @@
             </div>
         </div>
 
-        <div class="form-row">
-            <div class="form-group">
-                <label for="installments">פריסת תשלומים (להודעה ופרינט)</label>
-                <select id="installments">
-                    <option value="1">תשלום אחד</option>
-                    <option value="12">12 תשלומים</option>
-                    <option value="24">24 תשלומים</option>
-                    <option value="36" selected>36 תשלומים</option>
-                    <option value="48">48 תשלומים</option>
-                    <option value="60">60 תשלומים</option>
-                </select>
+        <!-- Collapsible Installments Simulator -->
+        <details class="sidebar-accordion" id="installmentsAccordion" style="margin-top: 10px; margin-bottom: 10px;">
+            <summary>
+                <span>💳 סימולטור פריסת תשלומים (חודשי)</span>
+            </summary>
+            <div class="accordion-content">
+                <div class="form-row" id="installmentsFormRow">
+                    <div class="form-group">
+                        <label for="installments">פריסת תשלומים (להודעה ופרינט)</label>
+                        <select id="installments">
+                            <option value="1">תשלום אחד</option>
+                            <option value="12">12 תשלומים</option>
+                            <option value="24">24 תשלומים</option>
+                            <option value="36" selected>36 תשלומים</option>
+                            <option value="48">48 תשלומים</option>
+                            <option value="60">60 תשלומים</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>תשלום חודשי משוער</label>
+                        <input type="text" id="monthlyPaymentDisplay" readonly style="background-color: #F8FAFC; color: #1E293B; font-weight: bold; text-align: center;" value="₪604 לחודש">
+                    </div>
+                </div>
+                <div class="form-group" id="showInstallmentsCheckboxGroup" style="margin-top: 5px; display: flex; align-items: center; gap: 8px;">
+                    <input type="checkbox" id="showInstallmentsOnQuote" checked style="width: auto; cursor: pointer;">
+                    <label for="showInstallmentsOnQuote" style="margin-bottom: 0; font-size: 12px; cursor: pointer; color: #475569;">הצג פריסת תשלומים בהצעת המחיר המודפסת</label>
+                </div>
             </div>
-            <div class="form-group">
-                <label>תשלום חודשי משוער</label>
-                <input type="text" id="monthlyPaymentDisplay" readonly style="background-color: #F8FAFC; color: #1E293B; font-weight: bold; text-align: center;" value="₪604 לחודש">
-            </div>
-        </div>
-        <div class="form-group" style="margin-top: 5px; display: flex; align-items: center; gap: 8px;">
-            <input type="checkbox" id="showInstallmentsOnQuote" checked style="width: auto; cursor: pointer;">
-            <label for="showInstallmentsOnQuote" style="margin-bottom: 0; font-size: 12px; cursor: pointer; color: #475569;">הצג פריסת תשלומים בהצעת המחיר המודפסת</label>
-        </div>
+        </details>
 
         <div class="form-row">
             <div class="form-group">
@@ -1797,23 +1805,20 @@
                 govTamatCodesRow.style.display = isGov ? 'flex' : 'none';
             }
 
-            // 3. Handle installments simulator and checkboxes visibility for vouchers (not relevant for govt paid)
-            const installmentsFormRow = document.getElementById('installmentsFormRow');
-            const showInstallmentsCheckboxGroup = document.getElementById('showInstallmentsCheckboxGroup');
+            // 3. Handle installments simulator visibility for vouchers (not relevant for govt paid)
+            const installmentsAccordion = document.getElementById('installmentsAccordion');
             const paymentPolicyAcc = document.getElementById('paymentPolicyAccordion');
             
             if (isGov) {
                 if (paymentPolicyAcc) paymentPolicyAcc.open = false;
-                if (installmentsFormRow) installmentsFormRow.style.display = 'none';
-                if (showInstallmentsCheckboxGroup) showInstallmentsCheckboxGroup.style.display = 'none';
+                if (installmentsAccordion) installmentsAccordion.style.display = 'none';
                 
                 // Force standard template style if user selected scholarship/discount in dark mode by accident
                 if (els.templateStyle.value === 'scholarship' || els.templateStyle.value === 'discount') {
                     els.templateStyle.value = 'standard';
                 }
             } else {
-                if (installmentsFormRow) installmentsFormRow.style.display = 'flex';
-                if (showInstallmentsCheckboxGroup) showInstallmentsCheckboxGroup.style.display = 'flex';
+                if (installmentsAccordion) installmentsAccordion.style.display = 'block';
             }
         }
 
