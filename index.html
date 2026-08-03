@@ -841,6 +841,22 @@
                     <option value="quick_comparison">תבנית 4: הצעה מקוצרת + זמני בוקר וערב</option>
                 </select>
             </div>
+
+            <!-- Urgency Countdown Display & Toggle -->
+            <div class="import-box" style="padding: 10px; border-color: #F59E0B; background-color: rgba(245, 158, 11, 0.05); display: flex; flex-direction: column; gap: 6px; border-style: dashed; border-radius: 6px; margin: 4px 0;">
+                <div style="display: flex; justify-content: space-between; align-items: center; font-size: 12px;">
+                    <span style="color: #F59E0B; font-weight: bold;">⏳ ימים לפתיחת הקורס:</span>
+                    <span id="countdownDisplay" style="font-weight: bold; background-color: #F59E0B; color: #0F172A; padding: 2px 6px; border-radius: 4px; font-size: 11px;">מחשב...</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 6px; font-size: 11px;">
+                    <input type="checkbox" id="chkIncludeUrgency" checked style="width: auto; cursor: pointer;">
+                    <label for="chkIncludeUrgency" style="margin-bottom: 0; cursor: pointer; color: #94A3B8;">שלב משפט דחיפות בהודעת הוואטסאפ</label>
+                </div>
+                <div style="display: flex; align-items: center; gap: 6px; font-size: 11px;">
+                    <input type="checkbox" id="chkShowUrgencyOnQuote" style="width: auto; cursor: pointer;">
+                    <label for="chkShowUrgencyOnQuote" style="margin-bottom: 0; cursor: pointer; color: #94A3B8;">הצג משפט דחיפות בהצעה המודפסת</label>
+                </div>
+            </div>
             
             <div class="form-group" style="margin-bottom: 0;">
                 <label for="fundingType" style="color: #4F46E5; font-weight: 700; display: flex; align-items: center; gap: 6px; margin-bottom: 4px;">
@@ -988,21 +1004,7 @@
                     </div>
                 </div>
 
-                <!-- Urgency Countdown Display & Toggle -->
-                <div class="import-box" style="margin-top: 4px; padding: 10px; border-color: #F59E0B; background-color: rgba(245, 158, 11, 0.05); display: flex; flex-direction: column; gap: 6px; border-style: dashed; margin-bottom: 8px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; font-size: 12px;">
-                        <span style="color: #F59E0B; font-weight: bold;">⏳ ימים לפתיחת הקורס:</span>
-                        <span id="countdownDisplay" style="font-weight: bold; background-color: #F59E0B; color: #0F172A; padding: 2px 6px; border-radius: 4px; font-size: 11px;">מחשב...</span>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 6px; font-size: 11px;">
-                        <input type="checkbox" id="chkIncludeUrgency" checked style="width: auto; cursor: pointer;">
-                        <label for="chkIncludeUrgency" style="margin-bottom: 0; cursor: pointer; color: #94A3B8;">שלב משפט דחיפות בהודעת הוואטסאפ</label>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 6px; font-size: 11px;">
-                        <input type="checkbox" id="chkShowUrgencyOnQuote" style="width: auto; cursor: pointer;">
-                        <label for="chkShowUrgencyOnQuote" style="margin-bottom: 0; cursor: pointer; color: #94A3B8;">הצג משפט דחיפות בהצעה המודפסת</label>
-                    </div>
-                </div>
+
 
                 <div class="form-row">
                     <div class="form-group">
