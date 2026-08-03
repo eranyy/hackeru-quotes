@@ -872,172 +872,180 @@
             </div>
         </details>
 
-        <div class="form-group">
-            <label for="courseSelect">בחר קורס (תבנית)</label>
-            <select id="courseSelect">
-                <option value="cyber" selected>סייבר ואבטחת מידע</option>
-                <option value="fullstack">פיתוח תוכנה (Full Stack)</option>
-                <option value="marketing">שיווק דיגיטלי (מאסטר)</option>
-                <option value="uiux">עיצוב גרפי וחווית משתמש UI/UX</option>
-                <option value="qa">בדיקות תוכנה ואוטומציה (QA)</option>
-                <option value="networks">ניהול רשתות ואבטחת מידע</option>
-                <option value="aispecialist">מיישם AI בארגונים</option>
-                <option value="devops">Devops Engineer</option>
-                <option value="aimanager">AI Management EXPERT</option>
-                <option value="datamaster">Data Master - Data Analyst + BI</option>
-                <option value="cyberdefense">מגן סייבר (Cyber Defense)</option>
-                <option value="webapps">פיתוח אתרי אינטרנט ואפליקציות</option>
-                <option value="custom">מותאם אישית...</option>
-            </select>
-        </div>
 
-        <!-- Dynamic Dropdown of Imported Dates -->
-        <div class="form-group" id="importedDatesGroup">
-            <label style="color: var(--primary-color); display: flex; justify-content: space-between; align-items: center;">
-                <span>בחר מחזור לימודים (מתוך פריזה)</span>
-                <div style="display: flex; gap: 6px;">
-                    <button class="clear-btn" id="btnDeleteActive" style="display: none; background: #FEF2F2; color: #EF4444; border: 1px solid #FCA5A5; font-size: 11px; padding: 2px 6px; border-radius: 4px; cursor: pointer;" onclick="deleteActiveSchedule()">מחק מועד זה</button>
-                    <button class="clear-btn" style="font-size: 11px; padding: 2px 6px;" onclick="clearSavedSchedules()">נקה מועדים</button>
-                </div>
-            </label>
-            <select id="scheduleDropdown" style="border-color: var(--primary-color);">
-                <option value="">-- טרם יובאו תאריכים עבור קורס זה --</option>
-            </select>
-        </div>
 
-        <!-- Dynamic sub-selection of dates A, B, C -->
-        <div class="form-group" id="tamatDatesSubgroup" style="display: none;">
-            <label>בחר תאריך פתיחה זמין (A / B / C)</label>
-            <div class="date-buttons-container" id="dateButtonsContainer">
-                <!-- Buttons populated dynamically -->
-            </div>
-        </div>
-
-        <div class="form-row">
-            <div class="form-group">
-                <label for="clientName">שם הלקוח (לכבוד) <span style="color: #EF4444; font-weight: bold;">*</span></label>
-                <input type="text" id="clientName" value="">
-            </div>
-            <div class="form-group">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <label for="clientId">תעודת זהות <span class="gov-req-star" style="color: #EF4444; font-weight: bold; display: none;">*</span></label>
-                    <div class="toggle-badge-container">
-                        <input type="checkbox" id="chkShowClientId" checked>
-                        <label for="chkShowClientId">הצג ת.ז</label>
+        <!-- Group 1: Recipient Details -->
+        <details class="sidebar-accordion" id="clientDetailsAccordion" open style="margin-bottom: 10px;">
+            <summary>
+                <span>👤 פרטי הלקוח והחברה</span>
+            </summary>
+            <div class="accordion-content">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="clientName">שם הלקוח (לכבוד) <span style="color: #EF4444; font-weight: bold;">*</span></label>
+                        <input type="text" id="clientName" value="">
+                    </div>
+                    <div class="form-group" id="clientIdGroup">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <label for="clientId">תעודת זהות <span class="gov-req-star" style="color: #EF4444; font-weight: bold; display: none;">*</span></label>
+                            <div class="toggle-badge-container">
+                                <input type="checkbox" id="chkShowClientId" checked>
+                                <label for="chkShowClientId">הצג ת.ז</label>
+                            </div>
+                        </div>
+                        <input type="text" id="clientId" value="">
                     </div>
                 </div>
-                <input type="text" id="clientId" value="">
-            </div>
-            <div class="form-group">
-                <label for="clientPhone">מספר טלפון</label>
-                <input type="text" id="clientPhone" value="" placeholder="למשל: 0501234567">
-            </div>
-            <div class="form-group">
-                <label for="companyName">שם החברה / ארגון (עבור לקוח עסקי)</label>
-                <input type="text" id="companyName" value="" placeholder="למשל: משרד הבריאות">
-            </div>
-        </div>
 
-        <div class="form-row">
-            <div class="form-group">
-                <label for="courseFormat">פורמט לימודים</label>
-                <select id="courseFormat">
-                    <option value="evening" selected>קורס ערב</option>
-                    <option value="morning">קורס בוקר</option>
-                    <option value="online">אונליין</option>
-                    <option value="hybrid">היברידי</option>
-                </select>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="clientPhone">מספר טלפון</label>
+                        <input type="text" id="clientPhone" value="" placeholder="למשל: 0501234567">
+                    </div>
+                    <div class="form-group" id="companyNameGroup">
+                        <label for="companyName">שם החברה / ארגון (עבור לקוח עסקי)</label>
+                        <input type="text" id="companyName" value="" placeholder="למשל: משרד הבריאות">
+                    </div>
+                </div>
             </div>
-            <div class="form-group">
-                <label for="studyFormat">מתכונת לימודים (מלל)</label>
-                <select id="studyFormat">
-                    <option value="היברידי" selected>היברידי</option>
-                    <option value="אונליין">אונליין</option>
-                </select>
-            </div>
-        </div>
+        </details>
 
-        <div class="form-row">
-            <div class="form-group">
-                <label for="startDate">מועד פתיחה <span class="gov-req-star" style="color: #EF4444; font-weight: bold; display: none;">*</span></label>
-                <input type="text" id="startDate" value="18/10/2026">
-            </div>
-            <div class="form-group">
-                <label for="endDate">מועד סיום משוער <span class="gov-req-star" style="color: #EF4444; font-weight: bold; display: none;">*</span></label>
-                <input type="text" id="endDate" value="22/08/2027">
-            </div>
-        </div>
+        <!-- Group 2: Course & Schedule Details -->
+        <details class="sidebar-accordion" id="courseDetailsAccordion" open style="margin-bottom: 10px;">
+            <summary>
+                <span>📅 מסלול לימודים ומועדים</span>
+            </summary>
+            <div class="accordion-content">
+                <div class="form-group">
+                    <label for="courseSelect">בחר קורס (תבנית)</label>
+                    <select id="courseSelect">
+                        <option value="cyber" selected>סייבר ואבטחת מידע</option>
+                        <option value="fullstack">פיתוח תוכנה (Full Stack)</option>
+                        <option value="marketing">שיווק דיגיטלי (מאסטר)</option>
+                        <option value="uiux">עיצוב גרפי וחווית משתמש UI/UX</option>
+                        <option value="qa">בדיקות תוכנה ואוטומציה (QA)</option>
+                        <option value="networks">ניהול רשתות ואבטחת מידע</option>
+                        <option value="aispecialist">מיישם AI בארגונים</option>
+                        <option value="devops">Devops Engineer</option>
+                        <option value="aimanager">AI Management EXPERT</option>
+                        <option value="datamaster">Data Master - Data Analyst + BI</option>
+                        <option value="cyberdefense">מגן סייבר (Cyber Defense)</option>
+                        <option value="webapps">פיתוח אתרי אינטרנט ואפליקציות</option>
+                        <option value="custom">מותאם אישית...</option>
+                    </select>
+                </div>
 
-        <!-- Urgency Countdown Display & Toggle -->
-        <div class="import-box" style="margin-top: -6px; padding: 10px; border-color: #F59E0B; background-color: rgba(245, 158, 11, 0.05); display: flex; flex-direction: column; gap: 6px; border-style: dashed;">
-            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 12px;">
-                <span style="color: #F59E0B; font-weight: bold;">⏳ ימים לפתיחת הקורס:</span>
-                <span id="countdownDisplay" style="font-weight: bold; background-color: #F59E0B; color: #0F172A; padding: 2px 6px; border-radius: 4px; font-size: 11px;">מחשב...</span>
-            </div>
-            <div style="display: flex; align-items: center; gap: 6px; font-size: 11px;">
-                <input type="checkbox" id="chkIncludeUrgency" checked style="width: auto; cursor: pointer;">
-                <label for="chkIncludeUrgency" style="margin-bottom: 0; cursor: pointer; color: #94A3B8;">שלב משפט דחיפות בהודעת הוואטסאפ</label>
-            </div>
-            <div style="display: flex; align-items: center; gap: 6px; font-size: 11px;">
-                <input type="checkbox" id="chkShowUrgencyOnQuote" style="width: auto; cursor: pointer;">
-                <label for="chkShowUrgencyOnQuote" style="margin-bottom: 0; cursor: pointer; color: #94A3B8;">הצג משפט דחיפות בהצעה המודפסת</label>
-            </div>
-        </div>
+                <!-- Dynamic Dropdown of Imported Dates -->
+                <div class="form-group" id="importedDatesGroup">
+                    <label style="color: var(--primary-color); display: flex; justify-content: space-between; align-items: center;">
+                        <span>בחר מחזור לימודים (מתוך פריזה)</span>
+                        <div style="display: flex; gap: 6px;">
+                            <button class="clear-btn" id="btnDeleteActive" style="display: none; background: #FEF2F2; color: #EF4444; border: 1px solid #FCA5A5; font-size: 11px; padding: 2px 6px; border-radius: 4px; cursor: pointer;" onclick="deleteActiveSchedule()">מחק מועד זה</button>
+                            <button class="clear-btn" style="font-size: 11px; padding: 2px 6px;" onclick="clearSavedSchedules()">נקה מועדים</button>
+                        </div>
+                    </label>
+                    <select id="scheduleDropdown" style="border-color: var(--primary-color);">
+                        <option value="">-- טרם יובאו תאריכים עבור קורס זה --</option>
+                    </select>
+                </div>
 
-        <div class="form-row">
-            <div class="form-group">
-                <label for="scheduleDays">ימים ושעות</label>
-                <input type="text" id="scheduleDays" value="א'+ד', 17:30-21:15">
-            </div>
-            <div class="form-group">
-                <label for="academicHours">שעות לימוד אקדמיות</label>
-                <input type="text" id="academicHours" value="400">
-            </div>
-        </div>
+                <!-- Dynamic sub-selection of dates A, B, C -->
+                <div class="form-group" id="tamatDatesSubgroup" style="display: none;">
+                    <label>בחר תאריך פתיחה זמין (A / B / C)</label>
+                    <div class="date-buttons-container" id="dateButtonsContainer">
+                        <!-- Buttons populated dynamically -->
+                    </div>
+                </div>
 
-        <div class="form-row">
-            <div class="form-group">
-                <label for="syllabusCode">סמל מגמה / קורס</label>
-                <input type="text" id="syllabusCode" value="02447550">
-            </div>
-            <div class="form-group">
-                <label for="tamatCode">ספק משרד הביטחון</label>
-                <input type="text" id="tamatCode" value="0011010148">
-            </div>
-        </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="courseFormat">פורמט לימודים</label>
+                        <select id="courseFormat">
+                            <option value="evening" selected>קורס ערב</option>
+                            <option value="morning">קורס בוקר</option>
+                            <option value="online">אונליין</option>
+                            <option value="hybrid">היברידי</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="studyFormat">מתכונת לימודים (מלל)</label>
+                        <select id="studyFormat">
+                            <option value="היברידי" selected>היברידי</option>
+                            <option value="אונליין">אונליין</option>
+                        </select>
+                    </div>
+                </div>
 
-        <div class="form-row">
-            <div class="form-group">
-                <label for="syllabusLink">🔗 קישור ישיר לסילבוס</label>
-                <input type="text" id="syllabusLink" placeholder="https://www.hackeru.co.il/courses/..." style="font-size: 11px;">
-            </div>
-        </div>
-        <div class="form-row">
-            <div class="form-group">
-                <label for="morningSchedule">☀️ זמני מסלול בוקר</label>
-                <input type="text" id="morningSchedule" placeholder="ג'+ו', 09:00-16:30">
-            </div>
-            <div class="form-group">
-                <label for="eveningSchedule">🌙 זמני מסלול ערב</label>
-                <input type="text" id="eveningSchedule" placeholder="א'+ד', 17:30-21:15">
-            </div>
-        </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="startDate">מועד פתיחה <span class="gov-req-star" style="color: #EF4444; font-weight: bold; display: none;">*</span></label>
+                        <input type="text" id="startDate" value="18/10/2026">
+                    </div>
+                    <div class="form-group">
+                        <label for="endDate">מועד סיום משוער <span class="gov-req-star" style="color: #EF4444; font-weight: bold; display: none;">*</span></label>
+                        <input type="text" id="endDate" value="22/08/2027">
+                    </div>
+                </div>
 
-        <h2>סוג שבלונה ותמחור</h2>
+                <!-- Urgency Countdown Display & Toggle -->
+                <div class="import-box" style="margin-top: 4px; padding: 10px; border-color: #F59E0B; background-color: rgba(245, 158, 11, 0.05); display: flex; flex-direction: column; gap: 6px; border-style: dashed; margin-bottom: 8px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; font-size: 12px;">
+                        <span style="color: #F59E0B; font-weight: bold;">⏳ ימים לפתיחת הקורס:</span>
+                        <span id="countdownDisplay" style="font-weight: bold; background-color: #F59E0B; color: #0F172A; padding: 2px 6px; border-radius: 4px; font-size: 11px;">מחשב...</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 6px; font-size: 11px;">
+                        <input type="checkbox" id="chkIncludeUrgency" checked style="width: auto; cursor: pointer;">
+                        <label for="chkIncludeUrgency" style="margin-bottom: 0; cursor: pointer; color: #94A3B8;">שלב משפט דחיפות בהודעת הוואטסאפ</label>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 6px; font-size: 11px;">
+                        <input type="checkbox" id="chkShowUrgencyOnQuote" style="width: auto; cursor: pointer;">
+                        <label for="chkShowUrgencyOnQuote" style="margin-bottom: 0; cursor: pointer; color: #94A3B8;">הצג משפט דחיפות בהצעה המודפסת</label>
+                    </div>
+                </div>
 
-        <div class="form-group">
-            <label for="templateStyle">סגנון שבלונת הצעת מחיר</label>
-            <select id="templateStyle">
-                <option value="scholarship" selected>שבלונת מלגה (מקורי / מלגה / סופי)</option>
-                <option value="discount">שבלונת הנחה (קו חוצה על המקור)</option>
-                <option value="idf">שבלונת פורשי צה"ל</option>
-                <option value="standard">שבלונה רגילה (מחיר אחד)</option>
-            </select>
-        </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="scheduleDays">ימים ושעות</label>
+                        <input type="text" id="scheduleDays" value="א'+ד', 17:30-21:15">
+                    </div>
+                    <div class="form-group">
+                        <label for="academicHours">שעות לימוד אקדמיות</label>
+                        <input type="text" id="academicHours" value="400">
+                    </div>
+                </div>
 
+                <div class="form-row" id="govTamatCodesRow" style="display: none;">
+                    <div class="form-group">
+                        <label for="syllabusCode">סמל מגמה / קורס</label>
+                        <input type="text" id="syllabusCode" value="02447550">
+                    </div>
+                    <div class="form-group">
+                        <label for="tamatCode">ספק משרד הביטחון</label>
+                        <input type="text" id="tamatCode" value="0011010148">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="syllabusLink">🔗 קישור ישיר לסילבוס</label>
+                        <input type="text" id="syllabusLink" placeholder="https://www.hackeru.co.il/courses/..." style="font-size: 11px;">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="morningSchedule">☀️ זמני מסלול בוקר</label>
+                        <input type="text" id="morningSchedule" placeholder="ג'+ו', 09:00-16:30">
+                    </div>
+                    <div class="form-group">
+                        <label for="eveningSchedule">🌙 זמני מסלול ערב</label>
+                        <input type="text" id="eveningSchedule" placeholder="א'+ד', 17:30-21:15">
+                    </div>
+                </div>
+            </div>
+        </details>
 
         <!-- Voucher Documents Package -->
-        <div class="import-box" id="voucherDocsPanel" style="display: none; border-color: var(--primary-color); background-color: rgba(0, 210, 122, 0.05);">
+        <div class="import-box" id="voucherDocsPanel" style="display: none; border-color: var(--primary-color); background-color: rgba(0, 210, 122, 0.05); margin-top: 10px; margin-bottom: 10px;">
             <label style="color: var(--primary-color); font-weight: 700; margin-bottom: 8px; display: block;">
                 📂 ערכת מסמכים לשוברים / פיקדון
             </label>
@@ -1068,6 +1076,22 @@
                 </a>
             </div>
         </div>
+
+        <!-- Group 3: Pricing & Payments -->
+        <details class="sidebar-accordion" id="pricingAccordion" open style="margin-bottom: 10px;">
+            <summary>
+                <span>💰 תמחור ותנאי תשלום</span>
+            </summary>
+            <div class="accordion-content">
+                <div class="form-group">
+                    <label for="templateStyle">סגנון שבלונת הצעת מחיר</label>
+                    <select id="templateStyle">
+                        <option value="scholarship" selected>שבלונת מלגה (מקורי / מלגה / סופי)</option>
+                        <option value="discount">שבלונת הנחה (קו חוצה על המקור)</option>
+                        <option value="idf">שבלונת פורשי צה"ל</option>
+                        <option value="standard">שבלונה רגילה (מחיר אחד)</option>
+                    </select>
+                </div>
 
         <div class="form-group">
             <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -1211,6 +1235,9 @@
                         <label for="chkShowBankDetails" style="margin-bottom: 0; font-size: 10px; cursor: pointer; color: #374151; font-weight: bold;">הצג פרטי חשבון בנק בהצעת המחיר</label>
                     </div>
                 </div>
+            </div>
+        </details>
+
             </div>
         </details>
 
@@ -1756,8 +1783,46 @@
             return Number(num).toLocaleString('he-IL') + " ₪";
         }
 
+        // Manage dynamic UI flow based on context (Government, Business B2B, Standard)
+        function applyUIFlowContext() {
+            const fund = els.fundingType.value;
+            const isGov = (fund === 'vouchers' || fund === 'deposit');
+
+            // 1. Toggle government documents checklist panel
+            const voucherDocsPanel = document.getElementById('voucherDocsPanel');
+            if (voucherDocsPanel) {
+                voucherDocsPanel.style.display = isGov ? 'block' : 'none';
+            }
+
+            // 2. Hide/show government Tamat codes row
+            const govTamatCodesRow = document.getElementById('govTamatCodesRow');
+            if (govTamatCodesRow) {
+                govTamatCodesRow.style.display = isGov ? 'flex' : 'none';
+            }
+
+            // 3. Handle installments simulator and checkboxes visibility for vouchers (not relevant for govt paid)
+            const installmentsFormRow = document.getElementById('installmentsFormRow');
+            const showInstallmentsCheckboxGroup = document.getElementById('showInstallmentsCheckboxGroup');
+            const paymentPolicyAcc = document.getElementById('paymentPolicyAccordion');
+            
+            if (isGov) {
+                if (paymentPolicyAcc) paymentPolicyAcc.open = false;
+                if (installmentsFormRow) installmentsFormRow.style.display = 'none';
+                if (showInstallmentsCheckboxGroup) showInstallmentsCheckboxGroup.style.display = 'none';
+                
+                // Force standard template style if user selected scholarship/discount in dark mode by accident
+                if (els.templateStyle.value === 'scholarship' || els.templateStyle.value === 'discount') {
+                    els.templateStyle.value = 'standard';
+                }
+            } else {
+                if (installmentsFormRow) installmentsFormRow.style.display = 'flex';
+                if (showInstallmentsCheckboxGroup) showInstallmentsCheckboxGroup.style.display = 'flex';
+            }
+        }
+
         // Render dynamic preview fields based on style templates
         function updatePreview() {
+            applyUIFlowContext();
             if (typeof updateGovAsterisks === 'function') updateGovAsterisks();
             
             // Update client / company name preview
