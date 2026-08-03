@@ -833,7 +833,7 @@
                 <label for="whatsappTemplateSelect" style="color: #25D366; font-weight: 700; display: flex; align-items: center; gap: 6px; margin-bottom: 4px;">
                     <span>💬 תבנית הודעה לוואטסאפ (1-4)</span>
                 </label>
-                <select id="whatsappTemplateSelect" style="border-color: #25D366; background-color: white; font-size: 13px; padding: 6px; width: 100%;">
+                <select id="whatsappTemplateSelect" style="border-color: #25D366; font-size: 13px; padding: 6px; width: 100%;">
                     <option value="full_quote" selected>תבנית 1: הצעת מחיר מלאה (הנוסח המלא)</option>
                     <option value="follow_up">תבנית 2: הודעת תזכורת ומעקב (Follow-up)</option>
                     <option value="vouchers_deposit">תבנית 3: פרטי שוברים ופיקדון בלבד</option>
@@ -845,7 +845,7 @@
                 <label for="fundingType" style="color: #4F46E5; font-weight: 700; display: flex; align-items: center; gap: 6px; margin-bottom: 4px;">
                     <span>מסלול מימון / זכאות</span>
                 </label>
-                <select id="fundingType" style="border-color: #4F46E5; background-color: white; font-size: 13px; padding: 6px; width: 100%;">
+                <select id="fundingType" style="border-color: #4F46E5; font-size: 13px; padding: 6px; width: 100%;">
                     <option value="standard" selected>מסלול רגיל</option>
                     <option value="vouchers">תוכנית השוברים (משרד העבודה/הקליטה)</option>
                     <option value="deposit">פיקדון לחיילים משוחררים</option>
@@ -931,6 +931,10 @@
             <div class="form-group">
                 <label for="clientPhone">מספר טלפון</label>
                 <input type="text" id="clientPhone" value="" placeholder="למשל: 0501234567">
+            </div>
+            <div class="form-group">
+                <label for="companyName">שם החברה / ארגון (עבור לקוח עסקי)</label>
+                <input type="text" id="companyName" value="" placeholder="למשל: משרד הבריאות">
             </div>
         </div>
 
@@ -1645,6 +1649,7 @@
         const els = {
             courseSelect: document.getElementById('courseSelect'),
             clientName: document.getElementById('clientName'),
+            companyName: document.getElementById('companyName'),
             clientId: document.getElementById('clientId'),
             courseFormat: document.getElementById('courseFormat'),
             studyFormat: document.getElementById('studyFormat'),
@@ -1754,6 +1759,20 @@
         // Render dynamic preview fields based on style templates
         function updatePreview() {
             if (typeof updateGovAsterisks === 'function') updateGovAsterisks();
+            
+            // Update client / company name preview
+            const cName = els.clientName.value.trim();
+            const compName = els.companyName.value.trim();
+            let displayClient = cName || 'ולד גודין'; // Use default if completely empty
+            if (cName && compName) {
+                displayClient = `${cName} - ${compName}`;
+            } else if (compName) {
+                displayClient = compName;
+            }
+            if (els.lblClientName) {
+                els.lblClientName.innerText = displayClient;
+            }
+            
             if (!els.templateStyle) return;
             const style = els.templateStyle.value;
             const orig = Number(els.originalPrice.value) || 0;
@@ -1943,7 +1962,6 @@
 
         // Input bindings to preview labels
         const bindings = [
-            ['clientName', 'lblClientName'],
             ['clientId', 'lblClientId'],
             ['studyFormat', 'lblStudyFormat'],
             ['startDate', 'lblStartDate'],
@@ -1952,6 +1970,17 @@
             ['advisorName', 'lblAdvisorName'],
             ['advisorTitle', 'lblAdvisorTitle']
         ];
+
+        els.clientName.addEventListener('input', () => {
+            updatePreview();
+            saveActiveFormDraft();
+        });
+        if (els.companyName) {
+            els.companyName.addEventListener('input', () => {
+                updatePreview();
+                saveActiveFormDraft();
+            });
+        }
 
         bindings.forEach(([inputId, labelId]) => {
             const inputEl = document.getElementById(inputId);
@@ -2313,6 +2342,7 @@
             if (isRestoringDraft) return;
             const draft = {
                 clientName: els.clientName.value,
+                companyName: els.companyName ? els.companyName.value : '',
                 clientId: els.clientId.value,
                 chkShowClientId: document.getElementById('chkShowClientId') ? document.getElementById('chkShowClientId').checked : true,
                 chkShowValidity: document.getElementById('chkShowValidity') ? document.getElementById('chkShowValidity').checked : true,
@@ -2360,6 +2390,7 @@
 
                 if (draft.courseKey) els.courseSelect.value = draft.courseKey;
                 if (draft.clientName !== undefined) els.clientName.value = draft.clientName;
+                if (draft.companyName !== undefined && els.companyName) els.companyName.value = draft.companyName;
                 if (draft.clientId !== undefined) els.clientId.value = draft.clientId;
                 if (draft.clientPhone !== undefined) els.clientPhone.value = draft.clientPhone;
                 if (draft.courseFormat !== undefined) els.courseFormat.value = draft.courseFormat;
@@ -2435,14 +2466,19 @@
 
         function clearClientForm() {
             els.clientName.value = "";
+            if (els.companyName) els.companyName.value = "";
             els.clientId.value = "";
             els.clientPhone.value = "";
+            
+            if (els.lblClientName) {
+                els.lblClientName.innerText = "ולד גודין";
+            }
             
             bindings.forEach(([inputId, labelId]) => {
                 const el = document.getElementById(inputId);
                 const lbl = document.getElementById(labelId);
-                if (el && lbl && (inputId === 'clientName' || inputId === 'clientId')) {
-                    lbl.innerText = inputId === 'clientName' ? 'שם הלקוח' : '';
+                if (el && lbl && inputId === 'clientId') {
+                    lbl.innerText = '';
                 }
             });
             
@@ -3073,7 +3109,14 @@
         }
 
         function buildMessageText(templateType) {
-            const clientName = els.clientName.value.trim() || 'מועמד';
+            const clientNameVal = els.clientName.value.trim();
+            const companyNameVal = els.companyName ? els.companyName.value.trim() : '';
+            let clientName = clientNameVal || 'מועמד';
+            if (clientNameVal && companyNameVal) {
+                clientName = `${clientNameVal} - ${companyNameVal}`;
+            } else if (companyNameVal) {
+                clientName = companyNameVal;
+            }
             const clientId = els.clientId.value.trim();
             const courseSelectText = els.courseSelect.options[els.courseSelect.selectedIndex].text;
             const courseKey = els.courseSelect.value;
@@ -3329,9 +3372,8 @@
             
             saveToHistory(true);
             
-            const waUrl = `https://wa.me/${cleanedPhone}?text=${encodeURIComponent(message)}`;
+            const waUrl = `https://web.whatsapp.com/send?phone=${cleanedPhone}&text=${encodeURIComponent(message)}`;
             window.open(waUrl, '_blank');
-            clearClientForm();
         }
 
         // Installment Calculator Updater
@@ -3465,6 +3507,7 @@
             
             const newItem = {
                 clientName: els.clientName.value,
+                companyName: els.companyName ? els.companyName.value : '',
                 clientId: els.clientId.value,
                 clientPhone: els.clientPhone.value,
                 courseKey: els.courseSelect.value,
@@ -3501,6 +3544,7 @@
                 isRestoringDraft = true;
 
                 els.clientName.value = item.clientName || '';
+                if (els.companyName) els.companyName.value = item.companyName || '';
                 els.clientId.value = item.clientId || '';
                 els.clientPhone.value = item.clientPhone || '';
                 
