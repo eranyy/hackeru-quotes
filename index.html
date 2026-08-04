@@ -661,6 +661,78 @@
             background-color: rgba(0, 210, 122, 0.05);
         }
 
+        /* Quick Mode Selector Chips */
+        .mode-chip {
+            padding: 8px 4px;
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-light);
+            font-size: 11.5px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+            transition: all 0.2s ease;
+        }
+        .mode-chip:hover {
+            border-color: var(--primary-color);
+            background-color: rgba(0, 210, 122, 0.05);
+        }
+        .mode-chip.active {
+            border-color: var(--primary-color);
+            background-color: rgba(0, 210, 122, 0.15);
+            color: var(--primary-color);
+            box-shadow: 0 2px 8px rgba(0, 210, 122, 0.25);
+        }
+
+        /* Floating Sticky Action Bar */
+        .sticky-action-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 8px 16px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            z-index: 9999;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+        }
+        body.light-theme .sticky-action-bar {
+            background: rgba(255, 255, 255, 0.9);
+            border-top-color: rgba(0, 0, 0, 0.1);
+        }
+        .sticky-action-bar .btn {
+            padding: 8px 14px;
+            font-size: 12px;
+            font-weight: 700;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            white-space: nowrap;
+        }
+
+        /* Interactive Clickable Preview Fields */
+        .clickable-preview-field {
+            cursor: pointer;
+            transition: outline 0.15s ease, background-color 0.15s ease;
+            border-radius: 3px;
+        }
+        .clickable-preview-field:hover {
+            outline: 2px dashed var(--primary-color) !important;
+            background-color: rgba(0, 210, 122, 0.1) !important;
+        }
+
         /* Collapsible Accordion Styles */
         .sidebar-accordion {
             background-color: var(--panel-bg);
@@ -828,6 +900,22 @@
             <button id="themeToggleBtn" onclick="toggleTheme()" style="background: none; border: none; font-size: 20px; cursor: pointer; padding: 4px; border-radius: 4px; display: flex; align-items: center; justify-content: center; transition: background-color 0.2s;" title="החלף מצב צבע">🌙</button>
         </div>
         
+        <!-- Quick Mode Selector Chips -->
+        <div class="mode-chips-container" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin-bottom: 10px;">
+            <button type="button" class="mode-chip active" id="btnModeStandard" onclick="setFormMode('standard')">
+                <span style="font-size: 14px;">📄</span>
+                <span>הצעה רגילה</span>
+            </button>
+            <button type="button" class="mode-chip" id="btnModeVouchers" onclick="setFormMode('vouchers')">
+                <span style="font-size: 14px;">📜</span>
+                <span>שוברים/פיקדון</span>
+            </button>
+            <button type="button" class="mode-chip" id="btnModeB2B" onclick="setFormMode('b2b')">
+                <span style="font-size: 14px;">🏢</span>
+                <span>עסקי B2B</span>
+            </button>
+        </div>
+
         <!-- Top Priority Controls: Templates & Funding -->
         <div style="background-color: rgba(37, 211, 102, 0.08); border: 1px solid rgba(37, 211, 102, 0.3); border-radius: 8px; padding: 10px; margin-bottom: 12px; display: flex; flex-direction: column; gap: 8px;">
             <div class="form-group" style="margin-bottom: 0;">
@@ -841,6 +929,17 @@
                     <option value="quick_comparison">תבנית 4: הצעה מקוצרת + זמני בוקר וערב</option>
                 </select>
             </div>
+
+            <!-- Collapsible Live WhatsApp Message Preview -->
+            <details class="sidebar-accordion" id="whatsappPreviewAccordion" style="margin-top: 4px; margin-bottom: 2px; border-color: #25D366; background-color: rgba(37, 211, 102, 0.03);">
+                <summary style="padding: 6px 10px; font-size: 11.5px; color: #25D366;">
+                    <span>👁️ תצוגה מקדימה להודעת וואטסאפ</span>
+                </summary>
+                <div class="accordion-content" style="padding: 8px;">
+                    <div id="whatsappLiveText" style="white-space: pre-wrap; font-size: 11px; line-height: 1.4; color: var(--text-light); background: rgba(0, 0, 0, 0.2); padding: 8px; border-radius: 6px; max-height: 140px; overflow-y: auto; font-family: inherit;"></div>
+                    <button type="button" class="btn" onclick="copyToClipboard()" style="margin-top: 6px; padding: 6px; font-size: 11px; width: 100%; background: #25D366; color: white;">📋 העתק הודעה בלחיצה</button>
+                </div>
+            </details>
 
             <!-- Urgency Countdown Display & Toggle -->
             <div class="import-box" style="padding: 10px; border-color: #F59E0B; background-color: rgba(245, 158, 11, 0.05); display: flex; flex-direction: column; gap: 6px; border-style: dashed; border-radius: 6px; margin: 4px 0;">
@@ -1007,43 +1106,54 @@
 
 
                 <div class="form-row">
-                    <div class="form-group">
-                        <label for="scheduleDays">ימים ושעות</label>
+                    <div class="form-group" style="width: 100%;">
+                        <label for="scheduleDays">ימים ושעות לימוד</label>
                         <input type="text" id="scheduleDays" value="א'+ד', 17:30-21:15">
                     </div>
-                    <div class="form-group">
-                        <label for="academicHours">שעות לימוד אקדמיות</label>
-                        <input type="text" id="academicHours" value="400">
-                    </div>
                 </div>
 
-                <div class="form-row" id="govTamatCodesRow" style="display: none;">
-                    <div class="form-group">
-                        <label for="syllabusCode">סמל מגמה / קורס</label>
-                        <input type="text" id="syllabusCode" value="02447550">
-                    </div>
-                    <div class="form-group">
-                        <label for="tamatCode">ספק משרד הביטחון</label>
-                        <input type="text" id="tamatCode" value="0011010148">
-                    </div>
-                </div>
+                <!-- Nested Collapsible Advanced Course Details -->
+                <details class="sidebar-accordion" style="margin-top: 8px; border-color: #64748B; background: rgba(100, 116, 139, 0.05);">
+                    <summary style="padding: 6px 10px; font-size: 11.5px; color: #94A3B8;">
+                        <span>⚙️ הגדרות ונתונים מתקדמים (סילבוס, שעות, זמנים)</span>
+                    </summary>
+                    <div class="accordion-content" style="padding: 8px;">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="academicHours">שעות לימוד אקדמיות</label>
+                                <input type="text" id="academicHours" value="400">
+                            </div>
+                        </div>
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="syllabusLink">🔗 קישור ישיר לסילבוס</label>
-                        <input type="text" id="syllabusLink" placeholder="https://www.hackeru.co.il/courses/..." style="font-size: 11px;">
+                        <div class="form-row" id="govTamatCodesRow" style="display: none;">
+                            <div class="form-group">
+                                <label for="syllabusCode">סמל מגמה / קורס</label>
+                                <input type="text" id="syllabusCode" value="02447550">
+                            </div>
+                            <div class="form-group">
+                                <label for="tamatCode">ספק משרד הביטחון</label>
+                                <input type="text" id="tamatCode" value="0011010148">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="syllabusLink">🔗 קישור ישיר לסילבוס</label>
+                                <input type="text" id="syllabusLink" placeholder="https://www.hackeru.co.il/courses/..." style="font-size: 11px;">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="morningSchedule">☀️ זמני מסלול בוקר</label>
+                                <input type="text" id="morningSchedule" placeholder="ג'+ו', 09:00-16:30">
+                            </div>
+                            <div class="form-group">
+                                <label for="eveningSchedule">🌙 זמני מסלול ערב</label>
+                                <input type="text" id="eveningSchedule" placeholder="א'+ד', 17:30-21:15">
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="morningSchedule">☀️ זמני מסלול בוקר</label>
-                        <input type="text" id="morningSchedule" placeholder="ג'+ו', 09:00-16:30">
-                    </div>
-                    <div class="form-group">
-                        <label for="eveningSchedule">🌙 זמני מסלול ערב</label>
-                        <input type="text" id="eveningSchedule" placeholder="א'+ד', 17:30-21:15">
-                    </div>
-                </div>
+                </details>
             </div>
         </details>
 
@@ -1788,6 +1898,38 @@
             return Number(num).toLocaleString('he-IL') + " ₪";
         }
 
+        // Switch Quick Form Modes (Standard, Vouchers, B2B)
+        function setFormMode(mode) {
+            const btnStd = document.getElementById('btnModeStandard');
+            const btnVoucher = document.getElementById('btnModeVouchers');
+            const btnB2B = document.getElementById('btnModeB2B');
+            const companyGroup = document.getElementById('companyNameGroup');
+            const fundingType = els.fundingType;
+
+            if (btnStd) btnStd.classList.remove('active');
+            if (btnVoucher) btnVoucher.classList.remove('active');
+            if (btnB2B) btnB2B.classList.remove('active');
+
+            if (mode === 'vouchers') {
+                if (btnVoucher) btnVoucher.classList.add('active');
+                if (fundingType) fundingType.value = 'vouchers';
+                if (companyGroup) companyGroup.style.display = 'none';
+            } else if (mode === 'b2b') {
+                if (btnB2B) btnB2B.classList.add('active');
+                if (fundingType) fundingType.value = 'standard';
+                if (companyGroup) companyGroup.style.display = 'block';
+            } else {
+                // standard
+                if (btnStd) btnStd.classList.add('active');
+                if (fundingType) fundingType.value = 'standard';
+                if (companyGroup) companyGroup.style.display = 'none';
+            }
+
+            applyUIFlowContext();
+            updatePreview();
+        }
+        window.setFormMode = setFormMode;
+
         // Manage dynamic UI flow based on context (Government, Business B2B, Standard)
         function applyUIFlowContext() {
             const fund = els.fundingType.value;
@@ -1965,9 +2107,20 @@
                 }
             }
             
+            updateLiveWhatsappPreview();
+
             if (typeof saveActiveFormDraft === 'function') {
                 saveActiveFormDraft();
             }
+        }
+
+        // Live WhatsApp Message Preview update
+        function updateLiveWhatsappPreview() {
+            const liveBox = document.getElementById('whatsappLiveText');
+            if (!liveBox) return;
+            const templateType = els.whatsappTemplateSelect ? els.whatsappTemplateSelect.value : 'full_quote';
+            const msg = buildMessageText(templateType);
+            liveBox.textContent = msg;
         }
 
         // Update document title dynamically to pre-fill PDF filename
@@ -3756,6 +3909,38 @@
         updateDocumentTitle();
         loadHistoryList();
         updateInstallments();
+        // Bind direct click events on live preview elements to focus sidebar inputs
+        function initInteractivePreviewClicks() {
+            const mappings = [
+                ['lblClientName', 'clientName'],
+                ['lblClientId', 'clientId'],
+                ['lblSubjectCourse', 'courseSelect'],
+                ['lblIntroCourse', 'courseSelect'],
+                ['lblStartDate', 'startDate'],
+                ['lblEndDate', 'endDate'],
+                ['lblHours', 'academicHours'],
+                ['lblAdvisorName', 'advisorName'],
+                ['lblAdvisorTitle', 'advisorTitle']
+            ];
+
+            mappings.forEach(([labelId, inputId]) => {
+                const lbl = document.getElementById(labelId);
+                const input = document.getElementById(inputId);
+                if (lbl && input) {
+                    lbl.classList.add('clickable-preview-field');
+                    lbl.title = "לחץ לעריכה בסרגל";
+                    lbl.addEventListener('click', () => {
+                        input.focus();
+                        if (typeof input.select === 'function') input.select();
+                        input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        input.style.transition = 'box-shadow 0.3s ease';
+                        input.style.boxShadow = '0 0 0 3px rgba(0, 210, 122, 0.5)';
+                        setTimeout(() => { input.style.boxShadow = ''; }, 1500);
+                    });
+                }
+            });
+        }
+        initInteractivePreviewClicks();
 
         // Copy plain text to clipboard
         function copyToClipboard() {
@@ -4484,5 +4669,11 @@
             });
         }
     </script>
+    <!-- Floating Sticky Action Bar -->
+    <div class="sticky-action-bar no-print">
+        <button class="btn btn-pdf" onclick="printQuote()">🖨️ הדפסה כ-PDF</button>
+        <button class="btn btn-whatsapp" onclick="shareOnWhatsApp()">💬 שלח בוואטסאפ</button>
+        <button class="btn btn-clipboard" onclick="copyToClipboard()">📋 העתק טקסט</button>
+    </div>
 </body>
 </html>
