@@ -969,11 +969,11 @@
         </div>
         
         <!-- Group 1: Document Type & Recipient Details (Step 1) -->
-        <details class="sidebar-accordion" id="clientDetailsAccordion" open style="margin-bottom: 10px;">
-            <summary style="border-color: #3B82F6;">
+        <div class="sidebar-step-card" id="clientDetailsCard" style="background-color: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 10px; padding: 14px; margin-bottom: 12px; box-shadow: var(--shadow-sm);">
+            <div style="font-weight: 700; font-size: 13.5px; color: #3B82F6; margin-bottom: 10px; border-bottom: 1px solid var(--border-color); padding-bottom: 6px; display: flex; align-items: center; justify-content: space-between;">
                 <span>שלב 1: 👤 סוג המסמך ופרטי הלקוח</span>
-            </summary>
-            <div class="accordion-content">
+            </div>
+            <div>
                 <!-- Mode & Funding Selection Chips -->
                 <div style="background-color: rgba(0, 210, 122, 0.05); border: 1px solid rgba(0, 210, 122, 0.2); border-radius: 8px; padding: 8px; margin-bottom: 10px;">
                     <div style="font-weight: 700; font-size: 11.5px; color: var(--primary-color); margin-bottom: 6px;">
@@ -1038,14 +1038,14 @@
                     </div>
                 </div>
             </div>
-        </details>
+        </div>
 
         <!-- Group 2: Course & Schedule Details (Step 2) -->
-        <details class="sidebar-accordion" id="courseDetailsAccordion" open style="margin-bottom: 10px;">
-            <summary style="border-color: #10B981;">
+        <div class="sidebar-step-card" id="courseDetailsCard" style="background-color: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 10px; padding: 14px; margin-bottom: 12px; box-shadow: var(--shadow-sm);">
+            <div style="font-weight: 700; font-size: 13.5px; color: #10B981; margin-bottom: 10px; border-bottom: 1px solid var(--border-color); padding-bottom: 6px; display: flex; align-items: center; justify-content: space-between;">
                 <span>שלב 2: 📅 מסלול לימודים ומועדים</span>
-            </summary>
-            <div class="accordion-content">
+            </div>
+            <div>
                 <!-- Collapsible Importer from Priza (Inside Step 2) -->
                 <details class="sidebar-accordion" style="margin-bottom: 10px; border-color: var(--primary-color); background-color: rgba(0, 210, 122, 0.03);">
                     <summary style="padding: 6px 10px; font-size: 11.5px; color: var(--primary-color);">
@@ -1221,11 +1221,11 @@
         </div>
 
         <!-- Group 3: Pricing & Payments (Step 3) -->
-        <details class="sidebar-accordion" id="pricingAccordion" open style="margin-bottom: 10px;">
-            <summary style="border-color: #F59E0B;">
+        <div class="sidebar-step-card" id="pricingCard" style="background-color: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 10px; padding: 14px; margin-bottom: 12px; box-shadow: var(--shadow-sm);">
+            <div style="font-weight: 700; font-size: 13.5px; color: #F59E0B; margin-bottom: 10px; border-bottom: 1px solid var(--border-color); padding-bottom: 6px; display: flex; align-items: center; justify-content: space-between;">
                 <span>שלב 3: 💰 מחיר והפקת המסמך בלחיצה</span>
-            </summary>
-            <div class="accordion-content">
+            </div>
+            <div>
                 <div class="form-group">
                     <label for="templateStyle">סגנון שבלונת הצעת מחיר</label>
                     <select id="templateStyle">
@@ -1436,7 +1436,7 @@
                     </button>
                 </div>
             </div>
-        </details>
+        </div>
         <!-- Collapsible CRM & Firebase Sync Panel -->
         <details class="sidebar-accordion" id="syncHistoryAccordion" style="margin-top: 15px;">
             <summary style="border-color: #A5B4FC;">
