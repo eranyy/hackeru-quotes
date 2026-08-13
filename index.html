@@ -1000,12 +1000,25 @@
             </div>
         </details>
 
-        <!-- Group 2: Course & Schedule Details (Step 3) -->
+        <!-- Group 2: Course & Schedule Details (Step 2) -->
         <details class="sidebar-accordion" id="courseDetailsAccordion" open style="margin-bottom: 10px;">
             <summary style="border-color: #10B981;">
-                <span>שלב 3: 📅 מסלול לימודים ומועדים</span>
+                <span>שלב 2: 📅 מסלול לימודים ומועדים</span>
             </summary>
             <div class="accordion-content">
+                <!-- Collapsible Importer from Priza (Inside Step 2) -->
+                <details class="sidebar-accordion" style="margin-bottom: 10px; border-color: var(--primary-color); background-color: rgba(0, 210, 122, 0.03);">
+                    <summary style="padding: 6px 10px; font-size: 11.5px; color: var(--primary-color);">
+                        <span>📥 ייבוא וניהול מועדים מפריזה</span>
+                        <span class="import-badge" id="importCount" style="font-size: 10px; font-weight: normal; background-color: var(--primary-color); color: var(--text-dark); padding: 2px 6px; border-radius: 4px;">0 מועדים</span>
+                    </summary>
+                    <div class="accordion-content" style="padding: 8px;">
+                        <textarea id="prizaImport" placeholder="העתק את דף הקורסים מפריזה (כולל הטבלה) והדבק כאן..." rows="3" style="width: 100%; font-size: 11.5px; resize: vertical;"></textarea>
+                        <button type="button" id="btnManualImport" style="width: 100%; margin-top: 6px; padding: 6px; font-size: 12px; font-weight: 700; background-color: var(--primary-color); color: var(--text-dark); border: none; border-radius: 6px; cursor: pointer;">ייבוא נתונים מפריזה בלחיצה</button>
+                        <div id="importSuccessMsg" class="badge-success" style="margin-top: 4px; display: none;">מועדים יובאו בהצלחה!</div>
+                    </div>
+                </details>
+
                 <div class="form-group">
                     <label for="courseSelect">בחר קורס (תבנית)</label>
                     <select id="courseSelect">
@@ -4644,8 +4657,13 @@
                     return;
                 }
 
-                // Check if firebase SDK is loaded
+                // Check if firebase SDK is loaded with auto-retry
                 if (typeof firebase === 'undefined') {
+                    if ((window._fbRetryCount || 0) < 10) {
+                        window._fbRetryCount = (window._fbRetryCount || 0) + 1;
+                        setTimeout(initFirebase, 300);
+                        return;
+                    }
                     const text = "🔴 SDK חסום";
                     if (statusEl) { statusEl.innerText = "🔴 שגיאה: Firebase SDK חסום/לא נטען"; statusEl.style.color = "#EF4444"; }
                     if (fbIndicator) { fbIndicator.innerText = text; fbIndicator.style.color = "#EF4444"; }
