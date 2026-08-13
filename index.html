@@ -245,6 +245,7 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
+            margin: 0 auto !important;
         }
 
         .letterhead-content {
@@ -4665,42 +4666,22 @@
             const activeKeyEl = document.getElementById('lblActiveSyncKey');
 
             try {
-                // Safe localStorage retrieval
-                let configStr = "";
-                let syncKey = "";
-                try {
-                    configStr = localStorage.getItem('hackeru_fb_config');
-                    syncKey = localStorage.getItem('hackeru_fb_synckey');
-                } catch(storageErr) {
-                    console.warn("localStorage is blocked or unavailable:", storageErr);
-                }
-                
-                // If not custom configured, automatically seed defaults
-                if (!configStr || configStr === 'null' || configStr === 'undefined' || (typeof configStr === 'string' && !configStr.trim())) {
-                    configStr = JSON.stringify(DEFAULT_FIREBASE_CONFIG);
-                    try {
-                        localStorage.setItem('hackeru_fb_config', configStr);
-                    } catch(e) {}
-                }
-                if (!syncKey || syncKey === 'null' || syncKey === 'undefined' || (typeof syncKey === 'string' && !syncKey.trim())) {
-                    syncKey = DEFAULT_SYNC_KEY;
-                    try {
-                        localStorage.setItem('hackeru_fb_synckey', syncKey);
-                    } catch(e) {}
-                }
+                // Force seed defaults if localStorage is empty or null
+                let configStr = localStorage.getItem('hackeru_fb_config');
+                let syncKey = localStorage.getItem('hackeru_fb_synckey');
 
-                if (!configStr || !syncKey || configStr === 'null' || syncKey === 'null') {
-                    const text = "🔴 לא מחובר";
-                    if (statusEl) { statusEl.innerText = text; statusEl.style.color = "#EF4444"; }
-                    if (fbIndicator) { fbIndicator.innerText = text; fbIndicator.style.color = "#EF4444"; }
-                    if (accSyncStatus) { accSyncStatus.innerText = text; accSyncStatus.style.backgroundColor = "#64748B"; }
-                    if (connectedFields) connectedFields.style.display = 'none';
-                    return;
+                if (!configStr || configStr === 'null' || configStr === 'undefined' || !configStr.trim()) {
+                    configStr = JSON.stringify(DEFAULT_FIREBASE_CONFIG);
+                    try { localStorage.setItem('hackeru_fb_config', configStr); } catch(e) {}
+                }
+                if (!syncKey || syncKey === 'null' || syncKey === 'undefined' || !syncKey.trim()) {
+                    syncKey = DEFAULT_SYNC_KEY;
+                    try { localStorage.setItem('hackeru_fb_synckey', syncKey); } catch(e) {}
                 }
 
                 // Check if firebase SDK is loaded with auto-retry
                 if (typeof firebase === 'undefined') {
-                    if ((window._fbRetryCount || 0) < 10) {
+                    if ((window._fbRetryCount || 0) < 15) {
                         window._fbRetryCount = (window._fbRetryCount || 0) + 1;
                         setTimeout(initFirebase, 300);
                         return;
