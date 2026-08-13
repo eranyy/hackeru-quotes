@@ -1047,17 +1047,16 @@
             </div>
             <div>
                 <!-- Collapsible Importer from Priza (Inside Step 2) -->
-                <details class="sidebar-accordion" style="margin-bottom: 10px; border-color: var(--primary-color); background-color: rgba(0, 210, 122, 0.03);">
-                    <summary style="padding: 6px 10px; font-size: 11.5px; color: var(--primary-color);">
-                        <span>📥 ייבוא וניהול מועדים מפריזה</span>
+                <!-- Priza Importer Box (Always Visible inside Step 2) -->
+                <div class="priza-box" style="margin-bottom: 12px; padding: 10px; border-radius: 8px; border: 1px solid var(--primary-color); background-color: rgba(0, 210, 122, 0.04);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; font-weight: 700; font-size: 11.5px; color: var(--primary-color);">
+                        <span>📥 ייבוא מועדים מפריזה (הדבק טקסט/טבלה כאן):</span>
                         <span class="import-badge" id="importCount" style="font-size: 10px; font-weight: normal; background-color: var(--primary-color); color: var(--text-dark); padding: 2px 6px; border-radius: 4px;">0 מועדים</span>
-                    </summary>
-                    <div class="accordion-content" style="padding: 8px;">
-                        <textarea id="prizaImport" placeholder="העתק את דף הקורסים מפריזה (כולל הטבלה) והדבק כאן..." rows="3" style="width: 100%; font-size: 11.5px; resize: vertical;"></textarea>
-                        <button type="button" id="btnManualImport" style="width: 100%; margin-top: 6px; padding: 6px; font-size: 12px; font-weight: 700; background-color: var(--primary-color); color: var(--text-dark); border: none; border-radius: 6px; cursor: pointer;">ייבוא נתונים מפריזה בלחיצה</button>
-                        <div id="importSuccessMsg" class="badge-success" style="margin-top: 4px; display: none;">מועדים יובאו בהצלחה!</div>
                     </div>
-                </details>
+                    <textarea id="prizaImport" placeholder="העתק את דף הקורסים מפריזה (כולל הטבלה) והדבק כאן..." rows="3" style="width: 100%; font-size: 11.5px; resize: vertical; margin-bottom: 6px;"></textarea>
+                    <button type="button" id="btnManualImport" style="width: 100%; padding: 6px; font-size: 12px; font-weight: 700; background-color: var(--primary-color); color: var(--text-dark); border: none; border-radius: 6px; cursor: pointer;">ייבוא נתונים מפריזה בלחיצה</button>
+                    <div id="importSuccessMsg" class="badge-success" style="margin-top: 4px; display: none;">מועדים יובאו בהצלחה!</div>
+                </div>
 
                 <div class="form-group">
                     <label for="courseSelect">בחר קורס (תבנית)</label>
@@ -2651,8 +2650,20 @@
                 if (preset.morningSchedule) els.morningSchedule.value = preset.morningSchedule;
                 if (preset.eveningSchedule) els.eveningSchedule.value = preset.eveningSchedule;
                 
-                // Select course format
+                // Select course format & populate default dates
                 els.courseFormat.value = preset.format;
+
+                if (preset.startDate) {
+                    els.startDate.value = preset.startDate;
+                } else if (!els.startDate.value) {
+                    els.startDate.value = "18/10/2026";
+                }
+
+                if (preset.endDate) {
+                    els.endDate.value = preset.endDate;
+                } else {
+                    els.endDate.value = estimateEndDate(els.startDate.value, preset.format || 'evening');
+                }
 
                 // Sync pricing
                 const defaultSchol = (preset.scholarshipAmount !== undefined) ? preset.scholarshipAmount : 0;
@@ -3056,6 +3067,12 @@
                 opt.innerText = `${dateA}${expiredSuffix} | ${format} | ${scheduleText.substring(0, 30)}... [${titleText.substring(0, 15)}]`;
                 els.scheduleDropdown.appendChild(opt);
             });
+
+            // Automatically select the first (newest) imported schedule item
+            if (filtered.length > 0) {
+                els.scheduleDropdown.selectedIndex = 1;
+                handleScheduleSelection();
+            }
         }
 
         // Handle selection of a schedule from the dropdown
