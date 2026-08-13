@@ -1184,6 +1184,9 @@
                 <button class="btn" onclick="printTofesHe2()" style="padding: 10px; font-size: 13px; width: 100%; display: flex; align-items: center; justify-content: center; gap: 6px; background: linear-gradient(135deg, var(--primary-color) 0%, #10B981 100%); color: var(--text-dark);">
                     <span>📝 הדפס טופס ה'2 מלא וחתום</span>
                 </button>
+                <button class="btn" onclick="printVoucherSoldier()" style="padding: 10px; font-size: 13px; width: 100%; display: flex; align-items: center; justify-content: center; gap: 6px; background: linear-gradient(135deg, #1E40AF 0%, #3B82F6 100%); color: white;">
+                    <span>🎖️ הדפס שובר פיקדון לחיילים משוחררים (בנק הדואר)</span>
+                </button>
                 <a id="lnkDownloadIshur" href="ishur_hakara_2026.pdf" download="אישור הכרה האקריו 2026.pdf" class="btn btn-outline" style="padding: 8px; font-size: 13px; text-decoration: none; text-align: center; display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 2px;">
                     <span>📄 הורד אישור הכרה 2026</span>
                 </a>
@@ -1584,6 +1587,108 @@
                             <text x="50" y="67" font-size="7" font-weight="bold" fill="#00D27A" text-anchor="middle" font-family="'Rubik', sans-serif">מוסד הכשרה מוכר</text>
                         </svg>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Discharged Soldiers Deposit Voucher (Postal Bank App N930 Printable Template) -->
+    <div id="printableSoldierVoucher" class="tofes-container" style="display: none;">
+        <div class="soldier-voucher-page" style="width: 100%; max-width: 750px; margin: 0 auto; padding: 20px 25px; font-family: 'Rubik', sans-serif; color: #000; direction: rtl; box-sizing: border-box; background: #fff;">
+            <!-- Header -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+                <div style="text-align: right;">
+                    <div style="font-weight: 900; font-size: 26px; color: #000; font-family: sans-serif;">Hacker<span style="color:#00D27A;">.</span>U</div>
+                    <div style="font-size: 9px; color: #64748B; letter-spacing: 0.5px; margin-top: -2px;">by ThriveDX</div>
+                </div>
+                <div style="background-color: #0F172A; color: #FFFFFF; padding: 10px 22px; border-radius: 4px; font-size: 18px; font-weight: 700; text-align: center;">
+                    תשלום עבור הכשרה מקצועית - חיילים משוחררים
+                </div>
+            </div>
+
+            <!-- Table 1: Institution Details -->
+            <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 14px;">
+                <tr>
+                    <td style="border: 1px solid #000; padding: 8px 12px; font-weight: bold; width: 30%;">שם מוסד ההכשרה</td>
+                    <td style="border: 1px solid #000; padding: 8px 12px; text-align: center; width: 70%; font-weight: bold;">האקריו בע"מ</td>
+                </tr>
+                <tr>
+                    <td style="border: 1px solid #000; padding: 8px 12px; font-weight: bold;">ח.פ</td>
+                    <td style="border: 1px solid #000; padding: 8px 12px; text-align: center; font-weight: bold;">513935965</td>
+                </tr>
+                <tr>
+                    <td style="border: 1px solid #000; padding: 8px 12px; font-weight: bold;">כתובת</td>
+                    <td style="border: 1px solid #000; padding: 8px 12px; text-align: center; font-weight: bold;">שהם 5, רמת גן</td>
+                </tr>
+            </table>
+
+            <!-- Table 2: Bank Details -->
+            <div style="font-size: 14px; font-weight: bold; margin-bottom: 6px;">פרטי חשבון להעברה בנקאית:</div>
+            <table style="width: 100%; border-collapse: collapse; margin-bottom: 25px; font-size: 14px;">
+                <tr>
+                    <td style="border: 1px solid #000; padding: 8px 12px; font-weight: bold; width: 30%;">בנק</td>
+                    <td style="border: 1px solid #000; padding: 8px 12px; text-align: center; width: 70%; font-weight: bold;">בנק הפועלים (12)</td>
+                </tr>
+                <tr>
+                    <td style="border: 1px solid #000; padding: 8px 12px; font-weight: bold;">מספר סניף</td>
+                    <td style="border: 1px solid #000; padding: 8px 12px; text-align: center; font-weight: bold;">537</td>
+                </tr>
+                <tr>
+                    <td style="border: 1px solid #000; padding: 8px 12px; font-weight: bold;">מספר חשבון</td>
+                    <td style="border: 1px solid #000; padding: 8px 12px; text-align: center; font-weight: bold;">154264</td>
+                </tr>
+            </table>
+
+            <!-- Table 3: Student & Deposit Amount Details -->
+            <table style="width: 100%; border-collapse: collapse; margin-bottom: 25px; font-size: 14px;">
+                <tr>
+                    <td style="border: 1px solid #000; padding: 10px 12px; font-weight: bold; width: 30%;">קוד קורס ממשלתי</td>
+                    <td style="border: 1px solid #000; padding: 10px 12px; text-align: center; width: 70%; font-weight: bold;" id="vchDepositCode">40043101</td>
+                </tr>
+                <tr>
+                    <td style="border: 1px solid #000; padding: 10px 12px; font-weight: bold;">שם הסטודנט</td>
+                    <td style="border: 1px solid #000; padding: 10px 12px; text-align: center; font-weight: bold;" id="vchClientName">-</td>
+                </tr>
+                <tr>
+                    <td style="border: 1px solid #000; padding: 10px 12px; font-weight: bold;">מספר ת.ז</td>
+                    <td style="border: 1px solid #000; padding: 10px 12px; text-align: center; font-weight: bold;" id="vchClientId">-</td>
+                </tr>
+                <tr>
+                    <td style="border: 1px solid #000; padding: 10px 12px; font-weight: bold;">סכום לתשלום</td>
+                    <td style="border: 1px solid #000; padding: 10px 12px; text-align: center; font-weight: bold;" id="vchPriceFormatted">₪ 20,720</td>
+                </tr>
+                <tr>
+                    <td style="border: 1px solid #000; padding: 10px 12px; font-weight: bold;">סכום במילים</td>
+                    <td style="border: 1px solid #000; padding: 10px 12px; text-align: center; font-weight: bold;" id="vchPriceWords">עשרים אלף ושבע מאות ועשרים שקלים</td>
+                </tr>
+            </table>
+
+            <!-- Instructions Text -->
+            <div style="text-align: center; font-size: 13.5px; margin-top: 30px; margin-bottom: 25px; line-height: 1.6;">
+                <div>לצורך ביצוע הפעולה בבנק הדואר יש להצטייד בתעודת זהות / רישיון נהיגה בתוקף .</div>
+                <div style="font-weight: bold; margin-top: 6px;">אישור תשלום מהפיקדון כנגד מסמך זה יופק בבנק הדואר במועד ביצוע הפעולה!</div>
+            </div>
+
+            <!-- Postal Bank Internal Box -->
+            <div style="border: 1px solid #000; padding: 12px 16px; font-size: 12.5px; margin-bottom: 45px; background-color: #fff;">
+                <div style="font-weight: bold; text-decoration: underline; margin-bottom: 4px;">לשימוש פנימי בנק הדואר בלבד:</div>
+                <div>לנציג השירות והמכירות בבנק הדואר – יש להיכנס לאפליקציה N930 , ולפעול על פי ההנחיות.</div>
+            </div>
+
+            <!-- Footer Stamp and Signature -->
+            <div style="margin-top: 50px; display: flex; flex-direction: column; align-items: center; position: relative;">
+                <div style="border: 1.5px solid #000; border-radius: 50%; width: 140px; height: 140px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; position: absolute; right: 15px; bottom: 25px; transform: rotate(-5deg);">
+                    <div style="font-weight: 900; font-size: 15px; color: #000;">Hacker.U</div>
+                    <div style="font-size: 9px; color: #475569;">by ThriveDX</div>
+                    <div style="margin-top: 6px; font-weight: bold; font-size: 11px; border-top: 1px solid #000; padding-top: 3px; width: 80%;">
+                        האקריו בע"מ<br>
+                        ח.פ. 513935965
+                    </div>
+                    <div style="font-size: 10px; font-weight: bold; margin-top: 4px;">חתימת וחותמת המוסד</div>
+                </div>
+
+                <div style="font-size: 11px; color: #64748B; border-top: 1px solid #CBD5E1; padding-top: 10px; width: 100%; text-align: center; margin-top: 90px;">
+                    רח' שוהם 5, מגדלי פז, בורסה רמת גן | טל': 03-6135565 מתחם HackerU
                 </div>
             </div>
         </div>
@@ -4217,6 +4322,104 @@
                 clearClientForm();
             }, 500);
         }
+
+        // Convert number to Hebrew words helper for soldier deposit voucher
+        function numberToHebrewWords(num) {
+            num = Math.round(Number(num) || 0);
+            if (num <= 0) return "אפס שקלים";
+
+            const units = ["", "אחד", "שניים", "שלושה", "ארבעה", "חמישה", "שישה", "שבעה", "שמונה", "תשעה"];
+            const tens = ["", "עשרה", "עשרים", "שלושים", "ארבעים", "חמישים", "שישים", "שבעים", "שמונים", "תשעים"];
+            const teens = ["עשרה", "אחד עשר", "שתים עשרה", "שלושה עשר", "ארבעה עשר", "חמישה עשר", "שישה עשר", "שבעה עשר", "שמונה עשר", "תשעה עשר"];
+            const hundreds = ["", "מאה", "מאתיים", "שלוש מאות", "ארבע מאות", "חמש מאות", "שש מאות", "שבע מאות", "שמונה מאות", "תשע מאות"];
+
+            function convertGroupBelowThousand(n) {
+                let str = "";
+                let h = Math.floor(n / 100);
+                let remainder = n % 100;
+                let t = Math.floor(remainder / 10);
+                let u = remainder % 10;
+
+                if (h > 0) {
+                    str += hundreds[h];
+                }
+
+                if (remainder > 0) {
+                    if (str.length > 0) str += " ו";
+                    if (remainder >= 10 && remainder < 20) {
+                        str += teens[remainder - 10];
+                    } else {
+                        if (t > 0) {
+                            str += tens[t];
+                            if (u > 0) str += " ו" + units[u];
+                        } else if (u > 0) {
+                            str += units[u];
+                        }
+                    }
+                }
+                return str;
+            }
+
+            let thousands = Math.floor(num / 1000);
+            let remainder = num % 1000;
+            let parts = [];
+
+            if (thousands > 0) {
+                if (thousands === 1) {
+                    parts.push("אלף");
+                } else if (thousands === 2) {
+                    parts.push("אלפיים");
+                } else if (thousands >= 3 && thousands <= 10) {
+                    parts.push(units[thousands] + " אלפים");
+                } else {
+                    parts.push(convertGroupBelowThousand(thousands) + " אלף");
+                }
+            }
+
+            if (remainder > 0) {
+                let remStr = convertGroupBelowThousand(remainder);
+                if (thousands > 0 && !remStr.startsWith("ו")) {
+                    parts.push("ו" + remStr);
+                } else {
+                    parts.push(remStr);
+                }
+            }
+
+            return parts.join(" ") + " שקלים";
+        }
+
+        // Print function for Discharged Soldiers Deposit Voucher (Postal Bank App N930)
+        function printVoucherSoldier() {
+            if (!validateQuoteForm()) return;
+
+            const courseKey = els.courseSelect.value;
+            const preset = coursePresets[courseKey] || {};
+
+            // Dynamic course deposit code
+            const depositCode = preset.depositCode || preset.syllabusCode || els.syllabusCode.value || '40043101';
+            document.getElementById('vchDepositCode').innerText = depositCode;
+            document.getElementById('vchClientName').innerText = els.clientName.value.trim() || '______________';
+            document.getElementById('vchClientId').innerText = els.clientId.value.trim() || '______________';
+            
+            const finalPriceVal = Number(els.finalPrice.value) || 0;
+            document.getElementById('vchPriceFormatted').innerText = `₪ ${finalPriceVal.toLocaleString('he-IL')}`;
+            document.getElementById('vchPriceWords').innerText = numberToHebrewWords(finalPriceVal);
+
+            const client = els.clientName.value.trim() || '______________';
+            const courseName = preset.name || els.courseSelect.options[els.courseSelect.selectedIndex].text;
+            document.title = `שובר פיקדון לחיילים משוחררים - ${client} - ${courseName}`;
+
+            document.body.classList.remove('print-tofes');
+            document.body.classList.add('print-soldier-voucher');
+            
+            window.print();
+
+            setTimeout(() => {
+                document.body.classList.remove('print-soldier-voucher');
+                clearClientForm();
+            }, 500);
+        }
+        window.printVoucherSoldier = printVoucherSoldier;
 
         // Print function for Quote
         function printQuote() {
