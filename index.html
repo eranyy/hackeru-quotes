@@ -1480,7 +1480,15 @@
     </div>
 
     <!-- Live preview area -->
-    <div class="preview-area">
+    <div class="preview-area" style="flex-direction: column; align-items: center;">
+        <!-- Live Document Template Switcher Toolbar -->
+        <div class="preview-template-toolbar no-print" style="display: flex; gap: 8px; margin-bottom: 20px; background: rgba(15, 23, 42, 0.85); padding: 8px 16px; border-radius: 10px; border: 1px solid var(--border-color); justify-content: center; align-items: center; box-shadow: var(--shadow-lg); flex-wrap: wrap; z-index: 5;">
+            <span style="font-size: 13px; font-weight: 700; color: var(--primary-color);">📄 בחר תבנית לתצוגה והדפסה:</span>
+            <button type="button" class="preview-doc-tab active" id="btnDocTabQuote" onclick="switchDocumentTemplate('quote')" style="padding: 6px 14px; font-size: 12.5px; font-weight: 700; border-radius: 6px; border: 1px solid var(--primary-color); background: var(--primary-color); color: var(--text-dark); cursor: pointer; transition: all 0.2s;">📄 הצעת מחיר</button>
+            <button type="button" class="preview-doc-tab" id="btnDocTabTofes" onclick="switchDocumentTemplate('tofes')" style="padding: 6px 14px; font-size: 12.5px; font-weight: 700; border-radius: 6px; border: 1px solid #64748B; background: transparent; color: var(--text-light); cursor: pointer; transition: all 0.2s;">📝 טופס ה-2 (אישור לימודים)</button>
+            <button type="button" class="preview-doc-tab" id="btnDocTabVoucher" onclick="switchDocumentTemplate('voucher')" style="padding: 6px 14px; font-size: 12.5px; font-weight: 700; border-radius: 6px; border: 1px solid #64748B; background: transparent; color: var(--text-light); cursor: pointer; transition: all 0.2s;">🎖️ שובר לחייל N930</button>
+        </div>
+
         <div class="letterhead-container" id="printableQuote">
             <div class="letterhead-content">
                 <!-- Header -->
@@ -4491,8 +4499,14 @@
         }
         window.printVoucherSoldier = printVoucherSoldier;
 
-        // Print function for Quote
+        // Print function for Quote / Active Template
         function printQuote() {
+            if (activeDocumentTemplate === 'tofes') {
+                return printTofesHe2();
+            } else if (activeDocumentTemplate === 'voucher') {
+                return printVoucherSoldier();
+            }
+
             if (!validateQuoteForm()) return;
 
             // Automatically save quote to CRM history & Firebase upon printing
@@ -4526,6 +4540,41 @@
             document.body.classList.remove('print-tofes');
             updateDocumentTitle();
         });
+
+        // Live Document Template Switcher (Quote, Form H2, Soldier Voucher N930)
+        let activeDocumentTemplate = 'quote';
+        function switchDocumentTemplate(type) {
+            activeDocumentTemplate = type;
+            const quoteEl = document.getElementById('printableQuote');
+            const tofesEl = document.getElementById('printableTofesHe2');
+            const voucherEl = document.getElementById('printableSoldierVoucher');
+            
+            const btnQuote = document.getElementById('btnDocTabQuote');
+            const btnTofes = document.getElementById('btnDocTabTofes');
+            const btnVoucher = document.getElementById('btnDocTabVoucher');
+
+            if (quoteEl) quoteEl.style.display = 'none';
+            if (tofesEl) tofesEl.style.display = 'none';
+            if (voucherEl) voucherEl.style.display = 'none';
+
+            if (btnQuote) { btnQuote.style.background = 'transparent'; btnQuote.style.color = 'var(--text-light)'; btnQuote.style.borderColor = '#64748B'; }
+            if (btnTofes) { btnTofes.style.background = 'transparent'; btnTofes.style.color = 'var(--text-light)'; btnTofes.style.borderColor = '#64748B'; }
+            if (btnVoucher) { btnVoucher.style.background = 'transparent'; btnVoucher.style.color = 'var(--text-light)'; btnVoucher.style.borderColor = '#64748B'; }
+
+            if (type === 'tofes') {
+                if (tofesEl) { tofesEl.style.display = 'block'; tofesEl.style.margin = '0 auto'; }
+                if (btnTofes) { btnTofes.style.background = 'var(--primary-color)'; btnTofes.style.color = 'var(--text-dark)'; btnTofes.style.borderColor = 'var(--primary-color)'; }
+                if (typeof updateTofesPreview === 'function') updateTofesPreview();
+            } else if (type === 'voucher') {
+                if (voucherEl) { voucherEl.style.display = 'block'; voucherEl.style.margin = '0 auto'; }
+                if (btnVoucher) { btnVoucher.style.background = 'var(--primary-color)'; btnVoucher.style.color = 'var(--text-dark)'; btnVoucher.style.borderColor = 'var(--primary-color)'; }
+            } else {
+                // default quote
+                if (quoteEl) { quoteEl.style.display = 'flex'; quoteEl.style.margin = '0 auto'; }
+                if (btnQuote) { btnQuote.style.background = 'var(--primary-color)'; btnQuote.style.color = 'var(--text-dark)'; btnQuote.style.borderColor = 'var(--primary-color)'; }
+            }
+        }
+        window.switchDocumentTemplate = switchDocumentTemplate;
 
         window.printTofesHe2 = printTofesHe2;
         window.printQuote = printQuote;
