@@ -2030,6 +2030,15 @@
                 if (companyGroup) companyGroup.style.display = 'none';
             }
 
+            // Always automatically expand core input accordions so the user can immediately type details
+            const clientAcc = document.getElementById('clientDetailsAccordion');
+            const courseAcc = document.getElementById('courseDetailsAccordion');
+            const pricingAcc = document.getElementById('pricingAccordion');
+
+            if (clientAcc) clientAcc.open = true;
+            if (courseAcc) courseAcc.open = true;
+            if (pricingAcc) pricingAcc.open = true;
+
             applyUIFlowContext();
             updatePreview();
         }
@@ -2039,6 +2048,16 @@
         function applyUIFlowContext() {
             const fund = els.fundingType.value;
             const isGov = (fund === 'vouchers' || fund === 'deposit');
+
+            // Automatically ensure core input accordions are open when selecting vouchers or deposit
+            if (isGov) {
+                const clientAcc = document.getElementById('clientDetailsAccordion');
+                const courseAcc = document.getElementById('courseDetailsAccordion');
+                const pricingAcc = document.getElementById('pricingAccordion');
+                if (clientAcc) clientAcc.open = true;
+                if (courseAcc) courseAcc.open = true;
+                if (pricingAcc) pricingAcc.open = true;
+            }
 
             // 1. Toggle government documents checklist panel
             const voucherDocsPanel = document.getElementById('voucherDocsPanel');
