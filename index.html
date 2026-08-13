@@ -928,67 +928,43 @@
             <button id="themeToggleBtn" onclick="toggleTheme()" style="background: none; border: none; font-size: 20px; cursor: pointer; padding: 4px; border-radius: 4px; display: flex; align-items: center; justify-content: center; transition: background-color 0.2s;" title="החלף מצב צבע">🌙</button>
         </div>
         
-        <!-- STEP 1: 🎯 Mode & Funding Selection -->
-        <div style="background-color: rgba(0, 210, 122, 0.05); border: 1px solid rgba(0, 210, 122, 0.2); border-radius: 8px; padding: 10px; margin-bottom: 12px;">
-            <div style="font-weight: 700; font-size: 12.5px; color: var(--primary-color); margin-bottom: 6px; display: flex; align-items: center; gap: 4px;">
-                <span>שלב 1: 🎯 בחירת סוג ההצעה / מסלול מימון</span>
-            </div>
-
-            <!-- Quick Mode Selector Chips -->
-            <div class="mode-chips-container" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin-bottom: 8px;">
-                <button type="button" class="mode-chip active" id="btnModeStandard" onclick="setFormMode('standard')">
-                    <span style="font-size: 14px;">📄</span>
-                    <span>הצעה רגילה</span>
-                </button>
-                <button type="button" class="mode-chip" id="btnModeVouchers" onclick="setFormMode('vouchers')">
-                    <span style="font-size: 14px;">📜</span>
-                    <span>שוברים/פיקדון</span>
-                </button>
-                <button type="button" class="mode-chip" id="btnModeB2B" onclick="setFormMode('b2b')">
-                    <span style="font-size: 14px;">🏢</span>
-                    <span>עסקי B2B</span>
-                </button>
-            </div>
-
-            <div class="form-group" style="margin-bottom: 0;">
-                <label for="fundingType" style="color: #4F46E5; font-weight: 700; display: flex; align-items: center; gap: 6px; margin-bottom: 4px; font-size: 11.5px;">
-                    <span>מסלול מימון / זכאות:</span>
-                </label>
-                <select id="fundingType" style="border-color: #4F46E5; font-size: 12.5px; padding: 5px; width: 100%;">
-                    <option value="standard" selected>מסלול רגיל (מימון עצמי / הסדר שכ"ל)</option>
-                    <option value="vouchers">תוכנית השוברים (משרד העבודה/הקליטה)</option>
-                    <option value="deposit">פיקדון לחיילים משוחררים</option>
-                </select>
-                <div id="voucherWarning" style="display: none; padding: 8px; margin-top: 6px; text-align: right; line-height: 1.4; border: 1px solid; border-radius: 6px; font-size: 11.5px;"></div>
-            </div>
-        </div>
-        
-        <!-- Collapsible Importer & Manager -->
-        <details class="sidebar-accordion" style="margin-bottom: 10px;">
-            <summary>
-                <span>📥 ייבוא וניהול מועדים</span>
-                <span class="import-badge" id="importCount" style="font-size: 10px; font-weight: normal; background-color: var(--primary-color); color: var(--text-dark); padding: 2px 6px; border-radius: 4px;">0 מועדים</span>
-            </summary>
-            <div class="accordion-content">
-                <textarea id="prizaImport" placeholder="העתק את דף הקורסים מפריזה (כולל הטבלה) והדבק כאן..." rows="3" style="width: 100%; font-size: 12px; resize: none;"></textarea>
-                <button id="btnManualImport" style="width: 100%; padding: 8px; font-size: 13px; font-weight: 700; background-color: var(--primary-color); color: var(--text-dark); border: none; border-radius: 6px; cursor: pointer; transition: opacity 0.2s;">ייבוא נתונים מפריזה</button>
-                <div id="importSuccessMsg" class="badge-success" style="margin-top: 4px; display: none;">מועדים יובאו בהצלחה!</div>
-                
-                <div style="display: flex; justify-content: space-between; margin-top: 6px; gap: 6px;">
-                    <button class="clear-btn" style="color: #EF4444; border-color: #FCA5A5; font-size: 10.5px; padding: 4px 8px; flex: 1;" onclick="clearSavedSchedules()">נקה מועדים</button>
-                    <button class="clear-btn" id="btnDeleteActive" style="display: none; color: #EF4444; border-color: #FCA5A5; font-size: 10.5px; padding: 4px 8px; flex: 1;" onclick="deleteActiveSchedule()">מחק מועד פעיל</button>
-                </div>
-            </div>
-        </details>
-
-
-
-        <!-- Group 1: Recipient Details (Step 2) -->
+        <!-- Group 1: Document Type & Recipient Details (Step 1) -->
         <details class="sidebar-accordion" id="clientDetailsAccordion" open style="margin-bottom: 10px;">
             <summary style="border-color: #3B82F6;">
-                <span>שלב 2: 👤 פרטי הלקוח והחברה</span>
+                <span>שלב 1: 👤 סוג המסמך ופרטי הלקוח</span>
             </summary>
             <div class="accordion-content">
+                <!-- Mode & Funding Selection Chips -->
+                <div style="background-color: rgba(0, 210, 122, 0.05); border: 1px solid rgba(0, 210, 122, 0.2); border-radius: 8px; padding: 8px; margin-bottom: 10px;">
+                    <div style="font-weight: 700; font-size: 11.5px; color: var(--primary-color); margin-bottom: 6px;">
+                        🎯 בחירת סוג ההצעה / מסלול מימון:
+                    </div>
+
+                    <div class="mode-chips-container" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin-bottom: 6px;">
+                        <button type="button" class="mode-chip active" id="btnModeStandard" onclick="setFormMode('standard')">
+                            <span style="font-size: 13px;">📄</span>
+                            <span>הצעה רגילה</span>
+                        </button>
+                        <button type="button" class="mode-chip" id="btnModeVouchers" onclick="setFormMode('vouchers')">
+                            <span style="font-size: 13px;">📜</span>
+                            <span>שוברים/פיקדון</span>
+                        </button>
+                        <button type="button" class="mode-chip" id="btnModeB2B" onclick="setFormMode('b2b')">
+                            <span style="font-size: 13px;">🏢</span>
+                            <span>עסקי B2B</span>
+                        </button>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <select id="fundingType" style="border-color: #4F46E5; font-size: 12px; padding: 5px; width: 100%;">
+                            <option value="standard" selected>מסלול רגיל (מימון עצמי / הסדר שכ"ל)</option>
+                            <option value="vouchers">תוכנית השוברים (משרד העבודה/הקליטה)</option>
+                            <option value="deposit">פיקדון לחיילים משוחררים</option>
+                        </select>
+                        <div id="voucherWarning" style="display: none; padding: 6px; margin-top: 6px; text-align: right; line-height: 1.4; border: 1px solid; border-radius: 6px; font-size: 11px;"></div>
+                    </div>
+                </div>
+
                 <div style="display: flex; justify-content: flex-end; margin-bottom: 6px;">
                     <button type="button" class="clear-btn" onclick="clearClientForm()" style="font-size: 10.5px; padding: 3px 8px; color: #EF4444; border-color: #FCA5A5; background: #FEF2F2;">
                         🧹 נקה טופס להצעה חדשה
@@ -1191,10 +1167,10 @@
             </div>
         </div>
 
-        <!-- Group 3: Pricing & Payments (Step 3b) -->
+        <!-- Group 3: Pricing & Payments (Step 3) -->
         <details class="sidebar-accordion" id="pricingAccordion" open style="margin-bottom: 10px;">
             <summary style="border-color: #F59E0B;">
-                <span>שלב 3ב': 💰 תמחור ותנאי תשלום</span>
+                <span>שלב 3: 💰 מחיר והפקת המסמך בלחיצה</span>
             </summary>
             <div class="accordion-content">
                 <div class="form-group">
@@ -1345,76 +1321,69 @@
                     <strong>🏦 פרטי חשבון העברה בנקאית:</strong><br>
                     מוטב: האקריו בע"מ<br>
                     בנק: מזרחי טפחות (20), סניף: 466 | מספר חשבון: 207746
+                <!-- WhatsApp Messaging & Urgency Controls (Inside Step 3) -->
+                <div style="background-color: rgba(37, 211, 102, 0.08); border: 1px solid rgba(37, 211, 102, 0.3); border-radius: 8px; padding: 10px; margin-top: 10px; margin-bottom: 10px; display: flex; flex-direction: column; gap: 8px;">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label for="whatsappTemplateSelect" style="color: #25D366; font-weight: 700; display: flex; align-items: center; gap: 6px; margin-bottom: 4px; font-size: 11.5px;">
+                            <span>💬 תבנית הודעה לוואטסאפ (1-4)</span>
+                        </label>
+                        <select id="whatsappTemplateSelect" style="border-color: #25D366; font-size: 12.5px; padding: 5px; width: 100%;">
+                            <option value="full_quote" selected>תבנית 1: הצעת מחיר מלאה (הנוסח המלא)</option>
+                            <option value="follow_up">תבנית 2: הודעת תזכורת ומעקב (Follow-up)</option>
+                            <option value="vouchers_deposit">תבנית 3: פרטי שוברים ופיקדון בלבד</option>
+                            <option value="quick_comparison">תבנית 4: הצעה מקוצרת + זמני בוקר וערב</option>
+                        </select>
+                    </div>
+
+                    <!-- Collapsible Live WhatsApp Message Preview -->
+                    <details class="sidebar-accordion" id="whatsappPreviewAccordion" style="margin-top: 2px; margin-bottom: 2px; border-color: #25D366; background-color: rgba(37, 211, 102, 0.03);">
+                        <summary style="padding: 6px 10px; font-size: 11.5px; color: #25D366;">
+                            <span>👁️ תצוגה מקדימה להודעת וואטסאפ</span>
+                        </summary>
+                        <div class="accordion-content" style="padding: 8px;">
+                            <div id="whatsappLiveText" style="white-space: pre-wrap; font-size: 11px; line-height: 1.4; color: var(--text-light); background: rgba(0, 0, 0, 0.2); padding: 8px; border-radius: 6px; max-height: 140px; overflow-y: auto; font-family: inherit;"></div>
+                            <button type="button" class="btn" onclick="copyToClipboard()" style="margin-top: 6px; padding: 6px; font-size: 11px; width: 100%; background: #25D366; color: white;">📋 העתק הודעה בלחיצה</button>
+                        </div>
+                    </details>
+
+                    <!-- Urgency Countdown Display & Toggle -->
+                    <div class="import-box" style="padding: 8px; border-color: #F59E0B; background-color: rgba(245, 158, 11, 0.05); display: flex; flex-direction: column; gap: 4px; border-style: dashed; border-radius: 6px; margin: 2px 0;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; font-size: 11.5px;">
+                            <span style="color: #F59E0B; font-weight: bold;">⏳ ימים לפתיחת הקורס:</span>
+                            <span id="countdownDisplay" style="font-weight: bold; background-color: #F59E0B; color: #0F172A; padding: 2px 6px; border-radius: 4px; font-size: 11px;">מחשב...</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 6px; font-size: 11px;">
+                            <input type="checkbox" id="chkIncludeUrgency" checked style="width: auto; cursor: pointer;">
+                            <label for="chkIncludeUrgency" style="margin-bottom: 0; cursor: pointer; color: #94A3B8;">שלב משפט דחיפות בהודעת הוואטסאפ</label>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 6px; font-size: 11px;">
+                            <input type="checkbox" id="chkShowUrgencyOnQuote" style="width: auto; cursor: pointer;">
+                            <label for="chkShowUrgencyOnQuote" style="margin-bottom: 0; cursor: pointer; color: #94A3B8;">הצג משפט דחיפות בהצעה המודפסת</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Immediate Action Buttons Grid (Inside Step 3) -->
+                <div class="action-grid" style="margin-top: 10px;">
+                    <button class="btn btn-pdf" onclick="printQuote()">
+                        🖨️ הדפסה כ-PDF
+                        <span>שמור והדפס הצעה</span>
+                    </button>
+                    <button class="btn btn-whatsapp" onclick="shareOnWhatsApp()">
+                        💬 שלח בוואטסאפ
+                        <span>נוסח לפי תבנית</span>
+                    </button>
+                    <button class="btn btn-clipboard" onclick="copyToClipboard()">
+                        📋 העתק טקסט
+                        <span>חיבור והדבקה ידנית</span>
+                    </button>
+                    <button class="btn btn-word" onclick="exportWordHtml()">
+                        📝 קובץ Word
+                        <span>עריכה מלאה ב-Word</span>
+                    </button>
                 </div>
             </div>
         </details>
-    </div>
-</details>
-
-        <!-- STEP 4: 🖨️ Outputs & WhatsApp Messaging -->
-        <div style="background-color: rgba(37, 211, 102, 0.08); border: 1px solid rgba(37, 211, 102, 0.3); border-radius: 8px; padding: 10px; margin-bottom: 12px; display: flex; flex-direction: column; gap: 8px;">
-            <div style="font-weight: 700; font-size: 12.5px; color: #25D366; display: flex; align-items: center; gap: 4px;">
-                <span>שלב 4: 💬 תבנית הודעת וואטסאפ ותקשורת</span>
-            </div>
-
-            <div class="form-group" style="margin-bottom: 0;">
-                <label for="whatsappTemplateSelect" style="color: #25D366; font-weight: 700; display: flex; align-items: center; gap: 6px; margin-bottom: 4px; font-size: 11.5px;">
-                    <span>תבנית הודעה לוואטסאפ (1-4)</span>
-                </label>
-                <select id="whatsappTemplateSelect" style="border-color: #25D366; font-size: 13px; padding: 6px; width: 100%;">
-                    <option value="full_quote" selected>תבנית 1: הצעת מחיר מלאה (הנוסח המלא)</option>
-                    <option value="follow_up">תבנית 2: הודעת תזכורת ומעקב (Follow-up)</option>
-                    <option value="vouchers_deposit">תבנית 3: פרטי שוברים ופיקדון בלבד</option>
-                    <option value="quick_comparison">תבנית 4: הצעה מקוצרת + זמני בוקר וערב</option>
-                </select>
-            </div>
-
-            <!-- Collapsible Live WhatsApp Message Preview -->
-            <details class="sidebar-accordion" id="whatsappPreviewAccordion" style="margin-top: 4px; margin-bottom: 2px; border-color: #25D366; background-color: rgba(37, 211, 102, 0.03);">
-                <summary style="padding: 6px 10px; font-size: 11.5px; color: #25D366;">
-                    <span>👁️ תצוגה מקדימה להודעת וואטסאפ</span>
-                </summary>
-                <div class="accordion-content" style="padding: 8px;">
-                    <div id="whatsappLiveText" style="white-space: pre-wrap; font-size: 11px; line-height: 1.4; color: var(--text-light); background: rgba(0, 0, 0, 0.2); padding: 8px; border-radius: 6px; max-height: 140px; overflow-y: auto; font-family: inherit;"></div>
-                    <button type="button" class="btn" onclick="copyToClipboard()" style="margin-top: 6px; padding: 6px; font-size: 11px; width: 100%; background: #25D366; color: white;">📋 העתק הודעה בלחיצה</button>
-                </div>
-            </details>
-
-            <!-- Urgency Countdown Display & Toggle -->
-            <div class="import-box" style="padding: 10px; border-color: #F59E0B; background-color: rgba(245, 158, 11, 0.05); display: flex; flex-direction: column; gap: 6px; border-style: dashed; border-radius: 6px; margin: 4px 0;">
-                <div style="display: flex; justify-content: space-between; align-items: center; font-size: 12px;">
-                    <span style="color: #F59E0B; font-weight: bold;">⏳ ימים לפתיחת הקורס:</span>
-                    <span id="countdownDisplay" style="font-weight: bold; background-color: #F59E0B; color: #0F172A; padding: 2px 6px; border-radius: 4px; font-size: 11px;">מחשב...</span>
-                </div>
-                <div style="display: flex; align-items: center; gap: 6px; font-size: 11px;">
-                    <input type="checkbox" id="chkIncludeUrgency" checked style="width: auto; cursor: pointer;">
-                    <label for="chkIncludeUrgency" style="margin-bottom: 0; cursor: pointer; color: #94A3B8;">שלב משפט דחיפות בהודעת הוואטסאפ</label>
-                </div>
-                <div style="display: flex; align-items: center; gap: 6px; font-size: 11px;">
-                    <input type="checkbox" id="chkShowUrgencyOnQuote" style="width: auto; cursor: pointer;">
-                    <label for="chkShowUrgencyOnQuote" style="margin-bottom: 0; cursor: pointer; color: #94A3B8;">הצג משפט דחיפות בהצעה המודפסת</label>
-                </div>
-            </div>
-        </div>
-
-        <div class="action-grid">
-            <button class="btn btn-pdf" onclick="printQuote()">
-                🖨️ הדפסה כ-PDF
-                <span>שמור והדפס הצעה</span>
-            </button>
-            <button class="btn btn-whatsapp" onclick="shareOnWhatsApp()">
-                💬 שלח בוואטסאפ
-                <span>נוסח לפי תבנית</span>
-            </button>
-            <button class="btn btn-clipboard" onclick="copyToClipboard()">
-                📋 העתק טקסט
-                <span>חיבור והדבקה ידנית</span>
-            </button>
-            <button class="btn btn-word" onclick="exportWordHtml()">
-                📝 קובץ Word
-                <span>עריכה מלאה ב-Word</span>
-            </button>
-        </div>
         <!-- Collapsible CRM & Firebase Sync Panel -->
         <details class="sidebar-accordion" id="syncHistoryAccordion" style="margin-top: 15px;">
             <summary style="border-color: #A5B4FC;">
