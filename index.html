@@ -3351,7 +3351,7 @@
                             savedSchedules[existingIndex].title = title;
                             updated++;
                         } else {
-                            savedSchedules.push({
+                            savedSchedules.unshift({
                                 course: detectedCourse,
                                 startDateA: startDateA,
                                 startDateB: startDateB, 
