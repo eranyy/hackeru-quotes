@@ -967,6 +967,11 @@
                 <span>שלב 2: 👤 פרטי הלקוח והחברה</span>
             </summary>
             <div class="accordion-content">
+                <div style="display: flex; justify-content: flex-end; margin-bottom: 6px;">
+                    <button type="button" class="clear-btn" onclick="clearClientForm()" style="font-size: 10.5px; padding: 3px 8px; color: #EF4444; border-color: #FCA5A5; background: #FEF2F2;">
+                        🧹 נקה טופס להצעה חדשה
+                    </button>
+                </div>
                 <div class="form-row">
                     <div class="form-group">
                         <label for="clientName">שם הלקוח (לכבוד) <span style="color: #EF4444; font-weight: bold;">*</span></label>
@@ -3868,6 +3873,8 @@
                 clientId: els.clientId.value,
                 clientPhone: els.clientPhone.value,
                 courseKey: els.courseSelect.value,
+                courseFormat: els.courseFormat ? els.courseFormat.value : 'evening',
+                studyFormat: els.studyFormat ? els.studyFormat.value : 'היברידי',
                 startDate: els.startDate.value,
                 endDate: els.endDate.value,
                 scheduleDays: els.scheduleDays.value,
@@ -3875,10 +3882,12 @@
                 originalPrice: els.originalPrice.value,
                 scholarshipAmount: els.scholarshipAmount.value,
                 finalPrice: els.finalPrice.value,
-                idfPrice: els.idfPrice.value,
+                idfPrice: els.idfPrice ? els.idfPrice.value : '',
                 fundingType: els.fundingType.value,
                 installments: els.installments.value,
                 templateStyle: els.templateStyle.value,
+                morningSchedule: els.morningSchedule ? els.morningSchedule.value : '',
+                eveningSchedule: els.eveningSchedule ? els.eveningSchedule.value : '',
                 timestamp: new Date().toISOString()
             };
             
@@ -3915,10 +3924,14 @@
                 }
                 els.courseSelect.value = hasOption ? (item.courseKey || 'custom') : 'custom';
                 
+                if (item.courseFormat && els.courseFormat) els.courseFormat.value = item.courseFormat;
+                if (item.studyFormat && els.studyFormat) els.studyFormat.value = item.studyFormat;
                 els.startDate.value = item.startDate || '';
                 els.endDate.value = item.endDate || '';
                 els.scheduleDays.value = item.scheduleDays || '';
                 els.academicHours.value = item.academicHours || '';
+                if (item.morningSchedule && els.morningSchedule) els.morningSchedule.value = item.morningSchedule;
+                if (item.eveningSchedule && els.eveningSchedule) els.eveningSchedule.value = item.eveningSchedule;
                 els.originalPrice.value = item.originalPrice || '';
                 els.scholarshipAmount.value = item.scholarshipAmount || '';
                 els.finalPrice.value = item.finalPrice || '';
@@ -3926,6 +3939,14 @@
                 els.fundingType.value = item.fundingType || 'standard';
                 els.installments.value = item.installments || '36';
                 if (item.templateStyle) els.templateStyle.value = item.templateStyle;
+                
+                // Automatically open all input accordions so Eran can immediately edit
+                const clientAcc = document.getElementById('clientDetailsAccordion');
+                const courseAcc = document.getElementById('courseDetailsAccordion');
+                const pricingAcc = document.getElementById('pricingAccordion');
+                if (clientAcc) clientAcc.open = true;
+                if (courseAcc) courseAcc.open = true;
+                if (pricingAcc) pricingAcc.open = true;
                 
                 bindings.forEach(([inputId, labelId]) => {
                     const el = document.getElementById(inputId);
@@ -4085,7 +4106,6 @@
 
             navigator.clipboard.writeText(message).then(() => {
                 alert("הטקסט הועתק ללוח בהצלחה!");
-                clearClientForm();
             });
         }
 
@@ -4305,7 +4325,6 @@
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
-            clearClientForm();
         }
 
         // Print function for Form H2
@@ -4348,10 +4367,6 @@
 
             document.body.classList.add('print-tofes');
             window.print();
-            
-            setTimeout(() => {
-                clearClientForm();
-            }, 500);
         }
 
         // Convert number to Hebrew words helper for soldier deposit voucher
@@ -4447,7 +4462,6 @@
 
             setTimeout(() => {
                 document.body.classList.remove('print-soldier-voucher');
-                clearClientForm();
             }, 500);
         }
         window.printVoucherSoldier = printVoucherSoldier;
@@ -4479,7 +4493,6 @@
                 if (previewArea && window.innerWidth <= 1024 && tabEdit && tabEdit.classList.contains('active')) {
                     previewArea.style.display = 'none';
                 }
-                clearClientForm();
             }, 500);
         }
 
