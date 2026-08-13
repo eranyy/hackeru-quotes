@@ -1715,6 +1715,22 @@
 
     <!-- Script for handling live updates, storage and computations -->
     <script>
+        // Global Firebase State & Constants (Declared at top to avoid TDZ ReferenceErrors)
+        const DEFAULT_FIREBASE_CONFIG = {
+            apiKey: "AIzaSyC4v0mxykA-VyCI6de4fr1yaVHj9zVxaL4",
+            authDomain: "hackeru-quotes.firebaseapp.com",
+            databaseURL: "https://hackeru-quotes-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "hackeru-quotes",
+            storageBucket: "hackeru-quotes.firebasestorage.app",
+            messagingSenderId: "695367652858",
+            appId: "1:695367652858:web:72b9a70310e2ff27668043",
+            measurementId: "G-864W6N0X0N"
+        };
+        const DEFAULT_SYNC_KEY = "eran";
+        let db = null;
+        let isFirebaseInitialized = false;
+        let isSyncingFromRemote = false;
+
         // Preset course options database
         const coursePresets = {
             cyber: {
@@ -3347,23 +3363,27 @@
             }
         }
 
-        els.prizaImport.addEventListener('input', (e) => {
-            try {
-                processPrizaImport(e.target.value);
-            } catch (err) {
-                console.error("Error during import parsing:", err);
-                alert("שגיאה במהלך ייבוא הנתונים: " + err.message);
-            }
-        });
+        if (els.prizaImport) {
+            els.prizaImport.addEventListener('input', (e) => {
+                try {
+                    processPrizaImport(e.target.value);
+                } catch (err) {
+                    console.error("Error during import parsing:", err);
+                    alert("שגיאה במהלך ייבוא הנתונים: " + err.message);
+                }
+            });
+        }
 
-        els.btnManualImport.addEventListener('click', () => {
-            try {
-                processPrizaImport(els.prizaImport.value);
-            } catch (err) {
-                console.error("Error during import parsing:", err);
-                alert("שגיאה במהלך ייבוא הנתונים: " + err.message);
-            }
-        });
+        if (els.btnManualImport && els.prizaImport) {
+            els.btnManualImport.addEventListener('click', () => {
+                try {
+                    processPrizaImport(els.prizaImport.value);
+                } catch (err) {
+                    console.error("Error during import parsing:", err);
+                    alert("שגיאה במהלך ייבוא הנתונים: " + err.message);
+                }
+            });
+        }
 
         function deleteActiveSchedule() {
             if (activeScheduleIndex !== -1 && activeScheduleItem) {
@@ -4767,20 +4787,26 @@
         }
 
         function uploadToFirebase() {
-            if (!isFirebaseInitialized || !db || isSyncingFromRemote) return;
-            
-            const syncKey = localStorage.getItem('hackeru_fb_synckey');
-            if (!syncKey) return;
-            const safeKey = encodeURIComponent(syncKey).replace(/\./g, '%2E');
-
-            db.ref(`workspaces/${safeKey}/schedules`).set(savedSchedules);
-            
-            let history = [];
             try {
-                const historyData = localStorage.getItem('hackeru_quote_history');
-                if (historyData) history = JSON.parse(historyData);
-            } catch(e) {}
-            db.ref(`workspaces/${safeKey}/history`).set(history);
+                if (typeof isFirebaseInitialized === 'undefined' || !isFirebaseInitialized || !db || isSyncingFromRemote) return;
+                
+                const syncKey = localStorage.getItem('hackeru_fb_synckey');
+                if (!syncKey) return;
+                const safeKey = encodeURIComponent(syncKey).replace(/\./g, '%2E');
+
+                if (typeof savedSchedules !== 'undefined') {
+                    db.ref(`workspaces/${safeKey}/schedules`).set(savedSchedules);
+                }
+                
+                let history = [];
+                try {
+                    const historyData = localStorage.getItem('hackeru_quote_history');
+                    if (historyData) history = JSON.parse(historyData);
+                } catch(e) {}
+                db.ref(`workspaces/${safeKey}/history`).set(history);
+            } catch(err) {
+                console.warn("uploadToFirebase deferred:", err);
+            }
         }
 
         function disconnectFirebase() {
