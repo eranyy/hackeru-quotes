@@ -44,17 +44,20 @@
             display: flex;
             height: 100vh;
             overflow: hidden;
+            direction: rtl;
         }
 
         /* Sidebar Control Panel */
         .sidebar {
-            width: 460px;
+            width: 440px;
+            min-width: 440px;
+            max-width: 440px;
             background-color: var(--panel-bg);
             border-left: 1px solid var(--border-color);
-            padding: 24px;
+            padding: 20px;
             display: flex;
             flex-direction: column;
-            gap: 18px;
+            gap: 14px;
             overflow-y: auto;
             box-shadow: var(--shadow-lg);
             z-index: 10;
@@ -67,13 +70,17 @@
         /* Main Preview Area */
         .preview-area {
             flex: 1;
-            padding: 40px;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
+            padding: 30px;
+            display: flex !important;
+            justify-content: center !important;
+            align-items: flex-start !important;
             overflow-y: auto;
             background-color: #0B0F19;
             position: relative;
+        }
+
+        body.light-theme .preview-area {
+            background-color: #CBD5E1;
         }
 
         h2 {
@@ -1728,8 +1735,22 @@
         };
         const DEFAULT_SYNC_KEY = "eran";
         let db = null;
-        let isFirebaseInitialized = false;
-        let isSyncingFromRemote = false;
+        // Theme Switcher (Dark/Light mode) Logic (Globally available at startup)
+        function toggleTheme() {
+            const isLight = document.body.classList.toggle('light-theme');
+            localStorage.setItem('hackeru_theme', isLight ? 'light' : 'dark');
+            updateThemeUI(isLight);
+        }
+
+        function updateThemeUI(isLight) {
+            const themeBtn = document.getElementById('themeToggleBtn');
+            const mobileThemeBtn = document.getElementById('mobileThemeToggleBtn');
+            const icon = isLight ? '☀️' : '🌙';
+            
+            if (themeBtn) themeBtn.innerText = icon;
+            if (mobileThemeBtn) mobileThemeBtn.innerText = icon;
+        }
+        window.toggleTheme = toggleTheme;
 
         // Preset course options database
         const coursePresets = {
@@ -2044,7 +2065,7 @@
             const btnVoucher = document.getElementById('btnModeVouchers');
             const btnB2B = document.getElementById('btnModeB2B');
             const companyGroup = document.getElementById('companyNameGroup');
-            const fundingType = els.fundingType;
+            const fundingType = document.getElementById('fundingType') || (typeof els !== 'undefined' ? els.fundingType : null);
 
             if (btnStd) btnStd.classList.remove('active');
             if (btnVoucher) btnVoucher.classList.remove('active');
