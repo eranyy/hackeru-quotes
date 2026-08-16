@@ -446,14 +446,17 @@
                 box-shadow: none !important;
             }
             
-            /* Tofes printing toggles */
-            body:not(.print-tofes) #printableQuote {
-                display: block !important;
+            /* Document Template Printing Visibility Toggles */
+            body:not(.print-tofes):not(.print-soldier-voucher) #printableQuote {
+                display: flex !important;
             }
-            body:not(.print-tofes) #printableTofesHe2 {
+            body:not(.print-tofes):not(.print-soldier-voucher) #printableTofesHe2,
+            body:not(.print-tofes):not(.print-soldier-voucher) #printableSoldierVoucher {
                 display: none !important;
             }
-            body.print-tofes #printableQuote {
+
+            body.print-tofes #printableQuote,
+            body.print-tofes #printableSoldierVoucher {
                 display: none !important;
             }
             body.print-tofes #printableTofesHe2 {
@@ -462,6 +465,21 @@
                 line-height: 1.4 !important;
                 font-size: 13.5px !important;
             }
+
+            body.print-soldier-voucher #printableQuote,
+            body.print-soldier-voucher #printableTofesHe2 {
+                display: none !important;
+            }
+            body.print-soldier-voucher #printableSoldierVoucher {
+                display: block !important;
+                padding: 10px !important;
+            }
+            body.print-soldier-voucher .soldier-voucher-page {
+                box-shadow: none !important;
+                margin: 0 auto !important;
+                width: 100% !important;
+            }
+
             body.print-tofes .tofes-header {
                 margin-bottom: 15px !important;
                 padding-bottom: 8px !important;
@@ -950,47 +968,6 @@
             color: #4F46E5 !important;
             cursor: pointer;
         }
-
-        /* Print Media Overrides */
-        @media print {
-            body {
-                background: white !important;
-                color: black !important;
-                margin: 0 !important;
-                padding: 0 !important;
-            }
-            /* Explicitly hide the sidebar structure */
-            .sidebar, .mobile-tabs, .no-print, .sticky-action-bar, .preview-template-toolbar, header {
-                display: none !important;
-                height: 0 !important;
-                width: 0 !important;
-                position: absolute !important;
-                left: -9999px !important;
-            }
-            .app-container {
-                display: block !important;
-            }
-            .preview-area {
-                display: block !important;
-                width: 100% !important;
-                height: auto !important;
-                background: white !important;
-                overflow: visible !important;
-                padding: 0 !important;
-                margin: 0 !important;
-                position: static !important;
-            }
-            .letterhead-container, #printableQuote, #printableTofesHe2 {
-                box-shadow: none !important;
-                margin: 0 !important;
-                transform: none !important;
-                width: 100% !important;
-                max-width: 100% !important;
-            }
-            @page {
-                margin: 0;
-            }
-        }
     </style>
 
 </head>
@@ -1223,7 +1200,7 @@
                     </div>
                 </details>
             </div>
-        </details>
+        </div>
 
         <!-- Voucher Documents Package -->
         <div class="import-box" id="voucherDocsPanel" style="display: none; border-color: var(--primary-color); background-color: rgba(0, 210, 122, 0.05); margin-top: 10px; margin-bottom: 10px;">
