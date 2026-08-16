@@ -1036,10 +1036,10 @@
                     <div class="form-group" id="clientIdGroup">
                         <div style="display: flex; justify-content: space-between; align-items: center;">
                             <label for="clientId">תעודת זהות <span class="gov-req-star" style="color: #EF4444; font-weight: bold; display: none;">*</span></label>
-                            <div class="toggle-badge-container">
+                            <label class="toggle-badge-container">
                                 <input type="checkbox" id="chkShowClientId" checked>
-                                <label for="chkShowClientId">הצג ת.ז</label>
-                            </div>
+                                <span>הצג ת.ז</span>
+                            </label>
                         </div>
                         <input type="text" id="clientId" value="">
                     </div>
@@ -1256,10 +1256,10 @@
                 <div class="form-group">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
                         <label for="quoteValidity">תוקף ההצעה (בסוגריים)</label>
-                        <div class="toggle-badge-container">
+                        <label class="toggle-badge-container">
                             <input type="checkbox" id="chkShowValidity" checked>
-                            <label for="chkShowValidity">הצג תוקף</label>
-                        </div>
+                            <span>הצג תוקף</span>
+                        </label>
                     </div>
                     <select id="quoteValidity">
                         <option value="תקף לחודש זה בלבד" selected>תקף לחודש זה בלבד</option>
@@ -1281,10 +1281,10 @@
                             <label for="scholarshipAmount" style="margin-bottom: 0;">גובה המלגה / הנחה</label>
                             <div style="display: flex; align-items: center; gap: 6px;">
                                 <a href="https://scholarships.hackeru.co.il/simulation" target="_blank" style="font-size: 10px; color: var(--primary-color); text-decoration: underline;">🔗 סימולטור</a>
-                                <div class="toggle-badge-container">
+                                <label class="toggle-badge-container">
                                     <input type="checkbox" id="chkShowScholarship" checked>
-                                    <label for="chkShowScholarship">הצג מלגה</label>
-                                </div>
+                                    <span>הצג מלגה</span>
+                                </label>
                             </div>
                         </div>
                         <input type="number" id="scholarshipAmount" value="0" placeholder="0">
@@ -1309,10 +1309,10 @@
                     <label for="showInstallmentsOnQuote" style="margin-bottom: 0; font-size: 12px; font-weight: 600; cursor: pointer; color: var(--text-light); display: flex; align-items: center; gap: 6px;">
                         <span>💳 הצג פריסת תשלומים בהצעת המחיר</span>
                     </label>
-                    <div class="toggle-badge-container">
+                    <label class="toggle-badge-container">
                         <input type="checkbox" id="showInstallmentsOnQuote" checked>
-                        <label for="showInstallmentsOnQuote">הצג בהצעה</label>
-                    </div>
+                        <span>הצג בהצעה</span>
+                    </label>
                 </div>
 
                 <!-- Collapsible Installments Simulator -->
@@ -2280,13 +2280,13 @@
 
             let html = "";
 
-            if (style === "scholarship" && showSchol) {
+            if (showSchol && (style === "scholarship" || (orig > final && style !== "discount" && style !== "idf"))) {
                 html = `
                     <li><span class="bold-text">מחיר קורס מקורי:</span> ${formatILS(orig)}</li>
-                    <li><span class="bold-text">סה"כ מלגות:</span> ${formatILS(schol)}</li>
+                    <li><span class="bold-text">סה"כ מלגות:</span> ${formatILS(schol || (orig - final))}</li>
                     <li><span class="bold-text">מחיר אחרי מלגות:</span> <span class="highlight-yellow">${formatILS(final)}</span> ${validityText ? `<span class="bold-text">${validityText}</span>` : ''}</li>
                 `;
-            } else if (style === "discount" && showSchol) {
+            } else if (showSchol && style === "discount") {
                 html = `
                     <li><span class="bold-text">עלות:</span> <span class="strike-through">${formatILS(orig)}</span> כולל מע"מ פר משתתף</li>
                     <li><span class="bold-text">עלות קורס לאחר הנחה:</span> <span class="highlight-yellow">${formatILS(final)}</span> כולל מע"מ פר משתתף</li>
@@ -2296,7 +2296,7 @@
                     <li><span class="bold-text">עלות:</span> ${formatILS(orig)} כולל מע"מ פר משתתף</li>
                     <li><span class="bold-text">עלות קורס עבור פורשי צה"ל:</span> <span class="highlight-yellow">${formatILS(idf)}</span> כולל מע"מ פר משתתף</li>
                 `;
-            } else { // standard or hidden details
+            } else { // standard or when showSchol is unchecked
                 html = `
                     <li><span class="bold-text">עלות הקורס:</span> <span class="highlight-yellow">${formatILS(final || orig)}</span> כולל מע"מ פר משתתף ${validityText ? `<span class="bold-text">${validityText}</span>` : ''}</li>
                 `;
@@ -2566,6 +2566,18 @@
         const chkShowScholarship = document.getElementById('chkShowScholarship');
         if (chkShowScholarship) {
             chkShowScholarship.addEventListener('change', () => {
+                if (chkShowScholarship.checked) {
+                    if (els.templateStyle.value === 'standard') {
+                        els.templateStyle.value = 'scholarship';
+                    }
+                    if (Number(els.scholarshipAmount.value) === 0 && Number(els.originalPrice.value) > Number(els.finalPrice.value)) {
+                        els.scholarshipAmount.value = Number(els.originalPrice.value) - Number(els.finalPrice.value);
+                    }
+                } else {
+                    if (els.templateStyle.value === 'scholarship') {
+                        els.templateStyle.value = 'standard';
+                    }
+                }
                 updatePreview();
                 saveActiveFormDraft();
             });
