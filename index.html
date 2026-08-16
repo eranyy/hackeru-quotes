@@ -614,7 +614,7 @@
             }
         }
 
-        @media (max-width: 1024px) {
+        @media (max-width: 768px) {
             body {
                 flex-direction: column;
                 height: 100vh;
@@ -3440,7 +3440,7 @@
                 // 2. Specific keyword matches if exact match failed
                 if (!targetOptionValue) {
                     if (normDetected.includes("management") || normDetected.includes("expert")) targetOptionValue = "aimanager";
-                    else if (normDetected.includes("מיישם") || normDetected.includes("specialist")) targetOptionValue = "aispecialist";
+                    else if (normDetected.includes("מיישם") || normDetected.includes("מיישמי") || normDetected.includes("specialist") || normDetected.includes("ai")) targetOptionValue = "aispecialist";
                     else if (normDetected.includes("סייבר") || normDetected.includes("cyber")) targetOptionValue = "cyber";
                     else if (normDetected.includes("fullstack") || normDetected.includes("תוכנה") || normDetected.includes("פיתוח")) targetOptionValue = "fullstack";
                     else if (normDetected.includes("עיצוב") || normDetected.includes("ui/ux") || normDetected.includes("ux")) targetOptionValue = "uiux";
@@ -4619,7 +4619,7 @@
             const tabEdit = document.getElementById('tabEdit');
             const tabPreview = document.getElementById('tabPreview');
 
-            if (window.innerWidth > 1024) {
+            if (window.innerWidth > 768) {
                 if (sidebar) sidebar.style.display = 'flex';
                 if (previewArea) previewArea.style.display = 'flex';
                 return;
@@ -4640,7 +4640,7 @@
         }
 
         function adjustMobileScale() {
-            if (window.innerWidth > 1024) {
+            if (window.innerWidth > 768) {
                 const previewEl = document.getElementById('printableQuote');
                 if (previewEl) {
                     previewEl.style.transform = '';
