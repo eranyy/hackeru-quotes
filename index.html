@@ -49,15 +49,15 @@
 
         /* Sidebar Control Panel */
         .sidebar {
-            width: 440px;
-            min-width: 440px;
-            max-width: 440px;
+            width: 460px;
+            min-width: 460px;
+            max-width: 460px;
             background-color: var(--panel-bg);
             border-left: 1px solid var(--border-color);
-            padding: 20px;
+            padding: 24px;
             display: flex;
             flex-direction: column;
-            gap: 14px;
+            gap: 16px;
             overflow-y: auto;
             box-shadow: var(--shadow-lg);
             z-index: 10;
@@ -112,19 +112,19 @@
         .form-group {
             display: flex;
             flex-direction: column;
-            gap: 6px;
-            margin-bottom: 10px;
+            gap: 8px;
+            margin-bottom: 14px;
         }
 
         .form-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 12px;
+            gap: 16px;
         }
 
         label {
             font-size: 13px;
-            font-weight: 500;
+            font-weight: 600;
             color: #94A3B8;
         }
 
@@ -132,10 +132,10 @@
             background-color: #0F172A;
             border: 1px solid var(--border-color);
             color: var(--text-light);
-            padding: 10px 12px;
-            border-radius: 6px;
+            padding: 12px 14px;
+            border-radius: 8px;
             font-family: inherit;
-            font-size: 14px;
+            font-size: 15px;
             outline: none;
             transition: border-color 0.2s, box-shadow 0.2s;
         }
@@ -150,16 +150,20 @@
             background-color: var(--primary-color);
             color: var(--text-dark);
             border: none;
-            padding: 12px;
-            border-radius: 6px;
+            padding: 14px;
+            border-radius: 8px;
             font-weight: 700;
             cursor: pointer;
-            transition: background-color 0.2s;
+            transition: background-color 0.2s, transform 0.1s;
             display: flex;
             justify-content: center;
             align-items: center;
             gap: 8px;
-            font-size: 14px;
+            font-size: 15px;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
         }
 
         .btn:hover {
@@ -496,9 +500,9 @@
             }
             .sidebar {
                 display: flex !important;
-                width: 440px !important;
-                min-width: 440px !important;
-                max-width: 440px !important;
+                width: 460px !important;
+                min-width: 460px !important;
+                max-width: 460px !important;
                 height: 100% !important;
                 border-left: 1px solid var(--border-color) !important;
             }
@@ -754,27 +758,27 @@
         .action-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 8px;
-            margin-top: 10px;
+            gap: 10px;
+            margin-top: 14px;
         }
         
         .action-grid .btn {
-            font-size: 13px;
-            padding: 10px 8px;
+            font-size: 14px;
+            padding: 12px 10px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 4px;
+            gap: 6px;
             text-align: center;
-            border-radius: 6px;
-            min-height: 52px;
+            border-radius: 8px;
+            min-height: 60px;
             margin-top: 0;
             width: 100%;
         }
 
         .action-grid .btn span {
-            font-size: 10.5px;
+            font-size: 11.5px;
             font-weight: 500;
             opacity: 0.9;
         }
@@ -982,27 +986,27 @@
 
     <!-- Sidebar controls -->
     <div class="sidebar no-print">
-        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; margin-bottom: 10px;">
-            <h2 style="border-bottom: none; margin-bottom: 0; padding-bottom: 0;">הגדרות הצעת מחיר (v1.4)</h2>
-            <div style="display: flex; align-items: center; gap: 6px;">
-                <button type="button" id="btnOpenCrmModal" onclick="openCrmModal()" style="background: rgba(99, 102, 241, 0.12); border: 1px solid #6366F1; color: #6366F1; font-weight: 700; font-size: 11.5px; padding: 5px 10px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 5px; transition: all 0.2s;" title="היסטוריית הצעות מחיר (CRM)">
-                    <span style="font-size: 13px;">📂</span>
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; margin-bottom: 14px;">
+            <h2 style="border-bottom: none; margin-bottom: 0; padding-bottom: 0; font-size: 20px;">הגדרות הצעת מחיר</h2>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <button type="button" id="btnOpenCrmModal" onclick="openCrmModal()" style="background: rgba(99, 102, 241, 0.12); border: 1px solid #6366F1; color: #6366F1; font-weight: 700; font-size: 13px; padding: 6px 12px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s;" title="היסטוריית הצעות מחיר (CRM)">
+                    <span style="font-size: 14px;">📂</span>
                     <span>היסטוריה</span>
-                    <span id="topHistoryBadge" style="background: #6366F1; color: white; border-radius: 10px; padding: 1px 6px; font-size: 10px; font-weight: 700;">0</span>
+                    <span id="topHistoryBadge" style="background: #6366F1; color: white; border-radius: 10px; padding: 2px 8px; font-size: 11px; font-weight: 700;">0</span>
                 </button>
-                <button id="themeToggleBtn" onclick="toggleTheme()" style="background: none; border: none; font-size: 20px; cursor: pointer; padding: 4px; border-radius: 4px; display: flex; align-items: center; justify-content: center; transition: background-color 0.2s;" title="החלף מצב צבע">🌙</button>
+                <button id="themeToggleBtn" onclick="toggleTheme()" style="background: none; border: none; font-size: 22px; cursor: pointer; padding: 6px; border-radius: 6px; display: flex; align-items: center; justify-content: center; transition: background-color 0.2s;" title="החלף מצב צבע">🌙</button>
             </div>
         </div>
         
         <!-- Group 1: Document Type & Recipient Details (Step 1) -->
-        <div class="sidebar-step-card" id="clientDetailsCard" style="background-color: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 10px; padding: 14px; margin-bottom: 12px; box-shadow: var(--shadow-sm);">
-            <div style="font-weight: 700; font-size: 13.5px; color: #3B82F6; margin-bottom: 10px; border-bottom: 1px solid var(--border-color); padding-bottom: 6px; display: flex; align-items: center; justify-content: space-between;">
+        <div class="sidebar-step-card" id="clientDetailsCard" style="background-color: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 18px; margin-bottom: 16px; box-shadow: var(--shadow-sm); transition: border-color 0.2s, box-shadow 0.2s;">
+            <div style="font-weight: 700; font-size: 14.5px; color: #3B82F6; margin-bottom: 14px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; display: flex; align-items: center; justify-content: space-between;">
                 <span>שלב 1: 👤 סוג המסמך ופרטי הלקוח</span>
             </div>
             <div>
                 <!-- Mode & Funding Selection Chips -->
-                <div style="background-color: rgba(0, 210, 122, 0.05); border: 1px solid rgba(0, 210, 122, 0.2); border-radius: 8px; padding: 8px; margin-bottom: 10px;">
-                    <div style="font-weight: 700; font-size: 11.5px; color: var(--primary-color); margin-bottom: 6px;">
+                <div style="background-color: rgba(0, 210, 122, 0.05); border: 1px solid rgba(0, 210, 122, 0.2); border-radius: 10px; padding: 12px; margin-bottom: 16px;">
+                    <div style="font-weight: 700; font-size: 13px; color: var(--primary-color); margin-bottom: 8px;">
                         🎯 בחירת סוג ההצעה / מסלול מימון:
                     </div>
 
@@ -1070,21 +1074,21 @@
         </div>
 
         <!-- Group 2: Course & Schedule Details (Step 2) -->
-        <div class="sidebar-step-card" id="courseDetailsCard" style="background-color: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 10px; padding: 14px; margin-bottom: 12px; box-shadow: var(--shadow-sm);">
-            <div style="font-weight: 700; font-size: 13.5px; color: #10B981; margin-bottom: 10px; border-bottom: 1px solid var(--border-color); padding-bottom: 6px; display: flex; align-items: center; justify-content: space-between;">
+        <div class="sidebar-step-card" id="courseDetailsCard" style="background-color: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 18px; margin-bottom: 16px; box-shadow: var(--shadow-sm); transition: border-color 0.2s, box-shadow 0.2s;">
+            <div style="font-weight: 700; font-size: 14.5px; color: #10B981; margin-bottom: 14px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; display: flex; align-items: center; justify-content: space-between;">
                 <span>שלב 2: 📅 מסלול לימודים ומועדים</span>
             </div>
             <div>
                 <!-- Collapsible Importer from Priza (Inside Step 2) -->
                 <!-- Priza Importer Box (Always Visible inside Step 2) -->
-                <div class="priza-box" style="margin-bottom: 12px; padding: 10px; border-radius: 8px; border: 1px solid var(--primary-color); background-color: rgba(0, 210, 122, 0.04);">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; font-weight: 700; font-size: 11.5px; color: var(--primary-color);">
+                <div class="priza-box" style="margin-bottom: 16px; padding: 12px; border-radius: 10px; border: 1px solid var(--primary-color); background-color: rgba(0, 210, 122, 0.04);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-weight: 700; font-size: 12.5px; color: var(--primary-color);">
                         <span>📥 ייבוא מועדים מפריזה (הדבק טקסט/טבלה כאן):</span>
-                        <span class="import-badge" id="importCount" style="font-size: 10px; font-weight: normal; background-color: var(--primary-color); color: var(--text-dark); padding: 2px 6px; border-radius: 4px;">0 מועדים</span>
+                        <span class="import-badge" id="importCount" style="font-size: 11px; font-weight: normal; background-color: var(--primary-color); color: var(--text-dark); padding: 3px 8px; border-radius: 6px;">0 מועדים</span>
                     </div>
-                    <textarea id="prizaImport" placeholder="העתק את דף הקורסים מפריזה (כולל הטבלה) והדבק כאן..." rows="3" style="width: 100%; font-size: 11.5px; resize: vertical; margin-bottom: 6px;"></textarea>
-                    <button type="button" id="btnManualImport" style="width: 100%; padding: 6px; font-size: 12px; font-weight: 700; background-color: var(--primary-color); color: var(--text-dark); border: none; border-radius: 6px; cursor: pointer;">ייבוא נתונים מפריזה בלחיצה</button>
-                    <div id="importSuccessMsg" class="badge-success" style="margin-top: 4px; display: none;">מועדים יובאו בהצלחה!</div>
+                    <textarea id="prizaImport" placeholder="העתק את דף הקורסים מפריזה (כולל הטבלה) והדבק כאן..." rows="3" style="width: 100%; font-size: 13px; resize: vertical; margin-bottom: 8px; border-radius: 6px; padding: 8px;"></textarea>
+                    <button type="button" id="btnManualImport" style="width: 100%; padding: 10px; font-size: 13px; font-weight: 700; background-color: var(--primary-color); color: var(--text-dark); border: none; border-radius: 8px; cursor: pointer; transition: transform 0.1s;">ייבוא נתונים מפריזה בלחיצה</button>
+                    <div id="importSuccessMsg" class="badge-success" style="margin-top: 6px; display: none;">מועדים יובאו בהצלחה!</div>
                 </div>
 
                 <div class="form-group">
@@ -1168,8 +1172,8 @@
                 </div>
 
                 <!-- Nested Collapsible Advanced Course Details -->
-                <details class="sidebar-accordion" style="margin-top: 8px; border-color: #64748B; background: rgba(100, 116, 139, 0.05);">
-                    <summary style="padding: 6px 10px; font-size: 11.5px; color: #94A3B8;">
+                <details class="sidebar-accordion" style="margin-top: 14px; border-color: #64748B; background: rgba(100, 116, 139, 0.05);">
+                    <summary style="padding: 8px 12px; font-size: 12.5px; color: #94A3B8;">
                         <span>⚙️ הגדרות ונתונים מתקדמים (סילבוס, שעות, זמנים)</span>
                     </summary>
                     <div class="accordion-content" style="padding: 8px;">
@@ -1213,8 +1217,8 @@
         </div>
 
         <!-- Voucher Documents Package -->
-        <div class="import-box" id="voucherDocsPanel" style="display: none; border-color: var(--primary-color); background-color: rgba(0, 210, 122, 0.05); margin-top: 10px; margin-bottom: 10px;">
-            <label style="color: var(--primary-color); font-weight: 700; margin-bottom: 8px; display: block;">
+        <div class="import-box" id="voucherDocsPanel" style="display: none; border-color: var(--primary-color); background-color: rgba(0, 210, 122, 0.05); margin-top: 16px; margin-bottom: 16px;">
+            <label style="color: var(--primary-color); font-size: 14px; font-weight: 700; margin-bottom: 12px; display: block;">
                 📂 ערכת מסמכים לשוברים / פיקדון
             </label>
             
@@ -1249,39 +1253,11 @@
         </div>
 
         <!-- Group 3: Pricing & Payments (Step 3) -->
-        <div class="sidebar-step-card" id="pricingCard" style="background-color: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 10px; padding: 14px; margin-bottom: 12px; box-shadow: var(--shadow-sm);">
-            <div style="font-weight: 700; font-size: 13.5px; color: #F59E0B; margin-bottom: 10px; border-bottom: 1px solid var(--border-color); padding-bottom: 6px; display: flex; align-items: center; justify-content: space-between;">
+        <div class="sidebar-step-card" id="pricingCard" style="background-color: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 18px; margin-bottom: 16px; box-shadow: var(--shadow-sm); transition: border-color 0.2s, box-shadow 0.2s;">
+            <div style="font-weight: 700; font-size: 14.5px; color: #F59E0B; margin-bottom: 14px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; display: flex; align-items: center; justify-content: space-between;">
                 <span>שלב 3: 💰 תנאי תשלום וזכאות</span>
             </div>
             <div>
-                <div class="form-group">
-                    <label for="templateStyle">סגנון שבלונת הצעת מחיר</label>
-                    <select id="templateStyle">
-                        <option value="scholarship" selected>שבלונת מלגה (מקורי / מלגה / סופי)</option>
-                        <option value="discount">שבלונת הנחה (קו חוצה על המקור)</option>
-                        <option value="idf">שבלונת פורשי צה"ל</option>
-                        <option value="standard">שבלונה רגילה (מחיר אחד)</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <label for="quoteValidity">תוקף ההצעה (בסוגריים)</label>
-                        <label class="toggle-badge-container">
-                            <input type="checkbox" id="chkShowValidity" checked>
-                            <span>הצג תוקף</span>
-                        </label>
-                    </div>
-                    <select id="quoteValidity">
-                        <option value="תקף לחודש זה בלבד" selected>תקף לחודש זה בלבד</option>
-                        <option value="תקף לשבוע זה בלבד">תקף לשבוע זה בלבד</option>
-                        <option value="תקף ל-72 שעות בלבד">תקף ל-72 שעות בלבד</option>
-                        <option value="תקף ל-48 שעות בלבד">תקף ל-48 שעות בלבד</option>
-                        <option value="custom">מותאם אישית...</option>
-                    </select>
-                    <input type="text" id="quoteValidityCustom" placeholder="הקלד תוקף מותאם אישית..." style="display:none; margin-top:5px;">
-                </div>
-
                 <div class="form-row">
                     <div class="form-group">
                         <label for="originalPrice">מחיר קורס מקורי</label>
@@ -1315,58 +1291,10 @@
                     </div>
                 </div>
 
-                <!-- Installments Display Toggle (Outside accordion for instant access) -->
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px; margin-bottom: 8px; padding: 6px 10px; background: rgba(59, 130, 246, 0.06); border: 1px solid rgba(59, 130, 246, 0.25); border-radius: 6px;">
-                    <label for="showInstallmentsOnQuote" style="margin-bottom: 0; font-size: 12px; font-weight: 600; cursor: pointer; color: var(--text-light); display: flex; align-items: center; gap: 6px;">
-                        <span>💳 הצג פריסת תשלומים בהצעת המחיר</span>
-                    </label>
-                    <label class="toggle-badge-container">
-                        <input type="checkbox" id="showInstallmentsOnQuote" checked>
-                        <span>הצג בהצעה</span>
-                    </label>
-                </div>
-
-                <!-- Collapsible Installments Simulator -->
-                <details class="sidebar-accordion" id="installmentsAccordion" style="margin-top: 4px; margin-bottom: 10px;">
-                    <summary>
-                        <span>💳 סימולטור פריסת תשלומים (חודשי)</span>
-                    </summary>
-                    <div class="accordion-content">
-                        <div class="form-row" id="installmentsFormRow">
-                            <div class="form-group">
-                                <label for="installments">פריסת תשלומים (להודעה ופרינט)</label>
-                                <select id="installments">
-                                    <option value="1">תשלום אחד</option>
-                                    <option value="12">12 תשלומים</option>
-                                    <option value="24">24 תשלומים</option>
-                                    <option value="36" selected>36 תשלומים</option>
-                                    <option value="48">48 תשלומים</option>
-                                    <option value="60">60 תשלומים</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>תשלום חודשי משוער</label>
-                                <input type="text" id="monthlyPaymentDisplay" readonly style="background-color: #F8FAFC; color: #1E293B; font-weight: bold; text-align: center;" value="₪604 לחודש">
-                            </div>
-                        </div>
-                    </div>
-                </details>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="advisorName">שם יועץ הלימודים</label>
-                        <input type="text" id="advisorName" value="ערן ידיגר">
-                    </div>
-                    <div class="form-group">
-                        <label for="advisorTitle">תפקיד</label>
-                        <input type="text" id="advisorTitle" value="יועץ לימודים | HackerU">
-                    </div>
-                </div>
-
                 <!-- Collapsible Tuition Payment Policy Helper -->
-                <details class="sidebar-accordion" id="paymentPolicyAccordion" style="margin-top: 15px; border-color: #34D399; margin-bottom: 10px;">
+                <details class="sidebar-accordion" id="paymentPolicyAccordion" style="margin-top: 10px; border-color: #34D399; margin-bottom: 10px;" open>
                     <summary style="border-color: #34D399;">
-                        <span>💳 הסדרי תשלום והנחות (מדיניות מוסדרת)</span>
+                        <span>💳 הסדרי תשלום, הנחות ופריסה (מדיניות מוסדרת)</span>
                     </summary>
                     <div class="accordion-content" style="gap: 10px;">
                         <div style="font-size: 11px; color: #64748B; line-height: 1.4;">
@@ -1410,24 +1338,109 @@
                             מוטב: האקריו בע"מ<br>
                             בנק: מזרחי טפחות (20), סניף: 466 | מספר חשבון: 207746
                         </div>
+
+                        <!-- Installments Display Toggle (Inside accordion for better flow) -->
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px; padding: 6px 10px; background: rgba(59, 130, 246, 0.06); border: 1px solid rgba(59, 130, 246, 0.25); border-radius: 6px;">
+                            <label for="showInstallmentsOnQuote" style="margin-bottom: 0; font-size: 12px; font-weight: 600; cursor: pointer; color: var(--text-light); display: flex; align-items: center; gap: 6px;">
+                                <span>💳 הצג פריסת תשלומים בהצעת המחיר</span>
+                            </label>
+                            <label class="toggle-badge-container">
+                                <input type="checkbox" id="showInstallmentsOnQuote" checked>
+                                <span>הצג בהצעה</span>
+                            </label>
+                        </div>
+
+                        <!-- Installments Simulator embedded directly instead of a nested accordion -->
+                        <div class="form-row" id="installmentsFormRow" style="margin-top: 10px;">
+                            <div class="form-group">
+                                <label for="installments">פריסת תשלומים (להודעה ופרינט)</label>
+                                <select id="installments">
+                                    <option value="1">תשלום אחד</option>
+                                    <option value="12">12 תשלומים</option>
+                                    <option value="24">24 תשלומים</option>
+                                    <option value="36" selected>36 תשלומים</option>
+                                    <option value="48">48 תשלומים</option>
+                                    <option value="60">60 תשלומים</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>תשלום חודשי משוער</label>
+                                <input type="text" id="monthlyPaymentDisplay" readonly style="background-color: #F8FAFC; color: #1E293B; font-weight: bold; text-align: center;" value="₪604 לחודש">
+                            </div>
+                        </div>
                     </div>
                 </details>
+
+                <details class="sidebar-accordion" style="margin-top: 14px; border-color: #64748B; background: rgba(100, 116, 139, 0.05);">
+                    <summary style="padding: 8px 12px; font-size: 12.5px; color: #94A3B8;">
+                        <span>⚙️ הגדרות תצוגה מתקדמות (סגנון ותוקף)</span>
+                    </summary>
+                    <div class="accordion-content" style="padding: 8px;">
+                        <div class="form-group">
+                            <label for="templateStyle">סגנון שבלונת הצעת מחיר</label>
+                            <select id="templateStyle">
+                                <option value="scholarship" selected>שבלונת מלגה (מקורי / מלגה / סופי)</option>
+                                <option value="discount">שבלונת הנחה (קו חוצה על המקור)</option>
+                                <option value="idf">שבלונת פורשי צה"ל</option>
+                                <option value="standard">שבלונה רגילה (מחיר אחד)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <label for="quoteValidity">תוקף ההצעה (בסוגריים)</label>
+                                <label class="toggle-badge-container">
+                                    <input type="checkbox" id="chkShowValidity" checked>
+                                    <span>הצג תוקף</span>
+                                </label>
+                            </div>
+                            <select id="quoteValidity">
+                                <option value="תקף לחודש זה בלבד" selected>תקף לחודש זה בלבד</option>
+                                <option value="תקף לשבוע זה בלבד">תקף לשבוע זה בלבד</option>
+                                <option value="תקף ל-72 שעות בלבד">תקף ל-72 שעות בלבד</option>
+                                <option value="תקף ל-48 שעות בלבד">תקף ל-48 שעות בלבד</option>
+                                <option value="custom">מותאם אישית...</option>
+                            </select>
+                            <input type="text" id="quoteValidityCustom" placeholder="הקלד תוקף מותאם אישית..." style="display:none; margin-top:5px;">
+                        </div>
+                    </div>
+                </details>
+
             </div>
         </div>
 
-        <!-- Group 4: Output & Actions (Step 4) -->
-        <div class="sidebar-step-card" id="outputActionsCard" style="background-color: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 10px; padding: 14px; margin-bottom: 12px; box-shadow: var(--shadow-sm);">
-            <div style="font-weight: 700; font-size: 13.5px; color: #10B981; margin-bottom: 10px; border-bottom: 1px solid var(--border-color); padding-bottom: 6px; display: flex; align-items: center; justify-content: space-between;">
-                <span>שלב 4: 🚀 הפקה ושליחה</span>
+        <!-- Group 4: Advisor Details (Step 4) -->
+        <div class="sidebar-step-card" id="advisorCard" style="background-color: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 18px; margin-bottom: 16px; box-shadow: var(--shadow-sm); transition: border-color 0.2s, box-shadow 0.2s;">
+            <div style="font-weight: 700; font-size: 14.5px; color: #8B5CF6; margin-bottom: 14px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; display: flex; align-items: center; justify-content: space-between;">
+                <span>שלב 4: 👔 פרטי יועץ הלימודים</span>
+            </div>
+            <div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="advisorName">שם יועץ הלימודים</label>
+                        <input type="text" id="advisorName" value="ערן ידיגר">
+                    </div>
+                    <div class="form-group">
+                        <label for="advisorTitle">תפקיד</label>
+                        <input type="text" id="advisorTitle" value="יועץ לימודים | HackerU">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Group 5: Output & Actions (Step 5) -->
+        <div class="sidebar-step-card" id="outputActionsCard" style="background-color: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 18px; margin-bottom: 16px; box-shadow: var(--shadow-sm); transition: border-color 0.2s, box-shadow 0.2s;">
+            <div style="font-weight: 700; font-size: 14.5px; color: #10B981; margin-bottom: 14px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; display: flex; align-items: center; justify-content: space-between;">
+                <span>שלב 5: 🚀 הפקה ושליחה</span>
             </div>
             <div>
                 <!-- WhatsApp Messaging & Urgency Controls -->
-                <div style="background-color: rgba(37, 211, 102, 0.08); border: 1px solid rgba(37, 211, 102, 0.3); border-radius: 8px; padding: 10px; margin-bottom: 10px; display: flex; flex-direction: column; gap: 8px;">
+                <div style="background-color: rgba(37, 211, 102, 0.08); border: 1px solid rgba(37, 211, 102, 0.3); border-radius: 10px; padding: 14px; margin-bottom: 14px; display: flex; flex-direction: column; gap: 10px;">
                     <div class="form-group" style="margin-bottom: 0;">
-                        <label for="whatsappTemplateSelect" style="color: #25D366; font-weight: 700; display: flex; align-items: center; gap: 6px; margin-bottom: 4px; font-size: 11.5px;">
+                        <label for="whatsappTemplateSelect" style="color: #25D366; font-weight: 700; display: flex; align-items: center; gap: 6px; margin-bottom: 6px; font-size: 12.5px;">
                             <span>💬 תבנית הודעה לוואטסאפ (1-4)</span>
                         </label>
-                        <select id="whatsappTemplateSelect" style="border-color: #25D366; font-size: 12.5px; padding: 5px; width: 100%;">
+                        <select id="whatsappTemplateSelect" style="border-color: #25D366; font-size: 13px; padding: 8px; width: 100%;">
                             <option value="full_quote" selected>תבנית 1: הצעת מחיר מלאה (הנוסח המלא)</option>
                             <option value="follow_up">תבנית 2: הודעת תזכורת ומעקב (Follow-up)</option>
                             <option value="vouchers_deposit">תבנית 3: פרטי שוברים ופיקדון בלבד</option>
@@ -1436,21 +1449,21 @@
                     </div>
 
                     <!-- Collapsible Live WhatsApp Message Preview -->
-                    <details class="sidebar-accordion" id="whatsappPreviewAccordion" style="margin-top: 2px; margin-bottom: 2px; border-color: #25D366; background-color: rgba(37, 211, 102, 0.03);">
-                        <summary style="padding: 6px 10px; font-size: 11.5px; color: #25D366;">
+                    <details class="sidebar-accordion" id="whatsappPreviewAccordion" style="margin-top: 4px; margin-bottom: 4px; border-color: #25D366; background-color: rgba(37, 211, 102, 0.03);">
+                        <summary style="padding: 8px 12px; font-size: 12.5px; color: #25D366;">
                             <span>👁️ תצוגה מקדימה להודעת וואטסאפ</span>
                         </summary>
-                        <div class="accordion-content" style="padding: 8px;">
-                            <div id="whatsappLiveText" style="white-space: pre-wrap; font-size: 11px; line-height: 1.4; color: var(--text-light); background: rgba(0, 0, 0, 0.2); padding: 8px; border-radius: 6px; max-height: 140px; overflow-y: auto; font-family: inherit;"></div>
-                            <button type="button" class="btn" onclick="copyToClipboard()" style="margin-top: 6px; padding: 6px; font-size: 11px; width: 100%; background: #25D366; color: white;">📋 העתק הודעה בלחיצה</button>
+                        <div class="accordion-content" style="padding: 10px;">
+                            <div id="whatsappLiveText" style="white-space: pre-wrap; font-size: 12px; line-height: 1.4; color: var(--text-light); background: rgba(0, 0, 0, 0.2); padding: 10px; border-radius: 8px; max-height: 160px; overflow-y: auto; font-family: inherit;"></div>
+                            <button type="button" class="btn" onclick="copyToClipboard()" style="margin-top: 8px; padding: 8px; font-size: 12px; width: 100%; background: #25D366; color: white;">📋 העתק הודעה בלחיצה</button>
                         </div>
                     </details>
 
                     <!-- Urgency Countdown Display & Toggle -->
-                    <div class="import-box" style="padding: 8px; border-color: #F59E0B; background-color: rgba(245, 158, 11, 0.05); display: flex; flex-direction: column; gap: 4px; border-style: dashed; border-radius: 6px; margin: 2px 0;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; font-size: 11.5px;">
+                    <div class="import-box" style="padding: 12px; border-color: #F59E0B; background-color: rgba(245, 158, 11, 0.05); display: flex; flex-direction: column; gap: 6px; border-style: dashed; border-radius: 8px; margin: 4px 0;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; font-size: 12.5px;">
                             <span style="color: #F59E0B; font-weight: bold;">⏳ ימים לפתיחת הקורס:</span>
-                            <span id="countdownDisplay" style="font-weight: bold; background-color: #F59E0B; color: #0F172A; padding: 2px 6px; border-radius: 4px; font-size: 11px;">מחשב...</span>
+                            <span id="countdownDisplay" style="font-weight: bold; background-color: #F59E0B; color: #0F172A; padding: 4px 8px; border-radius: 6px; font-size: 12px;">מחשב...</span>
                         </div>
                         <div style="display: flex; align-items: center; gap: 6px; font-size: 11px;">
                             <input type="checkbox" id="chkIncludeUrgency" checked style="width: auto; cursor: pointer;">
@@ -1464,7 +1477,7 @@
                 </div>
 
                 <!-- Immediate Action Buttons Grid -->
-                <div class="action-grid" style="margin-top: 10px;">
+                <div class="action-grid" style="margin-top: 14px;">
                     <button class="btn btn-pdf" onclick="printQuote()">
                         🖨️ הדפסה כ-PDF
                         <span>שמור והדפס הצעה</span>
@@ -1485,10 +1498,10 @@
             </div>
         </div>
         <!-- Collapsible CRM & Firebase Sync Panel -->
-        <details class="sidebar-accordion" id="syncHistoryAccordion" style="margin-top: 15px;">
-            <summary style="border-color: #A5B4FC;">
+        <details class="sidebar-accordion" id="syncHistoryAccordion" style="margin-top: 16px; margin-bottom: 24px;">
+            <summary style="border-color: #A5B4FC; padding: 10px 14px; font-size: 13.5px;">
                 <span>📂 היסטוריה וסנכרון ענן</span>
-                <span id="accordionSyncStatus" style="font-size: 10px; font-weight: normal; background-color: #64748B; color: white; padding: 2px 6px; border-radius: 4px;">🔴 לא מחובר</span>
+                <span id="accordionSyncStatus" style="font-size: 11px; font-weight: normal; background-color: #64748B; color: white; padding: 2px 8px; border-radius: 4px;">🔴 לא מחובר</span>
             </summary>
             <div class="accordion-content">
                 <!-- Local CRM Header / Actions -->
