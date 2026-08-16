@@ -450,7 +450,9 @@
             
             /* Document Template Printing Visibility Toggles */
             body:not(.print-tofes):not(.print-soldier-voucher) #printableQuote {
-                display: flex !important;
+                display: block !important;
+                visibility: visible !important;
+                opacity: 1 !important;
             }
             body:not(.print-tofes):not(.print-soldier-voucher) #printableTofesHe2,
             body:not(.print-tofes):not(.print-soldier-voucher) #printableSoldierVoucher {
@@ -618,7 +620,12 @@
             background-color: rgba(0, 210, 122, 0.05);
         }
 
-        @media (min-width: 1025px) {
+        @media (min-width: 900px) {
+            body {
+                flex-direction: row !important;
+                height: 100vh !important;
+                overflow: hidden !important;
+            }
             .mobile-tabs {
                 display: none !important;
             }
@@ -627,36 +634,40 @@
                 width: 440px !important;
                 min-width: 440px !important;
                 max-width: 440px !important;
+                height: 100% !important;
+                border-left: 1px solid var(--border-color) !important;
             }
             .preview-area {
                 display: flex !important;
                 flex: 1 !important;
+                height: 100% !important;
             }
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 899px) {
             body {
-                flex-direction: column;
-                height: 100vh;
-                overflow: hidden;
+                flex-direction: column !important;
+                height: 100vh !important;
+                overflow: hidden !important;
             }
 
             .mobile-tabs {
-                display: flex;
+                display: flex !important;
             }
 
             .sidebar {
                 width: 100% !important;
-                flex: 1;
-                border-left: none;
-                padding: 16px;
+                max-width: 100% !important;
+                flex: 1 !important;
+                border-left: none !important;
+                padding: 16px !important;
             }
 
             .preview-area {
                 width: 100% !important;
-                flex: 1;
-                padding: 16px;
-                display: none;
+                max-width: 100% !important;
+                flex: 1 !important;
+                padding: 16px !important;
                 align-items: flex-start;
                 justify-content: center;
                 overflow-x: hidden;
@@ -664,7 +675,7 @@
             }
 
             .letterhead-container {
-                box-shadow: none;
+                box-shadow: none !important;
             }
         }
 
@@ -4668,7 +4679,7 @@
             const tabEdit = document.getElementById('tabEdit');
             const tabPreview = document.getElementById('tabPreview');
 
-            if (window.innerWidth > 768) {
+            if (window.innerWidth >= 900) {
                 if (sidebar) sidebar.style.display = 'flex';
                 if (previewArea) previewArea.style.display = 'flex';
                 return;
@@ -4689,7 +4700,7 @@
         }
 
         function adjustMobileScale() {
-            if (window.innerWidth > 768) {
+            if (window.innerWidth >= 900) {
                 const previewEl = document.getElementById('printableQuote');
                 if (previewEl) {
                     previewEl.style.transform = '';
