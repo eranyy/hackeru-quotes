@@ -950,7 +950,49 @@
             color: #4F46E5 !important;
             cursor: pointer;
         }
+
+        /* Print Media Overrides */
+        @media print {
+            body {
+                background: white !important;
+                color: black !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            /* Explicitly hide the sidebar structure */
+            .sidebar, .mobile-tabs, .no-print, .sticky-action-bar, .preview-template-toolbar, header {
+                display: none !important;
+                height: 0 !important;
+                width: 0 !important;
+                position: absolute !important;
+                left: -9999px !important;
+            }
+            .app-container {
+                display: block !important;
+            }
+            .preview-area {
+                display: block !important;
+                width: 100% !important;
+                height: auto !important;
+                background: white !important;
+                overflow: visible !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                position: static !important;
+            }
+            .letterhead-container, #printableQuote, #printableTofesHe2 {
+                box-shadow: none !important;
+                margin: 0 !important;
+                transform: none !important;
+                width: 100% !important;
+                max-width: 100% !important;
+            }
+            @page {
+                margin: 0;
+            }
+        }
     </style>
+
 </head>
 <body>
 
@@ -4557,6 +4599,7 @@
                 previewArea.style.display = 'block';
             }
 
+            updateDocumentTitle();
             window.print();
 
             // Restore inline style after print dialog
