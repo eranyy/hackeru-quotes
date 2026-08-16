@@ -1318,8 +1318,19 @@
                     </div>
                 </div>
 
+                <!-- Installments Display Toggle (Outside accordion for instant access) -->
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px; margin-bottom: 8px; padding: 6px 10px; background: rgba(59, 130, 246, 0.06); border: 1px solid rgba(59, 130, 246, 0.25); border-radius: 6px;">
+                    <label for="showInstallmentsOnQuote" style="margin-bottom: 0; font-size: 12px; font-weight: 600; cursor: pointer; color: var(--text-light); display: flex; align-items: center; gap: 6px;">
+                        <span>💳 הצג פריסת תשלומים בהצעת המחיר</span>
+                    </label>
+                    <div class="toggle-badge-container">
+                        <input type="checkbox" id="showInstallmentsOnQuote" checked>
+                        <label for="showInstallmentsOnQuote">הצג בהצעה</label>
+                    </div>
+                </div>
+
                 <!-- Collapsible Installments Simulator -->
-                <details class="sidebar-accordion" id="installmentsAccordion" style="margin-top: 10px; margin-bottom: 10px;">
+                <details class="sidebar-accordion" id="installmentsAccordion" style="margin-top: 4px; margin-bottom: 10px;">
                     <summary>
                         <span>💳 סימולטור פריסת תשלומים (חודשי)</span>
                     </summary>
@@ -1340,10 +1351,6 @@
                                 <label>תשלום חודשי משוער</label>
                                 <input type="text" id="monthlyPaymentDisplay" readonly style="background-color: #F8FAFC; color: #1E293B; font-weight: bold; text-align: center;" value="₪604 לחודש">
                             </div>
-                        </div>
-                        <div class="form-group" id="showInstallmentsCheckboxGroup" style="margin-top: 5px; display: flex; align-items: center; gap: 8px;">
-                            <input type="checkbox" id="showInstallmentsOnQuote" checked style="width: auto; cursor: pointer;">
-                            <label for="showInstallmentsOnQuote" style="margin-bottom: 0; font-size: 12px; cursor: pointer; color: #475569;">הצג פריסת תשלומים בהצעת המחיר המודפסת</label>
                         </div>
                     </div>
                 </details>
