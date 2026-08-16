@@ -976,14 +976,22 @@
     <div class="mobile-tabs no-print">
         <button class="mobile-tab-btn active" id="tabEdit" onclick="switchMobileTab('edit')">✍️ עריכת הצעה</button>
         <button class="mobile-tab-btn" id="tabPreview" onclick="switchMobileTab('preview')">👁️ תצוגה מקדימה</button>
-        <button onclick="toggleTheme()" style="background: none; border: none; font-size: 18px; padding: 0 16px; cursor: pointer; color: #94A3B8; display: flex; align-items: center; justify-content: center;" id="mobileThemeToggleBtn" title="החלף מצב צבע">🌙</button>
+        <button class="mobile-tab-btn" onclick="openCrmModal()" style="color: #6366F1; font-weight: 700;">📂 היסטוריה (<span id="mobileHistoryBadge">0</span>)</button>
+        <button onclick="toggleTheme()" style="background: none; border: none; font-size: 18px; padding: 0 12px; cursor: pointer; color: #94A3B8; display: flex; align-items: center; justify-content: center;" id="mobileThemeToggleBtn" title="החלף מצב צבע">🌙</button>
     </div>
 
     <!-- Sidebar controls -->
     <div class="sidebar no-print">
-        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 6px; margin-bottom: 8px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; margin-bottom: 10px;">
             <h2 style="border-bottom: none; margin-bottom: 0; padding-bottom: 0;">הגדרות הצעת מחיר (v1.4)</h2>
-            <button id="themeToggleBtn" onclick="toggleTheme()" style="background: none; border: none; font-size: 20px; cursor: pointer; padding: 4px; border-radius: 4px; display: flex; align-items: center; justify-content: center; transition: background-color 0.2s;" title="החלף מצב צבע">🌙</button>
+            <div style="display: flex; align-items: center; gap: 6px;">
+                <button type="button" id="btnOpenCrmModal" onclick="openCrmModal()" style="background: rgba(99, 102, 241, 0.12); border: 1px solid #6366F1; color: #6366F1; font-weight: 700; font-size: 11.5px; padding: 5px 10px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 5px; transition: all 0.2s;" title="היסטוריית הצעות מחיר (CRM)">
+                    <span style="font-size: 13px;">📂</span>
+                    <span>היסטוריה</span>
+                    <span id="topHistoryBadge" style="background: #6366F1; color: white; border-radius: 10px; padding: 1px 6px; font-size: 10px; font-weight: 700;">0</span>
+                </button>
+                <button id="themeToggleBtn" onclick="toggleTheme()" style="background: none; border: none; font-size: 20px; cursor: pointer; padding: 4px; border-radius: 4px; display: flex; align-items: center; justify-content: center; transition: background-color 0.2s;" title="החלף מצב צבע">🌙</button>
+            </div>
         </div>
         
         <!-- Group 1: Document Type & Recipient Details (Step 1) -->
@@ -1023,9 +1031,12 @@
                     </div>
                 </div>
 
-                <div style="display: flex; justify-content: flex-end; margin-bottom: 6px;">
-                    <button type="button" class="clear-btn" onclick="clearClientForm()" style="font-size: 10.5px; padding: 3px 8px; color: #EF4444; border-color: #FCA5A5; background: #FEF2F2;">
-                        🧹 נקה טופס להצעה חדשה
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; gap: 6px;">
+                    <button type="button" class="clear-btn" onclick="openCrmModal()" style="font-size: 11px; padding: 4px 10px; color: #4F46E5; border-color: #A5B4FC; background: #EEF2FF; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 4px;">
+                        <span>📂</span> טען הצעה מההיסטוריה (CRM)
+                    </button>
+                    <button type="button" class="clear-btn" onclick="clearClientForm()" style="font-size: 10.5px; padding: 4px 8px; color: #EF4444; border-color: #FCA5A5; background: #FEF2F2; cursor: pointer;">
+                        🧹 נקה טופס
                     </button>
                 </div>
                 <div class="form-row">
@@ -3982,7 +3993,215 @@
                 card.appendChild(deleteBtn);
                 container.appendChild(card);
             });
+
+            // Update top counter badges
+            const topBadge = document.getElementById('topHistoryBadge');
+            const mobileBadge = document.getElementById('mobileHistoryBadge');
+            const crmTotal = document.getElementById('crmTotalCount');
+            if (topBadge) topBadge.innerText = history.length;
+            if (mobileBadge) mobileBadge.innerText = history.length;
+            if (crmTotal) crmTotal.innerText = history.length;
+
+            renderCrmModalList();
         }
+
+        // Render quotes inside the dedicated CRM Modal
+        function renderCrmModalList(filter = '') {
+            const container = document.getElementById('crmModalListContainer');
+            if (!container) return;
+
+            let history = [];
+            try {
+                const data = localStorage.getItem('hackeru_quote_history');
+                if (data) history = JSON.parse(data);
+            } catch(e) {}
+
+            const query = (filter || '').trim().toLowerCase();
+            const filtered = history.filter(item => {
+                if (!query) return true;
+                const name = (item.clientName || '').toLowerCase();
+                const phone = (item.clientPhone || '').toLowerCase();
+                const id = (item.clientId || '').toLowerCase();
+                const course = (coursePresets[item.courseKey]?.name || item.courseKey || '').toLowerCase();
+                return name.includes(query) || phone.includes(query) || id.includes(query) || course.includes(query);
+            });
+
+            container.innerHTML = '';
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; color: #94A3B8; padding: 30px 10px;">
+                        <div style="font-size: 32px; margin-bottom: 8px;">📂</div>
+                        <div style="font-size: 13.5px; font-weight: 600;">${query ? 'לא נמצאו הצעות התואמות לחיפוש' : 'אין עדיין הצעות מחיר בהיסטוריה'}</div>
+                        <div style="font-size: 11.5px; color: #64748B; margin-top: 4px;">הצעות שתדפיס או תשמור יופיעו כאן אוטומטית</div>
+                    </div>
+                `;
+                return;
+            }
+
+            filtered.forEach((item, idx) => {
+                const preset = coursePresets[item.courseKey] || {};
+                const courseName = preset.name || item.courseKey || 'קורס מותאם אישית';
+                const formattedDate = item.timestamp ? new Date(item.timestamp).toLocaleDateString('he-IL', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
+                
+                const card = document.createElement('div');
+                card.style.background = 'var(--panel-bg, #F8FAFC)';
+                card.style.border = '1px solid var(--border-color, #E2E8F0)';
+                card.style.borderRadius = '8px';
+                card.style.padding = '10px 14px';
+                card.style.display = 'flex';
+                card.style.justifyContent = 'space-between';
+                card.style.alignItems = 'center';
+                card.style.transition = 'all 0.15s ease';
+                card.style.cursor = 'pointer';
+                card.style.gap = '10px';
+
+                card.onmouseover = () => {
+                    card.style.borderColor = '#6366F1';
+                    card.style.backgroundColor = 'rgba(99, 102, 241, 0.05)';
+                };
+                card.onmouseout = () => {
+                    card.style.borderColor = 'var(--border-color, #E2E8F0)';
+                    card.style.backgroundColor = 'var(--panel-bg, #F8FAFC)';
+                };
+
+                const infoCol = document.createElement('div');
+                infoCol.style.flex = '1';
+                infoCol.style.textAlign = 'right';
+
+                const headerRow = document.createElement('div');
+                headerRow.style.display = 'flex';
+                headerRow.style.alignItems = 'center';
+                headerRow.style.gap = '8px';
+                headerRow.style.marginBottom = '3px';
+
+                const nameText = document.createElement('span');
+                nameText.style.fontWeight = '700';
+                nameText.style.fontSize = '13.5px';
+                nameText.style.color = 'var(--text-light, #0F172A)';
+                nameText.innerText = item.clientName || 'לקוח ללא שם';
+
+                const priceBadge = document.createElement('span');
+                priceBadge.style.background = 'rgba(0, 210, 122, 0.15)';
+                priceBadge.style.color = '#059669';
+                priceBadge.style.padding = '2px 8px';
+                priceBadge.style.borderRadius = '12px';
+                priceBadge.style.fontSize = '11px';
+                priceBadge.style.fontWeight = '700';
+                priceBadge.innerText = `₪${Number(item.finalPrice || 0).toLocaleString()}`;
+
+                headerRow.appendChild(nameText);
+                headerRow.appendChild(priceBadge);
+
+                const subRow = document.createElement('div');
+                subRow.style.fontSize = '11.5px';
+                subRow.style.color = '#64748B';
+                subRow.style.display = 'flex';
+                subRow.style.gap = '12px';
+                subRow.style.flexWrap = 'wrap';
+
+                const courseSpan = document.createElement('span');
+                courseSpan.innerText = `🎓 ${courseName}`;
+
+                const dateSpan = document.createElement('span');
+                dateSpan.innerText = `🗓️ ${formattedDate || item.startDate || ''}`;
+
+                if (item.clientPhone) {
+                    const phoneSpan = document.createElement('span');
+                    phoneSpan.innerText = `📞 ${item.clientPhone}`;
+                    subRow.appendChild(phoneSpan);
+                }
+
+                subRow.appendChild(courseSpan);
+                subRow.appendChild(dateSpan);
+
+                infoCol.appendChild(headerRow);
+                infoCol.appendChild(subRow);
+
+                const actionsCol = document.createElement('div');
+                actionsCol.style.display = 'flex';
+                actionsCol.style.gap = '6px';
+                actionsCol.style.alignItems = 'center';
+
+                const loadBtn = document.createElement('button');
+                loadBtn.type = 'button';
+                loadBtn.className = 'btn';
+                loadBtn.style.padding = '4px 10px';
+                loadBtn.style.fontSize = '11.5px';
+                loadBtn.style.backgroundColor = '#10B981';
+                loadBtn.style.color = 'white';
+                loadBtn.style.borderRadius = '6px';
+                loadBtn.innerText = 'טען לעריכה ✍️';
+                loadBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    loadHistoryItem(item);
+                    closeCrmModal();
+                };
+
+                const delBtn = document.createElement('button');
+                delBtn.type = 'button';
+                delBtn.style.background = 'none';
+                delBtn.style.border = 'none';
+                delBtn.style.color = '#94A3B8';
+                delBtn.style.fontSize = '18px';
+                delBtn.style.cursor = 'pointer';
+                delBtn.style.padding = '4px 6px';
+                delBtn.title = 'מחק הצעה מההיסטוריה';
+                delBtn.onmouseover = () => delBtn.style.color = '#EF4444';
+                delBtn.onmouseout = () => delBtn.style.color = '#94A3B8';
+                delBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    const realIndex = history.findIndex(h => h.clientName === item.clientName && h.timestamp === item.timestamp);
+                    if (realIndex !== -1) deleteHistoryItem(realIndex);
+                };
+
+                actionsCol.appendChild(loadBtn);
+                actionsCol.appendChild(delBtn);
+
+                card.appendChild(infoCol);
+                card.appendChild(actionsCol);
+
+                card.onclick = () => {
+                    loadHistoryItem(item);
+                    closeCrmModal();
+                };
+
+                container.appendChild(card);
+            });
+        }
+
+        function openCrmModal() {
+            const overlay = document.getElementById('crmModalOverlay');
+            if (overlay) {
+                overlay.style.display = 'flex';
+                renderCrmModalList();
+                const searchInput = document.getElementById('crmSearchInput');
+                if (searchInput) {
+                    searchInput.value = '';
+                    setTimeout(() => searchInput.focus(), 50);
+                }
+            }
+        }
+
+        function closeCrmModal() {
+            const overlay = document.getElementById('crmModalOverlay');
+            if (overlay) overlay.style.display = 'none';
+        }
+
+        function filterCrmModalList(val) {
+            renderCrmModalList(val);
+        }
+
+        function handleCrmBackdropClick(e) {
+            if (e.target.id === 'crmModalOverlay') {
+                closeCrmModal();
+            }
+        }
+
+        window.openCrmModal = openCrmModal;
+        window.closeCrmModal = closeCrmModal;
+        window.filterCrmModalList = filterCrmModalList;
+        window.handleCrmBackdropClick = handleCrmBackdropClick;
 
         function saveToHistory(silent = false) {
             const clientName = els.clientName.value.trim();
@@ -5072,6 +5291,52 @@
             });
         }
     </script>
+    <!-- Dedicated CRM History & Cloud Sync Modal -->
+    <div id="crmModalOverlay" class="no-print" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(4px); z-index: 9999; justify-content: center; align-items: center; padding: 16px;" onclick="handleCrmBackdropClick(event)">
+        <div style="background: var(--panel-bg, #FFFFFF); border: 1px solid var(--border-color); border-radius: 14px; width: 100%; max-width: 600px; max-height: 90vh; display: flex; flex-direction: column; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35); overflow: hidden;" onclick="event.stopPropagation()">
+            
+            <!-- Modal Header -->
+            <div style="padding: 16px 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: rgba(99, 102, 241, 0.08);">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 24px;">📂</span>
+                    <div>
+                        <div style="font-weight: 800; font-size: 16px; color: var(--text-light, #0F172A);">היסטוריית הצעות מחיר (CRM)</div>
+                        <div style="font-size: 11.5px; color: #64748B;">צפייה, טעינה ועריכה של הצעות קודמות</div>
+                    </div>
+                </div>
+                <button type="button" onclick="closeCrmModal()" style="background: none; border: none; font-size: 22px; color: #94A3B8; cursor: pointer; padding: 4px 8px; border-radius: 6px; line-height: 1;" title="סגור חלון">✕</button>
+            </div>
+
+            <!-- Search & Actions Bar -->
+            <div style="padding: 12px 20px; border-bottom: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 10px; background: var(--bg-color);">
+                <div style="position: relative;">
+                    <input type="text" id="crmSearchInput" placeholder="🔍 חפש לפי שם לקוח, טלפון, ת.ז או קורס..." style="width: 100%; padding: 9px 14px; font-size: 13.5px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--panel-bg); color: var(--text-light);" oninput="filterCrmModalList(this.value)">
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+                    <div style="font-size: 12px; color: #64748B;">
+                        סה"כ שמורות: <strong id="crmTotalCount" style="color: var(--primary-color);">0</strong> הצעות
+                    </div>
+                    <div style="display: flex; gap: 6px;">
+                        <button type="button" class="clear-btn" style="color: #6366F1; border-color: #C7D2FE; font-size: 11px; padding: 4px 10px;" onclick="exportCRMData()">💾 גיבוי קובץ</button>
+                        <button type="button" class="clear-btn" style="color: #6366F1; border-color: #C7D2FE; font-size: 11px; padding: 4px 10px;" onclick="importCRMData()">📥 שחזור מקובץ</button>
+                        <button type="button" class="clear-btn" style="color: #EF4444; border-color: #FCA5A5; font-size: 11px; padding: 4px 10px;" onclick="clearHistory()">🧹 נקה הכל</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- List of Saved Quotes -->
+            <div id="crmModalListContainer" style="padding: 14px 20px; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 8px; min-height: 200px; max-height: 440px;">
+                <!-- Populated dynamically -->
+            </div>
+
+            <!-- Modal Footer -->
+            <div style="padding: 12px 20px; border-top: 1px solid var(--border-color); background: var(--bg-color); display: flex; justify-content: space-between; align-items: center;">
+                <div style="font-size: 11px; color: #94A3B8;">💡 לחיצה על כל הצעה תטען אותה מיידית לעריכה מלאה בטופס.</div>
+                <button type="button" class="btn btn-pdf" style="padding: 6px 16px; font-size: 12.5px;" onclick="closeCrmModal()">סגור חלון</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Floating Sticky Action Bar -->
     <div class="sticky-action-bar no-print">
         <button class="btn btn-pdf" onclick="printQuote()">🖨️ הדפסה כ-PDF</button>
