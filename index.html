@@ -381,141 +381,6 @@
             display: none;
         }
 
-        /* Print Media Styles */
-        @media print {
-            @page {
-                size: A4 portrait;
-                margin: 0;
-            }
-            html, body {
-                background: white !important;
-                color: black !important;
-                overflow: visible !important;
-                height: auto !important;
-                margin: 0 !important;
-                padding: 0 !important;
-                display: block !important;
-            }
-            .sidebar, .mobile-tabs, .no-print, .sticky-action-bar, .preview-template-toolbar, #mobileThemeToggleBtn, #themeToggleBtn {
-                display: none !important;
-            }
-            .preview-area {
-                display: block !important;
-                background: white !important;
-                padding: 0 !important;
-                margin: 0 !important;
-                overflow: visible !important;
-                width: 100% !important;
-                height: auto !important;
-                position: static !important;
-            }
-            .letterhead-container {
-                box-shadow: none !important;
-                width: 100% !important;
-                max-width: 100% !important;
-                padding: 1.0cm 1.5cm !important;
-                margin: 0 !important;
-                transform: none !important; /* Reset mobile scale transform during print */
-                box-sizing: border-box !important;
-                page-break-after: avoid !important;
-                page-break-inside: avoid !important;
-                background: white !important;
-            }
-            .details-list li {
-                margin-bottom: 6px !important;
-                font-size: 13px !important;
-            }
-            .subject-title {
-                font-size: 16px !important;
-                margin-top: 10px !important;
-                margin-bottom: 10px !important;
-            }
-            .intro-text {
-                font-size: 13px !important;
-                margin-bottom: 10px !important;
-            }
-            .doc-header {
-                margin-bottom: 12px !important;
-                padding-bottom: 8px !important;
-            }
-            .signature-block {
-                margin-top: 15px !important;
-            }
-            .clickable-preview-field {
-                outline: none !important;
-                border: none !important;
-                background: transparent !important;
-                box-shadow: none !important;
-            }
-            
-            /* Document Template Printing Visibility Toggles */
-            body:not(.print-tofes):not(.print-soldier-voucher) #printableQuote {
-                display: block !important;
-                visibility: visible !important;
-                opacity: 1 !important;
-            }
-            body:not(.print-tofes):not(.print-soldier-voucher) #printableTofesHe2,
-            body:not(.print-tofes):not(.print-soldier-voucher) #printableSoldierVoucher {
-                display: none !important;
-            }
-
-            body.print-tofes #printableQuote,
-            body.print-tofes #printableSoldierVoucher {
-                display: none !important;
-            }
-            body.print-tofes #printableTofesHe2 {
-                display: block !important;
-                padding: 15px !important;
-                line-height: 1.4 !important;
-                font-size: 13.5px !important;
-            }
-
-            body.print-soldier-voucher #printableQuote,
-            body.print-soldier-voucher #printableTofesHe2 {
-                display: none !important;
-            }
-            body.print-soldier-voucher #printableSoldierVoucher {
-                display: block !important;
-                padding: 10px !important;
-            }
-            body.print-soldier-voucher .soldier-voucher-page {
-                box-shadow: none !important;
-                margin: 0 auto !important;
-                width: 100% !important;
-            }
-
-            body.print-tofes .tofes-header {
-                margin-bottom: 15px !important;
-                padding-bottom: 8px !important;
-            }
-            body.print-tofes .tofes-header img {
-                height: 48px !important;
-            }
-            body.print-tofes .tofes-title {
-                font-size: 18px !important;
-                margin-bottom: 5px !important;
-            }
-            body.print-tofes .tofes-subtitle {
-                font-size: 11px !important;
-                margin-bottom: 20px !important;
-            }
-            body.print-tofes .tofes-body p {
-                margin-bottom: 6px !important;
-                font-size: 13.5px !important;
-            }
-            body.print-tofes .tofes-body h3 {
-                margin-top: 20px !important;
-                margin-bottom: 10px !important;
-                font-size: 14.5px !important;
-            }
-            body.print-tofes .tofes-signature-area {
-                margin-top: 30px !important;
-            }
-            body.print-tofes .tofes-fill {
-                min-width: 100px !important;
-            }
-        }
-
         /* Tofes He 2 screen display styles */
         #printableTofesHe2 {
             display: none;
@@ -620,7 +485,7 @@
             background-color: rgba(0, 210, 122, 0.05);
         }
 
-        @media (min-width: 900px) {
+        @media screen and (min-width: 900px) {
             body {
                 flex-direction: row !important;
                 height: 100vh !important;
@@ -644,7 +509,7 @@
             }
         }
 
-        @media (max-width: 899px) {
+        @media screen and (max-width: 899px) {
             body {
                 flex-direction: column !important;
                 height: 100vh !important;
@@ -679,7 +544,7 @@
             }
         }
 
-        @media (max-width: 480px) {
+        @media screen and (max-width: 480px) {
             .form-row {
                 grid-template-columns: 1fr;
                 gap: 8px;
@@ -980,6 +845,127 @@
             font-weight: 700 !important;
             color: #4F46E5 !important;
             cursor: pointer;
+        }
+
+        /* =========================================================
+           PRINT MEDIA OVERRIDES (Placed at the very end of CSS to guarantee 100% precedence)
+           ========================================================= */
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 0;
+            }
+            html, body {
+                background: #FFFFFF !important;
+                color: #000000 !important;
+                overflow: visible !important;
+                height: auto !important;
+                min-height: auto !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                display: block !important;
+            }
+            /* Explicitly and completely remove all non-printable UI elements */
+            .sidebar, 
+            .mobile-tabs, 
+            .no-print, 
+            .sticky-action-bar, 
+            .preview-template-toolbar, 
+            #mobileThemeToggleBtn, 
+            #themeToggleBtn {
+                display: none !important;
+                visibility: hidden !important;
+                height: 0 !important;
+                width: 0 !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                position: absolute !important;
+                left: -9999px !important;
+            }
+            .preview-area {
+                display: block !important;
+                background: #FFFFFF !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                overflow: visible !important;
+                width: 100% !important;
+                height: auto !important;
+                position: static !important;
+                box-shadow: none !important;
+            }
+            .letterhead-container,
+            #printableQuote {
+                display: block !important;
+                box-shadow: none !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                min-height: auto !important;
+                height: auto !important;
+                padding: 1.0cm 1.5cm !important;
+                margin: 0 auto !important;
+                transform: none !important;
+                box-sizing: border-box !important;
+                page-break-inside: avoid !important;
+                page-break-after: avoid !important;
+                page-break-before: avoid !important;
+                background: #FFFFFF !important;
+                color: #000000 !important;
+            }
+            .letterhead-container *,
+            #printableQuote * {
+                color: #000000 !important;
+            }
+            .letterhead-container .highlight-yellow {
+                background-color: #FEF08A !important;
+                color: #854D0E !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .letterhead-container .sublogo {
+                color: #00D27A !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .letterhead-container .doc-header {
+                display: flex !important;
+                justify-content: space-between !important;
+                align-items: flex-start !important;
+                margin-bottom: 20px !important;
+            }
+
+            /* Document Template Printing Visibility Toggles */
+            body:not(.print-tofes):not(.print-soldier-voucher) #printableQuote {
+                display: block !important;
+            }
+            body:not(.print-tofes):not(.print-soldier-voucher) #printableTofesHe2,
+            body:not(.print-tofes):not(.print-soldier-voucher) #printableSoldierVoucher {
+                display: none !important;
+            }
+
+            body.print-tofes #printableQuote,
+            body.print-tofes #printableSoldierVoucher {
+                display: none !important;
+            }
+            body.print-tofes #printableTofesHe2 {
+                display: block !important;
+                padding: 15px !important;
+                line-height: 1.4 !important;
+                font-size: 13.5px !important;
+            }
+
+            body.print-soldier-voucher #printableQuote,
+            body.print-soldier-voucher #printableTofesHe2 {
+                display: none !important;
+            }
+            body.print-soldier-voucher #printableSoldierVoucher {
+                display: block !important;
+                padding: 10px !important;
+            }
+            body.print-soldier-voucher .soldier-voucher-page {
+                box-shadow: none !important;
+                margin: 0 auto !important;
+                width: 100% !important;
+            }
         }
     </style>
 
