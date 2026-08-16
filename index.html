@@ -1264,7 +1264,7 @@
         <!-- Group 3: Pricing & Payments (Step 3) -->
         <div class="sidebar-step-card" id="pricingCard" style="background-color: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 10px; padding: 14px; margin-bottom: 12px; box-shadow: var(--shadow-sm);">
             <div style="font-weight: 700; font-size: 13.5px; color: #F59E0B; margin-bottom: 10px; border-bottom: 1px solid var(--border-color); padding-bottom: 6px; display: flex; align-items: center; justify-content: space-between;">
-                <span>שלב 3: 💰 מחיר והפקת המסמך בלחיצה</span>
+                <span>שלב 3: 💰 תנאי תשלום וזכאות</span>
             </div>
             <div>
                 <div class="form-group">
@@ -1277,146 +1277,158 @@
                     </select>
                 </div>
 
-        <div class="form-group">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <label for="quoteValidity">תוקף ההצעה (בסוגריים)</label>
-                <div class="toggle-badge-container">
-                    <input type="checkbox" id="chkShowValidity" checked>
-                    <label for="chkShowValidity">הצג תוקף</label>
-                </div>
-            </div>
-            <select id="quoteValidity">
-                <option value="תקף לחודש זה בלבד" selected>תקף לחודש זה בלבד</option>
-                <option value="תקף לשבוע זה בלבד">תקף לשבוע זה בלבד</option>
-                <option value="תקף ל-72 שעות בלבד">תקף ל-72 שעות בלבד</option>
-                <option value="תקף ל-48 שעות בלבד">תקף ל-48 שעות בלבד</option>
-                <option value="custom">מותאם אישית...</option>
-            </select>
-            <input type="text" id="quoteValidityCustom" placeholder="הקלד תוקף מותאם אישית..." style="display:none; margin-top:5px;">
-        </div>
-
-        <div class="form-row">
-            <div class="form-group">
-                <label for="originalPrice">מחיר קורס מקורי</label>
-                <input type="number" id="originalPrice" value="25900">
-            </div>
-            <div class="form-group">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-                    <label for="scholarshipAmount" style="margin-bottom: 0;">גובה המלגה / הנחה</label>
-                    <div style="display: flex; align-items: center; gap: 6px;">
-                        <a href="https://scholarships.hackeru.co.il/simulation" target="_blank" style="font-size: 10px; color: var(--primary-color); text-decoration: underline;">🔗 סימולטור</a>
+                <div class="form-group">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <label for="quoteValidity">תוקף ההצעה (בסוגריים)</label>
                         <div class="toggle-badge-container">
-                            <input type="checkbox" id="chkShowScholarship" checked>
-                            <label for="chkShowScholarship">הצג מלגה</label>
+                            <input type="checkbox" id="chkShowValidity" checked>
+                            <label for="chkShowValidity">הצג תוקף</label>
+                        </div>
+                    </div>
+                    <select id="quoteValidity">
+                        <option value="תקף לחודש זה בלבד" selected>תקף לחודש זה בלבד</option>
+                        <option value="תקף לשבוע זה בלבד">תקף לשבוע זה בלבד</option>
+                        <option value="תקף ל-72 שעות בלבד">תקף ל-72 שעות בלבד</option>
+                        <option value="תקף ל-48 שעות בלבד">תקף ל-48 שעות בלבד</option>
+                        <option value="custom">מותאם אישית...</option>
+                    </select>
+                    <input type="text" id="quoteValidityCustom" placeholder="הקלד תוקף מותאם אישית..." style="display:none; margin-top:5px;">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="originalPrice">מחיר קורס מקורי</label>
+                        <input type="number" id="originalPrice" value="25900">
+                    </div>
+                    <div class="form-group">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                            <label for="scholarshipAmount" style="margin-bottom: 0;">גובה המלגה / הנחה</label>
+                            <div style="display: flex; align-items: center; gap: 6px;">
+                                <a href="https://scholarships.hackeru.co.il/simulation" target="_blank" style="font-size: 10px; color: var(--primary-color); text-decoration: underline;">🔗 סימולטור</a>
+                                <div class="toggle-badge-container">
+                                    <input type="checkbox" id="chkShowScholarship" checked>
+                                    <label for="chkShowScholarship">הצג מלגה</label>
+                                </div>
+                            </div>
+                        </div>
+                        <input type="number" id="scholarshipAmount" value="0" placeholder="0">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="finalPrice">מחיר סופי (לתשלום) <span style="color: #EF4444; font-weight: bold;">*</span></label>
+                        <input type="number" id="finalPrice" value="21760">
+                    </div>
+                    <div class="form-row" style="display:none;">
+                        <div class="form-group">
+                            <label for="idfPrice">עלות לפורשי צה"ל</label>
+                            <input type="number" id="idfPrice" value="21760">
                         </div>
                     </div>
                 </div>
-                <input type="number" id="scholarshipAmount" value="0" placeholder="0">
-            </div>
-        </div>
 
-        <div class="form-row">
-            <div class="form-group">
-                <label for="finalPrice">מחיר סופי (לתשלום) <span style="color: #EF4444; font-weight: bold;">*</span></label>
-                <input type="number" id="finalPrice" value="21760">
-            </div>
-            <div class="form-row" style="display:none;">
-                <div class="form-group">
-                    <label for="idfPrice">עלות לפורשי צה"ל</label>
-                    <input type="number" id="idfPrice" value="21760">
-                </div>
-            </div>
-        </div>
+                <!-- Collapsible Installments Simulator -->
+                <details class="sidebar-accordion" id="installmentsAccordion" style="margin-top: 10px; margin-bottom: 10px;">
+                    <summary>
+                        <span>💳 סימולטור פריסת תשלומים (חודשי)</span>
+                    </summary>
+                    <div class="accordion-content">
+                        <div class="form-row" id="installmentsFormRow">
+                            <div class="form-group">
+                                <label for="installments">פריסת תשלומים (להודעה ופרינט)</label>
+                                <select id="installments">
+                                    <option value="1">תשלום אחד</option>
+                                    <option value="12">12 תשלומים</option>
+                                    <option value="24">24 תשלומים</option>
+                                    <option value="36" selected>36 תשלומים</option>
+                                    <option value="48">48 תשלומים</option>
+                                    <option value="60">60 תשלומים</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>תשלום חודשי משוער</label>
+                                <input type="text" id="monthlyPaymentDisplay" readonly style="background-color: #F8FAFC; color: #1E293B; font-weight: bold; text-align: center;" value="₪604 לחודש">
+                            </div>
+                        </div>
+                        <div class="form-group" id="showInstallmentsCheckboxGroup" style="margin-top: 5px; display: flex; align-items: center; gap: 8px;">
+                            <input type="checkbox" id="showInstallmentsOnQuote" checked style="width: auto; cursor: pointer;">
+                            <label for="showInstallmentsOnQuote" style="margin-bottom: 0; font-size: 12px; cursor: pointer; color: #475569;">הצג פריסת תשלומים בהצעת המחיר המודפסת</label>
+                        </div>
+                    </div>
+                </details>
 
-        <!-- Collapsible Installments Simulator -->
-        <details class="sidebar-accordion" id="installmentsAccordion" style="margin-top: 10px; margin-bottom: 10px;">
-            <summary>
-                <span>💳 סימולטור פריסת תשלומים (חודשי)</span>
-            </summary>
-            <div class="accordion-content">
-                <div class="form-row" id="installmentsFormRow">
+                <div class="form-row">
                     <div class="form-group">
-                        <label for="installments">פריסת תשלומים (להודעה ופרינט)</label>
-                        <select id="installments">
-                            <option value="1">תשלום אחד</option>
-                            <option value="12">12 תשלומים</option>
-                            <option value="24">24 תשלומים</option>
-                            <option value="36" selected>36 תשלומים</option>
-                            <option value="48">48 תשלומים</option>
-                            <option value="60">60 תשלומים</option>
-                        </select>
+                        <label for="advisorName">שם יועץ הלימודים</label>
+                        <input type="text" id="advisorName" value="ערן ידיגר">
                     </div>
                     <div class="form-group">
-                        <label>תשלום חודשי משוער</label>
-                        <input type="text" id="monthlyPaymentDisplay" readonly style="background-color: #F8FAFC; color: #1E293B; font-weight: bold; text-align: center;" value="₪604 לחודש">
+                        <label for="advisorTitle">תפקיד</label>
+                        <input type="text" id="advisorTitle" value="יועץ לימודים | HackerU">
                     </div>
                 </div>
-                <div class="form-group" id="showInstallmentsCheckboxGroup" style="margin-top: 5px; display: flex; align-items: center; gap: 8px;">
-                    <input type="checkbox" id="showInstallmentsOnQuote" checked style="width: auto; cursor: pointer;">
-                    <label for="showInstallmentsOnQuote" style="margin-bottom: 0; font-size: 12px; cursor: pointer; color: #475569;">הצג פריסת תשלומים בהצעת המחיר המודפסת</label>
-                </div>
-            </div>
-        </details>
 
-        <div class="form-row">
-            <div class="form-group">
-                <label for="advisorName">שם יועץ הלימודים</label>
-                <input type="text" id="advisorName" value="ערן ידיגר">
-            </div>
-            <div class="form-group">
-                <label for="advisorTitle">תפקיד</label>
-                <input type="text" id="advisorTitle" value="יועץ לימודים | HackerU">
+                <!-- Collapsible Tuition Payment Policy Helper -->
+                <details class="sidebar-accordion" id="paymentPolicyAccordion" style="margin-top: 15px; border-color: #34D399; margin-bottom: 10px;">
+                    <summary style="border-color: #34D399;">
+                        <span>💳 הסדרי תשלום והנחות (מדיניות מוסדרת)</span>
+                    </summary>
+                    <div class="accordion-content" style="gap: 10px;">
+                        <div style="font-size: 11px; color: #64748B; line-height: 1.4;">
+                            בחר הסדר תשלום כדי לעדכן אוטומטית את אחוז ההנחה ומספר התשלומים בטופס:
+                        </div>
+                        
+                        <div class="payment-method-grid" style="display: grid; grid-template-columns: 1fr; gap: 6px;">
+                            <button type="button" class="clear-btn" style="text-align: right; padding: 6px 10px; font-size: 11px; justify-content: flex-start; display: flex; align-items: center; gap: 6px;" onclick="applyPaymentMethod('cash_full')">
+                                💵 <strong>מזומן / העברה (תשלום מלא):</strong> 10% הנחה + 1 תשלום
+                            </button>
+                            <button type="button" class="clear-btn" style="text-align: right; padding: 6px 10px; font-size: 11px; justify-content: flex-start; display: flex; align-items: center; gap: 6px;" onclick="applyPaymentMethod('credit_full')">
+                                💳 <strong>אשראי - תשלום מלא:</strong> 5% הנחה + 1 תשלום
+                            </button>
+                            <button type="button" class="clear-btn" style="text-align: right; padding: 6px 10px; font-size: 11px; justify-content: flex-start; display: flex; align-items: center; gap: 6px;" onclick="applyPaymentMethod('credit_installments')">
+                                💳 <strong>אשראי - פריסה:</strong> עד 12 תשלומים ללא ריבית
+                            </button>
+                            <button type="button" class="clear-btn" style="text-align: right; padding: 6px 10px; font-size: 11px; justify-content: flex-start; display: flex; align-items: center; gap: 6px;" onclick="applyPaymentMethod('hk_installments_12')">
+                                📝 <strong>הוראת קבע (12 תשלומים):</strong> ללא ריבית
+                            </button>
+                            <button type="button" class="clear-btn" style="text-align: right; padding: 6px 10px; font-size: 11px; justify-content: flex-start; display: flex; align-items: center; gap: 6px;" onclick="applyPaymentMethod('hk_installments_36')">
+                                📝 <strong>הוראת קבע רחבה (36 תשלומים):</strong> כולל ריבית
+                            </button>
+                            <button type="button" class="clear-btn" style="text-align: right; padding: 6px 10px; font-size: 11px; justify-content: flex-start; display: flex; align-items: center; gap: 6px;" onclick="applyPaymentMethod('tution_fund_36')">
+                                🏛️ <strong>קרן שכ"ל (36 תשלומים):</strong> 5% הנחה (ללא ריבית)
+                            </button>
+                            <button type="button" class="clear-btn" style="text-align: right; padding: 6px 10px; font-size: 11px; justify-content: flex-start; display: flex; align-items: center; gap: 6px;" onclick="applyPaymentMethod('tution_fund_60')">
+                                🏛️ <strong>קרן שכ"ל רחבה (60 תשלומים):</strong> ללא ריבית
+                            </button>
+                            <button type="button" class="clear-btn" style="text-align: right; padding: 6px 10px; font-size: 11px; justify-content: flex-start; display: flex; align-items: center; gap: 6px;" onclick="applyPaymentMethod('mercantil_36')">
+                                🏦 <strong>בנק מרכנתיל (36 תשלומים):</strong> 15% הנחה + פריים+1.25%
+                            </button>
+                            <button type="button" class="clear-btn" style="text-align: right; padding: 6px 10px; font-size: 11px; justify-content: flex-start; display: flex; align-items: center; gap: 6px;" onclick="applyPaymentMethod('mercantil_48_grace')">
+                                🏦 <strong>מרכנתיל גרייס (48 תשלומים):</strong> 15% הנחה + שנת גרייס
+                            </button>
+                        </div>
+                        
+                        <div id="paymentMethodIndicator" style="display: none; background-color: rgba(52, 211, 153, 0.15); border: 1px solid rgba(52, 211, 153, 0.4); border-radius: 6px; padding: 6px 10px; font-size: 11px; font-weight: bold; color: #065F46; text-align: center;"></div>
+                        
+                        <div id="bankDetailsInfoBox" style="font-size: 10px; color: #475569; background: #F1F5F9; padding: 8px; border-radius: 6px; border: 1px solid #CBD5E1; margin-top: 6px;">
+                            <strong>🏦 פרטי חשבון העברה בנקאית:</strong><br>
+                            מוטב: האקריו בע"מ<br>
+                            בנק: מזרחי טפחות (20), סניף: 466 | מספר חשבון: 207746
+                        </div>
+                    </div>
+                </details>
             </div>
         </div>
 
-        <!-- Collapsible Tuition Payment Policy Helper -->
-        <details class="sidebar-accordion" id="paymentPolicyAccordion" style="margin-top: 15px; border-color: #34D399; margin-bottom: 10px;">
-            <summary style="border-color: #34D399;">
-                <span>💳 הסדרי תשלום והנחות (מדיניות מוסדרת)</span>
-            </summary>
-            <div class="accordion-content" style="gap: 10px;">
-                <div style="font-size: 11px; color: #64748B; line-height: 1.4;">
-                    בחר הסדר תשלום כדי לעדכן אוטומטית את אחוז ההנחה ומספר התשלומים בטופס:
-                </div>
-                
-                <div class="payment-method-grid" style="display: grid; grid-template-columns: 1fr; gap: 6px;">
-                    <button type="button" class="clear-btn" style="text-align: right; padding: 6px 10px; font-size: 11px; justify-content: flex-start; display: flex; align-items: center; gap: 6px;" onclick="applyPaymentMethod('cash_full')">
-                        💵 <strong>מזומן / העברה (תשלום מלא):</strong> 10% הנחה + 1 תשלום
-                    </button>
-                    <button type="button" class="clear-btn" style="text-align: right; padding: 6px 10px; font-size: 11px; justify-content: flex-start; display: flex; align-items: center; gap: 6px;" onclick="applyPaymentMethod('credit_full')">
-                        💳 <strong>אשראי - תשלום מלא:</strong> 5% הנחה + 1 תשלום
-                    </button>
-                    <button type="button" class="clear-btn" style="text-align: right; padding: 6px 10px; font-size: 11px; justify-content: flex-start; display: flex; align-items: center; gap: 6px;" onclick="applyPaymentMethod('credit_installments')">
-                        💳 <strong>אשראי - פריסה:</strong> עד 12 תשלומים ללא ריבית
-                    </button>
-                    <button type="button" class="clear-btn" style="text-align: right; padding: 6px 10px; font-size: 11px; justify-content: flex-start; display: flex; align-items: center; gap: 6px;" onclick="applyPaymentMethod('hk_installments_12')">
-                        📝 <strong>הוראת קבע (12 תשלומים):</strong> ללא ריבית
-                    </button>
-                    <button type="button" class="clear-btn" style="text-align: right; padding: 6px 10px; font-size: 11px; justify-content: flex-start; display: flex; align-items: center; gap: 6px;" onclick="applyPaymentMethod('hk_installments_36')">
-                        📝 <strong>הוראת קבע רחבה (36 תשלומים):</strong> כולל ריבית
-                    </button>
-                    <button type="button" class="clear-btn" style="text-align: right; padding: 6px 10px; font-size: 11px; justify-content: flex-start; display: flex; align-items: center; gap: 6px;" onclick="applyPaymentMethod('tution_fund_36')">
-                        🏛️ <strong>קרן שכ"ל (36 תשלומים):</strong> 5% הנחה (ללא ריבית)
-                    </button>
-                    <button type="button" class="clear-btn" style="text-align: right; padding: 6px 10px; font-size: 11px; justify-content: flex-start; display: flex; align-items: center; gap: 6px;" onclick="applyPaymentMethod('tution_fund_60')">
-                        🏛️ <strong>קרן שכ"ל רחבה (60 תשלומים):</strong> ללא ריבית
-                    </button>
-                    <button type="button" class="clear-btn" style="text-align: right; padding: 6px 10px; font-size: 11px; justify-content: flex-start; display: flex; align-items: center; gap: 6px;" onclick="applyPaymentMethod('mercantil_36')">
-                        🏦 <strong>בנק מרכנתיל (36 תשלומים):</strong> 15% הנחה + פריים+1.25%
-                    </button>
-                    <button type="button" class="clear-btn" style="text-align: right; padding: 6px 10px; font-size: 11px; justify-content: flex-start; display: flex; align-items: center; gap: 6px;" onclick="applyPaymentMethod('mercantil_48_grace')">
-                        🏦 <strong>מרכנתיל גרייס (48 תשלומים):</strong> 15% הנחה + שנת גרייס
-                    </button>
-                </div>
-                
-                <div id="paymentMethodIndicator" style="display: none; background-color: rgba(52, 211, 153, 0.15); border: 1px solid rgba(52, 211, 153, 0.4); border-radius: 6px; padding: 6px 10px; font-size: 11px; font-weight: bold; color: #065F46; text-align: center;"></div>
-                
-                <div id="bankDetailsInfoBox" style="font-size: 10px; color: #475569; background: #F1F5F9; padding: 8px; border-radius: 6px; border: 1px solid #CBD5E1;">
-                    <strong>🏦 פרטי חשבון העברה בנקאית:</strong><br>
-                    מוטב: האקריו בע"מ<br>
-                    בנק: מזרחי טפחות (20), סניף: 466 | מספר חשבון: 207746
-                <!-- WhatsApp Messaging & Urgency Controls (Inside Step 3) -->
-                <div style="background-color: rgba(37, 211, 102, 0.08); border: 1px solid rgba(37, 211, 102, 0.3); border-radius: 8px; padding: 10px; margin-top: 10px; margin-bottom: 10px; display: flex; flex-direction: column; gap: 8px;">
+        <!-- Group 4: Output & Actions (Step 4) -->
+        <div class="sidebar-step-card" id="outputActionsCard" style="background-color: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 10px; padding: 14px; margin-bottom: 12px; box-shadow: var(--shadow-sm);">
+            <div style="font-weight: 700; font-size: 13.5px; color: #10B981; margin-bottom: 10px; border-bottom: 1px solid var(--border-color); padding-bottom: 6px; display: flex; align-items: center; justify-content: space-between;">
+                <span>שלב 4: 🚀 הפקה ושליחה</span>
+            </div>
+            <div>
+                <!-- WhatsApp Messaging & Urgency Controls -->
+                <div style="background-color: rgba(37, 211, 102, 0.08); border: 1px solid rgba(37, 211, 102, 0.3); border-radius: 8px; padding: 10px; margin-bottom: 10px; display: flex; flex-direction: column; gap: 8px;">
                     <div class="form-group" style="margin-bottom: 0;">
                         <label for="whatsappTemplateSelect" style="color: #25D366; font-weight: 700; display: flex; align-items: center; gap: 6px; margin-bottom: 4px; font-size: 11.5px;">
                             <span>💬 תבנית הודעה לוואטסאפ (1-4)</span>
@@ -1457,7 +1469,7 @@
                     </div>
                 </div>
 
-                <!-- Immediate Action Buttons Grid (Inside Step 3) -->
+                <!-- Immediate Action Buttons Grid -->
                 <div class="action-grid" style="margin-top: 10px;">
                     <button class="btn btn-pdf" onclick="printQuote()">
                         🖨️ הדפסה כ-PDF
