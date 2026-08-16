@@ -1,4 +1,4 @@
-const CACHE_NAME = 'hackeru-quotes-v34';
+const CACHE_NAME = 'hackeru-quotes-v35';
 const ASSETS = [
   './',
   './index.html',
