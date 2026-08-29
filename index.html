@@ -3906,11 +3906,30 @@
         }
 
         // CRM Client History functions
+        let _cachedHistoryString = null;
+        let _cachedHistoryParsed = null;
+
+        function getParsedHistory() {
+            try {
+                const data = localStorage.getItem('hackeru_quote_history');
+                if (!data) return [];
+                if (data === _cachedHistoryString) {
+                    return _cachedHistoryParsed;
+                }
+                const parsed = JSON.parse(data);
+                _cachedHistoryString = data;
+                _cachedHistoryParsed = parsed;
+                return parsed;
+            } catch(e) {
+                console.error("Failed to parse history", e);
+                return [];
+            }
+        }
+
         function pruneOldHistory(days = 60) {
             let history = [];
             try {
-                const data = localStorage.getItem('hackeru_quote_history');
-                if (data) history = JSON.parse(data);
+                history = getParsedHistory();
             } catch(e) {}
 
             if (Array.isArray(history) && history.length > 0) {
@@ -3925,7 +3944,10 @@
                 });
 
                 if (filtered.length !== history.length) {
-                    localStorage.setItem('hackeru_quote_history', JSON.stringify(filtered));
+                    const filteredData = JSON.stringify(filtered);
+                    localStorage.setItem('hackeru_quote_history', filteredData);
+                    _cachedHistoryString = filteredData;
+                    _cachedHistoryParsed = filtered;
                     if (typeof uploadToFirebase === 'function') uploadToFirebase();
                 }
             }
@@ -3935,10 +3957,9 @@
             pruneOldHistory(60);
             let history = [];
             try {
-                const data = localStorage.getItem('hackeru_quote_history');
-                if (data) history = JSON.parse(data);
+                history = getParsedHistory();
             } catch(e) {
-                console.error("Failed to parse history", e);
+                console.error("Failed to load history", e);
             }
             
             const container = els.historyListContainer;
@@ -4024,8 +4045,7 @@
 
             let history = [];
             try {
-                const data = localStorage.getItem('hackeru_quote_history');
-                if (data) history = JSON.parse(data);
+                history = getParsedHistory();
             } catch(e) {}
 
             const query = (filter || '').trim().toLowerCase();
@@ -4224,8 +4244,7 @@
             
             let history = [];
             try {
-                const data = localStorage.getItem('hackeru_quote_history');
-                if (data) history = JSON.parse(data);
+                history = getParsedHistory();
             } catch(e) {}
             
             const newItem = {
@@ -4256,7 +4275,10 @@
             if (dupIndex !== -1) history.splice(dupIndex, 1);
             
             history.unshift(newItem);
-            localStorage.setItem('hackeru_quote_history', JSON.stringify(history));
+            const historyString = JSON.stringify(history);
+            localStorage.setItem('hackeru_quote_history', historyString);
+            _cachedHistoryString = historyString;
+            _cachedHistoryParsed = history;
             loadHistoryList();
             if (typeof uploadToFirebase === 'function') uploadToFirebase();
             
@@ -4349,12 +4371,14 @@
         function deleteHistoryItem(index) {
             let history = [];
             try {
-                const data = localStorage.getItem('hackeru_quote_history');
-                if (data) history = JSON.parse(data);
+                history = getParsedHistory();
             } catch(e) {}
             
             history.splice(index, 1);
-            localStorage.setItem('hackeru_quote_history', JSON.stringify(history));
+            const historyString = JSON.stringify(history);
+            localStorage.setItem('hackeru_quote_history', historyString);
+            _cachedHistoryString = historyString;
+            _cachedHistoryParsed = history;
             loadHistoryList();
             if (typeof uploadToFirebase === 'function') uploadToFirebase();
         }
@@ -4362,6 +4386,8 @@
         function clearHistory() {
             if (confirm("האם למחוק את כל היסטוריית הלקוחות מהמערכת?")) {
                 localStorage.removeItem('hackeru_quote_history');
+                _cachedHistoryString = null;
+                _cachedHistoryParsed = null;
                 loadHistoryList();
                 if (typeof uploadToFirebase === 'function') uploadToFirebase();
             }
@@ -4374,8 +4400,7 @@
                 history: []
             };
             try {
-                const historyData = localStorage.getItem('hackeru_quote_history');
-                if (historyData) data.history = JSON.parse(historyData);
+                data.history = getParsedHistory();
             } catch(e) {}
             
             const jsonString = `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(data))}`;
@@ -4406,7 +4431,10 @@
                             updateBadgeCount();
                         }
                         if (data.history) {
-                            localStorage.setItem('hackeru_quote_history', JSON.stringify(data.history));
+                            const historyString = JSON.stringify(data.history);
+                            localStorage.setItem('hackeru_quote_history', historyString);
+                            _cachedHistoryString = historyString;
+                            _cachedHistoryParsed = data.history;
                         }
                         loadHistoryList();
                         handleCoursePresetChange();
@@ -5106,8 +5134,7 @@
                 if (!snapshot.exists()) {
                     let history = [];
                     try {
-                        const historyData = localStorage.getItem('hackeru_quote_history');
-                        if (historyData) history = JSON.parse(historyData);
+                        history = getParsedHistory();
                     } catch(e) {}
                     
                     if ((savedSchedules && savedSchedules.length > 0) || (history && history.length > 0)) {
@@ -5135,7 +5162,10 @@
                 const remoteHistory = snapshot.val();
                 if (remoteHistory) {
                     isSyncingFromRemote = true;
-                    localStorage.setItem('hackeru_quote_history', JSON.stringify(remoteHistory));
+                    const historyString = JSON.stringify(remoteHistory);
+                    localStorage.setItem('hackeru_quote_history', historyString);
+                    _cachedHistoryString = historyString;
+                    _cachedHistoryParsed = remoteHistory;
                     loadHistoryList();
                     isSyncingFromRemote = false;
                 }
@@ -5156,8 +5186,7 @@
                 
                 let history = [];
                 try {
-                    const historyData = localStorage.getItem('hackeru_quote_history');
-                    if (historyData) history = JSON.parse(historyData);
+                    history = getParsedHistory();
                 } catch(e) {}
                 db.ref(`workspaces/${safeKey}/history`).set(history);
             } catch(err) {
