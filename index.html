@@ -3345,7 +3345,8 @@
             function tryTabSplitParsing() {
                 let imported = 0;
                 let updated = 0;
-                for (let i = 0; i < lines.length; i++) {
+                const len = lines.length;
+                for (let i = 0; i < len; i++) {
                     const line = lines[i].trim();
                     if (!line) continue;
 
@@ -3406,7 +3407,8 @@
             function tryRegexParsing() {
                 let imported = 0;
                 let updated = 0;
-                for (let i = 0; i < lines.length; i++) {
+                const len = lines.length;
+                for (let i = 0; i < len; i++) {
                     const line = lines[i].trim();
                     if (!line) continue;
 
