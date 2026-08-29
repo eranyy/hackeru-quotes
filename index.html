@@ -4284,8 +4284,10 @@
                 
                 // Ensure value exists in options before selecting, otherwise default to custom
                 let hasOption = false;
-                for (let i = 0; i < els.courseSelect.options.length; i++) {
-                    if (els.courseSelect.options[i].value === item.courseKey) {
+                const options = els.courseSelect.options;
+                const len = options.length;
+                for (let i = 0; i < len; i++) {
+                    if (options[i].value === item.courseKey) {
                         hasOption = true;
                         break;
                     }
