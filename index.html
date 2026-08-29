@@ -3675,6 +3675,144 @@
             return { days: diffDays, text: getUrgencyText(diffDays) };
         }
 
+        function buildFollowUpMessage(ctx) {
+            const valText = ctx.validityText ? ` (תוקף ההצעה: ${ctx.validityText})` : '';
+            let message = `היי ${ctx.clientName},\n`;
+            message += `רק רציתי להזכיר שהצעת המחיר ששלחתי לך למסלול ${ctx.courseName} בתוקף לזמן מוגבל${valText}.\n`;
+            if (ctx.urgencyText) message += `${ctx.urgencyText}`;
+            message += `\nנשמח לראות אותך איתנו! אשמח לענות על כל שאלה ולעזור לך להתקדם ברישום.\n\n`;
+            message += `בברכה,\n${els.advisorName.value}\n${els.advisorTitle.value}\nמכללת האקריו`;
+            return message;
+        }
+
+        function buildVouchersDepositMessage(ctx) {
+            let message = `שלום ${ctx.clientName},\n`;
+            message += `מצורפים הפרטים והקישורים הרלוונטיים להגשת השובר/הפיקדון עבור מסלול ${ctx.courseName}:\n\n`;
+            message += `• סמל מוסד מוכר: 40043 (האקריו בע"מ)\n`;
+            if (ctx.preset.tamatSymbol) message += `• סמל מגמה מאושרת: ${ctx.preset.tamatSymbol}\n`;
+            if (ctx.fund === 'deposit' && ctx.preset.depositCode) message += `• קוד מוטב (פיקדון): ${ctx.preset.depositCode}\n`;
+            message += `• עלות סופית: ₪${ctx.actualFinal.toLocaleString()}\n\n`;
+
+            message += `📄 להורדת אישור ההכרה הממשלתי הרשמי לשנת 2026 (PDF):\n`;
+            message += `https://eranyy.github.io/hackeru-quotes/ishur_hakara_2026.pdf\n\n`;
+
+            message += `טופס ה'2 מלא וחתום מצורף להצעת המחיר הכתובה ששלחתי לך.\n`;
+            message += `אני זמין כאן לכל שאלה ועזרה בהגשת הטפסים!\n\n`;
+            message += `בברכה,\n${els.advisorName.value}\n${els.advisorTitle.value}\nמכללת האקריו`;
+            return message;
+        }
+
+        function buildQuickComparisonMessage(ctx) {
+            const syllabusUrl = els.syllabusLink.value.trim();
+            const morningTimes = els.morningSchedule.value.trim();
+            const eveningTimes = els.eveningSchedule.value.trim();
+
+            let message = `שלום ${ctx.clientName},\n`;
+            message += `מצורפים הפרטים המקוצרים עבור מסלול ${ctx.courseName}:\n\n`;
+
+            if (syllabusUrl) {
+                message += `📄 סילבוס ותוכנית הלימודים המלאה:\n${syllabusUrl}\n\n`;
+            }
+
+            message += `⏰ זמני לימוד לבחירה:\n`;
+            if (morningTimes) message += `• ☀️ מסלול בוקר: ${morningTimes}\n`;
+            if (eveningTimes) message += `• 🌙 מסלול ערב: ${eveningTimes}\n`;
+            message += `\n`;
+
+            message += `💰 תמחור והסדר שכר לימוד:\n`;
+            if (ctx.style === "scholarship" && ctx.showSchol) {
+                message += `• מחיר מלא: ₪${ctx.orig.toLocaleString()}\n`;
+                message += `• גובה מלגה: ₪${ctx.schol.toLocaleString()}\n`;
+                message += `• עלות סופית: ₪${ctx.actualFinal.toLocaleString()}\n`;
+            } else if (ctx.style === "discount" && ctx.showSchol) {
+                message += `• מחיר מקורי: ₪${ctx.orig.toLocaleString()}\n`;
+                message += `• עלות סופית לאחר הנחה: ₪${ctx.actualFinal.toLocaleString()}\n`;
+            } else {
+                message += `• עלות סופית: ₪${ctx.actualFinal.toLocaleString()}\n`;
+            }
+
+            if (ctx.validityText) {
+                message += `(תוקף ההצעה: ${ctx.validityText})\n`;
+            }
+            message += `\n`;
+
+            const showInstallments = els.showInstallmentsOnQuote.checked;
+            const pmts = parseInt(els.installments.value, 10);
+            if (showInstallments && pmts > 1) {
+                const monthly = Math.round(ctx.actualFinal / pmts);
+                message += `💳 אפשרות פריסת תשלומים מוצעת:\n`;
+                message += `• ${pmts} תשלומים שווים של ₪${monthly.toLocaleString()} בחודש.\n\n`;
+            }
+
+            const chkShowBankDetails = document.getElementById('chkShowBankDetails');
+            const showBank = chkShowBankDetails ? chkShowBankDetails.checked : false;
+            if (showBank) {
+                message += `🏦 פרטי חשבון העברה בנקאית:\n• מוטב: האקריו בע"מ\n• בנק: מזרחי טפחות (20) | סניף: 466 | מ. חשבון: 207746\n\n`;
+            }
+
+            message += `בברכה,\n${els.advisorName.value}\n${els.advisorTitle.value}\nמכללת האקריו`;
+            return message;
+        }
+
+        function buildDefaultQuoteMessage(ctx) {
+            const formattedSchedule = formatScheduleHtmlAndText(ctx.schedule);
+            const chkShowClientId = document.getElementById('chkShowClientId');
+            const showId = chkShowClientId ? chkShowClientId.checked : true;
+            const idBlock = (showId && ctx.clientId) ? `ת.ז: ${ctx.clientId}\n` : '';
+
+            let message = `הצעת מחיר לקורס - ${ctx.courseName}\n\nלכבוד: ${ctx.clientName}\n${idBlock}\nפרטי הקורס:\n• מועד פתיחה: ${ctx.start}\n• מועד סיום משוער: ${ctx.end}\n• ${formattedSchedule.text}\n• מתכונת לימודים: ${els.studyFormat.value}\n• שעות לימוד: ${ctx.hours} שעות אקדמיות\n`;
+            if (ctx.urgencyText) message += `${ctx.urgencyText}`;
+            message += `\nתמחור:\n`;
+
+            if (ctx.style === "scholarship" && ctx.showSchol) {
+                message += `• מחיר מלא: ₪${ctx.orig.toLocaleString()}\n`;
+                message += `• גובה מלגה: ₪${ctx.schol.toLocaleString()}\n`;
+                message += `• מחיר סופי לאחר מלגות: ₪${ctx.actualFinal.toLocaleString()}`;
+                if (ctx.validityText) message += ` (תוקף ההצעה: ${ctx.validityText})`;
+                message += `\n\n`;
+            } else if (ctx.style === "discount" && ctx.showSchol) {
+                message += `• מחיר מקורי: ₪${ctx.orig.toLocaleString()}\n`;
+                message += `• מחיר סופי לאחר הנחה: ₪${ctx.actualFinal.toLocaleString()}`;
+                if (ctx.validityText) message += ` (תוקף ההצעה: ${ctx.validityText})`;
+                message += `\n\n`;
+            } else if (ctx.style === "idf") {
+                message += `• מחיר מקורי: ₪${ctx.orig.toLocaleString()}\n`;
+                message += `• עלות מיוחדת לחיילים משוחררים/פורשי צה"ל: ₪${ctx.actualFinal.toLocaleString()}`;
+                if (ctx.validityText) message += ` (תוקף ההצעה: ${ctx.validityText})`;
+                message += `\n\n`;
+            } else {
+                message += `• עלות קורס: ₪${ctx.actualFinal.toLocaleString()}`;
+                if (ctx.validityText) message += ` (תוקף ההצעה: ${ctx.validityText})`;
+                message += `\n\n`;
+            }
+
+            const showInstallments = els.showInstallmentsOnQuote.checked;
+            const pmts = parseInt(els.installments.value, 10);
+            if (showInstallments && pmts > 1) {
+                const monthly = Math.round(ctx.actualFinal / pmts);
+                message += `💳 אפשרות פריסת תשלומים מוצעת:\n`;
+                message += `• ${pmts} תשלומים שווים של ₪${monthly.toLocaleString()} בחודש.\n\n`;
+            }
+
+            if (ctx.fund === 'vouchers') {
+                message += `📌 לצורך הגשת הבקשה ללשכת התעסוקה/משרד הקליטה הועברו אליך:\n`;
+                message += `1. הצעת מחיר רשמית ומודפסת\n`;
+                message += `2. טופס ה'2 (נספח ה'2) חתום\n`;
+                message += `3. אישור ההכרה הממשלתי הרשמי לשנת 2026\n\n`;
+                message += `קישור ישיר להורדת אישור ההכרה הממשלתי (PDF):\n`;
+                message += `https://eranyy.github.io/hackeru-quotes/ishur_hakara_2026.pdf\n\n`;
+            }
+
+            const chkShowBankDetails = document.getElementById('chkShowBankDetails');
+            const showBank = chkShowBankDetails ? chkShowBankDetails.checked : false;
+            if (showBank) {
+                message += `🏦 פרטי חשבון העברה בנקאית:\n• מוטב: האקריו בע"מ\n• בנק: מזרחי טפחות (20) | סניף: 466 | מ. חשבון: 207746\n\n`;
+            }
+
+            message += `בברכה,\n${els.advisorName.value}\n${els.advisorTitle.value}\nמכללת האקריו`;
+            return message;
+        }
+
         function buildMessageText(templateType) {
             const clientNameVal = els.clientName.value.trim();
             const companyNameVal = els.companyName ? els.companyName.value.trim() : '';
@@ -3695,7 +3833,6 @@
             
             const start = els.startDate.value;
             const end = els.endDate.value;
-            const formatText = els.courseFormat.options[els.courseFormat.selectedIndex].text;
             const schedule = els.scheduleDays.value;
             const hours = els.academicHours.value;
             
@@ -3706,10 +3843,6 @@
             
             const style = els.templateStyle.value;
             const actualFinal = (style === "idf") ? idfVal : finalVal;
-            
-            let fundName = "מימון עצמי / הסדר שכר לימוד";
-            if (fund === 'vouchers') fundName = "תוכנית השוברים של לשכת התעסוקה / משרד הקליטה";
-            else if (fund === 'deposit') fundName = "פיקדון לחיילים משוחררים";
 
             const urgencyInfo = calculateCountdown();
             const urgencyText = (els.chkIncludeUrgency && els.chkIncludeUrgency.checked && urgencyInfo.days !== null) ? `\n⏳ שימו לב: ${urgencyInfo.text}\n` : '';
@@ -3724,141 +3857,34 @@
                 validityText = els.quoteValidity.value === "custom" ? els.quoteValidityCustom.value : els.quoteValidity.value;
             }
 
-            let message = "";
+            const ctx = {
+                clientName,
+                clientId,
+                courseName,
+                preset,
+                fund,
+                start,
+                end,
+                schedule,
+                hours,
+                orig,
+                schol,
+                actualFinal,
+                style,
+                urgencyText,
+                showSchol,
+                validityText
+            };
 
             if (templateType === 'follow_up') {
-                const valText = validityText ? ` (תוקף ההצעה: ${validityText})` : '';
-                message = `היי ${clientName},\n`;
-                message += `רק רציתי להזכיר שהצעת המחיר ששלחתי לך למסלול ${courseName} בתוקף לזמן מוגבל${valText}.\n`;
-                if (urgencyText) message += `${urgencyText}`;
-                message += `\nנשמח לראות אותך איתנו! אשמח לענות על כל שאלה ולעזור לך להתקדם ברישום.\n\n`;
-                message += `בברכה,\n${els.advisorName.value}\n${els.advisorTitle.value}\nמכללת האקריו`;
-            } 
-            else if (templateType === 'vouchers_deposit') {
-                message = `שלום ${clientName},\n`;
-                message += `מצורפים הפרטים והקישורים הרלוונטיים להגשת השובר/הפיקדון עבור מסלול ${courseName}:\n\n`;
-                message += `• סמל מוסד מוכר: 40043 (האקריו בע"מ)\n`;
-                if (preset.tamatSymbol) message += `• סמל מגמה מאושרת: ${preset.tamatSymbol}\n`;
-                if (fund === 'deposit' && preset.depositCode) message += `• קוד מוטב (פיקדון): ${preset.depositCode}\n`;
-                message += `• עלות סופית: ₪${actualFinal.toLocaleString()}\n\n`;
-                
-                message += `📄 להורדת אישור ההכרה הממשלתי הרשמי לשנת 2026 (PDF):\n`;
-                message += `https://eranyy.github.io/hackeru-quotes/ishur_hakara_2026.pdf\n\n`;
-                
-                message += `טופס ה'2 מלא וחתום מצורף להצעת המחיר הכתובה ששלחתי לך.\n`;
-                message += `אני זמין כאן לכל שאלה ועזרה בהגשת הטפסים!\n\n`;
-                message += `בברכה,\n${els.advisorName.value}\n${els.advisorTitle.value}\nמכללת האקריו`;
+                return buildFollowUpMessage(ctx);
+            } else if (templateType === 'vouchers_deposit') {
+                return buildVouchersDepositMessage(ctx);
+            } else if (templateType === 'quick_comparison') {
+                return buildQuickComparisonMessage(ctx);
+            } else {
+                return buildDefaultQuoteMessage(ctx);
             }
-            else if (templateType === 'quick_comparison') {
-                const syllabusUrl = els.syllabusLink.value.trim();
-                const morningTimes = els.morningSchedule.value.trim();
-                const eveningTimes = els.eveningSchedule.value.trim();
-                
-                message = `שלום ${clientName},\n`;
-                message += `מצורפים הפרטים המקוצרים עבור מסלול ${courseName}:\n\n`;
-                
-                if (syllabusUrl) {
-                    message += `📄 סילבוס ותוכנית הלימודים המלאה:\n${syllabusUrl}\n\n`;
-                }
-                
-                message += `⏰ זמני לימוד לבחירה:\n`;
-                if (morningTimes) message += `• ☀️ מסלול בוקר: ${morningTimes}\n`;
-                if (eveningTimes) message += `• 🌙 מסלול ערב: ${eveningTimes}\n`;
-                message += `\n`;
-                
-                message += `💰 תמחור והסדר שכר לימוד:\n`;
-                if (style === "scholarship" && showSchol) {
-                    message += `• מחיר מלא: ₪${orig.toLocaleString()}\n`;
-                    message += `• גובה מלגה: ₪${schol.toLocaleString()}\n`;
-                    message += `• עלות סופית: ₪${actualFinal.toLocaleString()}\n`;
-                } else if (style === "discount" && showSchol) {
-                    message += `• מחיר מקורי: ₪${orig.toLocaleString()}\n`;
-                    message += `• עלות סופית לאחר הנחה: ₪${actualFinal.toLocaleString()}\n`;
-                } else {
-                    message += `• עלות סופית: ₪${actualFinal.toLocaleString()}\n`;
-                }
-                
-                if (validityText) {
-                    message += `(תוקף ההצעה: ${validityText})\n`;
-                }
-                message += `\n`;
-                
-                const showInstallments = els.showInstallmentsOnQuote.checked;
-                const pmts = parseInt(els.installments.value, 10);
-                if (showInstallments && pmts > 1) {
-                    const monthly = Math.round(actualFinal / pmts);
-                    message += `💳 אפשרות פריסת תשלומים מוצעת:\n`;
-                    message += `• ${pmts} תשלומים שווים של ₪${monthly.toLocaleString()} בחודש.\n\n`;
-                }
-                
-                const chkShowBankDetails = document.getElementById('chkShowBankDetails');
-                const showBank = chkShowBankDetails ? chkShowBankDetails.checked : false;
-                if (showBank) {
-                    message += `🏦 פרטי חשבון העברה בנקאית:\n• מוטב: האקריו בע"מ\n• בנק: מזרחי טפחות (20) | סניף: 466 | מ. חשבון: 207746\n\n`;
-                }
-
-                message += `בברכה,\n${els.advisorName.value}\n${els.advisorTitle.value}\nמכללת האקריו`;
-            }
-            else {
-                // Default full quote template
-                const formattedSchedule = formatScheduleHtmlAndText(schedule);
-                const chkShowClientId = document.getElementById('chkShowClientId');
-                const showId = chkShowClientId ? chkShowClientId.checked : true;
-                const idBlock = (showId && clientId) ? `ת.ז: ${clientId}\n` : '';
-                
-                message = `הצעת מחיר לקורס - ${courseName}\n\nלכבוד: ${clientName}\n${idBlock}\nפרטי הקורס:\n• מועד פתיחה: ${start}\n• מועד סיום משוער: ${end}\n• ${formattedSchedule.text}\n• מתכונת לימודים: ${els.studyFormat.value}\n• שעות לימוד: ${hours} שעות אקדמיות\n`;
-                if (urgencyText) message += `${urgencyText}`;
-                message += `\nתמחור:\n`;
-                
-                if (style === "scholarship" && showSchol) {
-                    message += `• מחיר מלא: ₪${orig.toLocaleString()}\n`;
-                    message += `• גובה מלגה: ₪${schol.toLocaleString()}\n`;
-                    message += `• מחיר סופי לאחר מלגות: ₪${actualFinal.toLocaleString()}`;
-                    if (validityText) message += ` (תוקף ההצעה: ${validityText})`;
-                    message += `\n\n`;
-                } else if (style === "discount" && showSchol) {
-                    message += `• מחיר מקורי: ₪${orig.toLocaleString()}\n`;
-                    message += `• מחיר סופי לאחר הנחה: ₪${actualFinal.toLocaleString()}`;
-                    if (validityText) message += ` (תוקף ההצעה: ${validityText})`;
-                    message += `\n\n`;
-                } else if (style === "idf") {
-                    message += `• מחיר מקורי: ₪${orig.toLocaleString()}\n`;
-                    message += `• עלות מיוחדת לחיילים משוחררים/פורשי צה"ל: ₪${actualFinal.toLocaleString()}`;
-                    if (validityText) message += ` (תוקף ההצעה: ${validityText})`;
-                    message += `\n\n`;
-                } else {
-                    message += `• עלות קורס: ₪${actualFinal.toLocaleString()}`;
-                    if (validityText) message += ` (תוקף ההצעה: ${validityText})`;
-                    message += `\n\n`;
-                }
-                
-                const showInstallments = els.showInstallmentsOnQuote.checked;
-                const pmts = parseInt(els.installments.value, 10);
-                if (showInstallments && pmts > 1) {
-                    const monthly = Math.round(actualFinal / pmts);
-                    message += `💳 אפשרות פריסת תשלומים מוצעת:\n`;
-                    message += `• ${pmts} תשלומים שווים של ₪${monthly.toLocaleString()} בחודש.\n\n`;
-                }
-                
-                if (fund === 'vouchers') {
-                    message += `📌 לצורך הגשת הבקשה ללשכת התעסוקה/משרד הקליטה הועברו אליך:\n`;
-                    message += `1. הצעת מחיר רשמית ומודפסת\n`;
-                    message += `2. טופס ה'2 (נספח ה'2) חתום\n`;
-                    message += `3. אישור ההכרה הממשלתי הרשמי לשנת 2026\n\n`;
-                    message += `קישור ישיר להורדת אישור ההכרה הממשלתי (PDF):\n`;
-                    message += `https://eranyy.github.io/hackeru-quotes/ishur_hakara_2026.pdf\n\n`;
-                }
-                
-                const chkShowBankDetails = document.getElementById('chkShowBankDetails');
-                const showBank = chkShowBankDetails ? chkShowBankDetails.checked : false;
-                if (showBank) {
-                    message += `🏦 פרטי חשבון העברה בנקאית:\n• מוטב: האקריו בע"מ\n• בנק: מזרחי טפחות (20) | סניף: 466 | מ. חשבון: 207746\n\n`;
-                }
-                
-                message += `בברכה,\n${els.advisorName.value}\n${els.advisorTitle.value}\nמכללת האקריו`;
-            }
-            
-            return message;
         }
 
         function validateQuoteForm() {
