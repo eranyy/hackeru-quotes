@@ -2120,7 +2120,10 @@
             lblAdvisorName: document.getElementById('lblAdvisorName'),
             lblAdvisorTitle: document.getElementById('lblAdvisorTitle'),
             lblDate: document.getElementById('lblDate'),
-            dynamicPriceArea: document.getElementById('dynamicPriceArea')
+            dynamicPriceArea: document.getElementById('dynamicPriceArea'),
+
+            // Cached collections
+            govReqStars: Array.from(document.querySelectorAll('.gov-req-star'))
         };
 
         // Initialize schedules database in localStorage
@@ -3005,8 +3008,7 @@
             if (!els.fundingType) return;
             const fund = els.fundingType.value;
             const isGov = (fund === 'vouchers' || fund === 'deposit');
-            const stars = document.querySelectorAll('.gov-req-star');
-            stars.forEach(star => {
+            els.govReqStars.forEach(star => {
                 star.style.display = isGov ? 'inline' : 'none';
             });
         }
