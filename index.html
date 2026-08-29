@@ -2648,8 +2648,9 @@
         function formatScheduleHtmlAndText(scheduleStr) {
             const formatText = els.courseFormat.options[els.courseFormat.selectedIndex].text.trim();
             let formatClean = formatText.replace("קורס ", "").trim();
+            let formatCleanEscaped = escapeHTML(formatClean);
 
-            if (!scheduleStr) return { html: `<span class="bold-text">ימי לימוד ושעות (${formatClean}):</span> <span>לא צוין</span>`, text: `ימי לימוד ושעות (${formatClean}): לא צוין` };
+            if (!scheduleStr) return { html: `<span class="bold-text">ימי לימוד ושעות (${formatCleanEscaped}):</span> <span>לא צוין</span>`, text: `ימי לימוד ושעות (${formatClean}): לא צוין` };
             
             let cleanStr = scheduleStr.trim();
             if (cleanStr.startsWith("(") && cleanStr.endsWith(")")) {
@@ -2679,15 +2680,15 @@
             }
             
             // Generate HTML (with sub-bullets)
-            let html = `<span class="bold-text">ימי לימוד ושעות (${formatClean}):</span>`;
+            let html = `<span class="bold-text">ימי לימוד ושעות (${formatCleanEscaped}):</span>`;
             if (items.length > 1) {
                 html += `<div style="margin-right: 20px; margin-top: 5px; font-size: 14.5px; line-height: 1.5; color: #333;">`;
                 items.forEach(item => {
-                    html += `<div style="margin-bottom: 4px;">• ${item}</div>`;
+                    html += `<div style="margin-bottom: 4px;">• ${escapeHTML(item)}</div>`;
                 });
                 html += `</div>`;
             } else {
-                html += ` <span>${items[0]}</span>`;
+                html += ` <span>${escapeHTML(items[0])}</span>`;
             }
             
             // Generate Text (with sub-bullets)
