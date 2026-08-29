@@ -2527,13 +2527,13 @@
 
         // Price changes: Double-binding logic
         els.originalPrice.addEventListener('input', () => {
-            recalculateFromOriginal();
+            recalculateFinalPrice();
             updateInstallments();
             saveCustomPreset();
             saveActiveFormDraft();
         });
         els.scholarshipAmount.addEventListener('input', () => {
-            recalculateFromScholarship();
+            recalculateFinalPrice();
             updateInstallments();
             saveCustomPreset();
             saveActiveFormDraft();
@@ -3279,15 +3279,7 @@
         }
 
         // Calculations double-binding formulas
-        function recalculateFromOriginal() {
-            const orig = Number(els.originalPrice.value) || 0;
-            const schol = Number(els.scholarshipAmount.value) || 0;
-            els.finalPrice.value = orig - schol;
-            updatePreview();
-        }
-
-        // Keep scholarship calculation sync
-        function recalculateFromScholarship() {
+        function recalculateFinalPrice() {
             const orig = Number(els.originalPrice.value) || 0;
             const schol = Number(els.scholarshipAmount.value) || 0;
             els.finalPrice.value = orig - schol;
