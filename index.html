@@ -2493,9 +2493,10 @@
         }
 
         bindings.forEach(([inputId, labelId]) => {
-            const inputEl = document.getElementById(inputId);
+            const inputEl = els[inputId] || document.getElementById(inputId);
+            const labelEl = els[labelId] || document.getElementById(labelId);
             const handler = (e) => {
-                document.getElementById(labelId).innerText = e.target.value;
+                labelEl.innerText = e.target.value;
                 if(inputId === 'clientId') {
                     updateClientIdDisplay();
                 }
