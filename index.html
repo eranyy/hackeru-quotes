@@ -1831,14 +1831,14 @@
     <script>
         // Global Firebase State & Constants (Declared at top to avoid TDZ ReferenceErrors)
         const DEFAULT_FIREBASE_CONFIG = {
-            apiKey: "AIzaSyC4v0mxykA-VyCI6de4fr1yaVHj9zVxaL4",
-            authDomain: "hackeru-quotes.firebaseapp.com",
-            databaseURL: "https://hackeru-quotes-default-rtdb.europe-west1.firebasedatabase.app",
-            projectId: "hackeru-quotes",
-            storageBucket: "hackeru-quotes.firebasestorage.app",
-            messagingSenderId: "695367652858",
-            appId: "1:695367652858:web:72b9a70310e2ff27668043",
-            measurementId: "G-864W6N0X0N"
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            databaseURL: "YOUR_DATABASE_URL",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID",
+            measurementId: "YOUR_MEASUREMENT_ID"
         };
         const DEFAULT_SYNC_KEY = "eran";
         let db = null;
@@ -5048,6 +5048,15 @@
 
                 const config = JSON.parse(configStr);
                 
+                // Security check to avoid initializing with empty placeholders
+                if (!config.apiKey || config.apiKey === "YOUR_API_KEY" || config.apiKey.trim() === "") {
+                    const text = "🔴 חסרות הגדרות";
+                    if (statusEl) { statusEl.innerText = "🔴 ממתין להגדרות Firebase"; statusEl.style.color = "#F59E0B"; }
+                    if (fbIndicator) { fbIndicator.innerText = text; fbIndicator.style.color = "#F59E0B"; }
+                    if (accSyncStatus) { accSyncStatus.innerText = text; accSyncStatus.style.backgroundColor = "#F59E0B"; }
+                    return;
+                }
+
                 // Avoid double initialization
                 if (!firebase.apps.length) {
                     firebase.initializeApp(config);
