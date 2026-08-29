@@ -3528,7 +3528,8 @@
                 const normDetected = detectedCourse.toLowerCase().trim();
                 
                 // 1. Exact match on option text or option value
-                for (let opt of els.courseSelect.options) {
+                const optionsArray = Array.from(els.courseSelect.options);
+                for (let opt of optionsArray) {
                     if (opt.text.toLowerCase().trim() === normDetected || opt.value.toLowerCase() === normDetected) {
                         targetOptionValue = opt.value;
                         break;
