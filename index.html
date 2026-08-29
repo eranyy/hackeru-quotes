@@ -10,9 +10,22 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="icon-192.png">
-    <!-- Firebase SDK Compat -->
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    <!-- Firebase SDK Modular -->
+    <script type="module">
+        import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, get, onValue, set, off } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        window.firebaseModular = {
+            initializeApp,
+            getApps,
+            getDatabase,
+            ref,
+            get,
+            onValue,
+            set,
+            off
+        };
+    </script>
     <!-- Import Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -5115,7 +5128,7 @@
                 }
 
                 // Check if firebase SDK is loaded with auto-retry
-                if (typeof firebase === 'undefined') {
+                if (typeof window.firebaseModular === 'undefined') {
                     if ((window._fbRetryCount || 0) < 15) {
                         window._fbRetryCount = (window._fbRetryCount || 0) + 1;
                         setTimeout(initFirebase, 300);
@@ -5128,14 +5141,18 @@
                     return;
                 }
 
+                const { initializeApp, getApps, getDatabase } = window.firebaseModular;
                 const config = JSON.parse(configStr);
                 
                 // Avoid double initialization
-                if (!firebase.apps.length) {
-                    firebase.initializeApp(config);
+                let app;
+                if (!getApps().length) {
+                    app = initializeApp(config);
+                } else {
+                    app = getApps()[0];
                 }
                 
-                db = firebase.database();
+                db = getDatabase(app);
                 isFirebaseInitialized = true;
                 
                 if (statusEl) {
@@ -5179,11 +5196,12 @@
         function setupFirebaseListeners(syncKey) {
             if (!db) return;
 
+            const { ref, get, onValue } = window.firebaseModular;
             const safeKey = encodeURIComponent(syncKey).replace(/\./g, '%2E');
 
             // Safe auto-seed: If the cloud workspace is empty, upload local data to it
             // ONLY if this device actually contains saved schedules or customer history.
-            db.ref(`workspaces/${safeKey}`).once('value').then((snapshot) => {
+            get(ref(db, `workspaces/${safeKey}`)).then((snapshot) => {
                 if (!snapshot.exists()) {
                     let history = [];
                     try {
@@ -5198,7 +5216,7 @@
             });
 
             // Listen for changes in schedules
-            db.ref(`workspaces/${safeKey}/schedules`).on('value', (snapshot) => {
+            onValue(ref(db, `workspaces/${safeKey}/schedules`), (snapshot) => {
                 const remoteSchedules = snapshot.val();
                 if (remoteSchedules) {
                     isSyncingFromRemote = true;
@@ -5211,7 +5229,7 @@
             });
 
             // Listen for changes in customer quote history
-            db.ref(`workspaces/${safeKey}/history`).on('value', (snapshot) => {
+            onValue(ref(db, `workspaces/${safeKey}/history`), (snapshot) => {
                 const remoteHistory = snapshot.val();
                 if (remoteHistory) {
                     isSyncingFromRemote = true;
@@ -5229,19 +5247,20 @@
             try {
                 if (typeof isFirebaseInitialized === 'undefined' || !isFirebaseInitialized || !db || isSyncingFromRemote) return;
                 
+                const { ref, set } = window.firebaseModular;
                 const syncKey = localStorage.getItem('hackeru_fb_synckey');
                 if (!syncKey) return;
                 const safeKey = encodeURIComponent(syncKey).replace(/\./g, '%2E');
 
                 if (typeof savedSchedules !== 'undefined') {
-                    db.ref(`workspaces/${safeKey}/schedules`).set(savedSchedules);
+                    set(ref(db, `workspaces/${safeKey}/schedules`), savedSchedules);
                 }
                 
                 let history = [];
                 try {
                     history = getParsedHistory();
                 } catch(e) {}
-                db.ref(`workspaces/${safeKey}/history`).set(history);
+                set(ref(db, `workspaces/${safeKey}/history`), history);
             } catch(err) {
                 console.warn("uploadToFirebase deferred:", err);
             }
@@ -5251,9 +5270,10 @@
             if (confirm("האם לנתק את הסנכרון לענן? הנתונים יישמרו על המכשיר אך לא יסתנכרנו יותר.")) {
                 const syncKey = localStorage.getItem('hackeru_fb_synckey');
                 if (syncKey && db) {
+                    const { ref, off } = window.firebaseModular;
                     const safeKey = encodeURIComponent(syncKey).replace(/\./g, '%2E');
-                    db.ref(`workspaces/${safeKey}/schedules`).off();
-                    db.ref(`workspaces/${safeKey}/history`).off();
+                    off(ref(db, `workspaces/${safeKey}/schedules`));
+                    off(ref(db, `workspaces/${safeKey}/history`));
                 }
                 
                 localStorage.removeItem('hackeru_fb_config');
