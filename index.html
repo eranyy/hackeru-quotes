@@ -1860,6 +1860,17 @@
         window.toggleTheme = toggleTheme;
 
         // Preset course options database
+
+        function escapeHTML(str) {
+            if (!str) return str;
+            return String(str)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#39;");
+        }
+
         const coursePresets = {
             cyber: {
                 name: "סייבר ואבטחת מידע",
@@ -2307,7 +2318,7 @@
             if (showValidity) {
                 const text = els.quoteValidity.value === "custom" ? els.quoteValidityCustom.value : els.quoteValidity.value;
                 if (text) {
-                    validityText = `( ${text} )`;
+                    validityText = `( ${escapeHTML(text)} )`;
                 }
             }
 
@@ -4528,7 +4539,7 @@
             let validityText = '';
             if (showValidity) {
                 const valText = els.quoteValidity.value === "custom" ? els.quoteValidityCustom.value : els.quoteValidity.value;
-                if (valText) validityText = ` (תוקף ההצעה: ${valText})`;
+                if (valText) validityText = ` (תוקף ההצעה: ${escapeHTML(valText)})`;
             }
 
             let priceRowsHtml = '';
