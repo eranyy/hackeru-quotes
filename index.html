@@ -4783,7 +4783,7 @@
                     parts.push("אלף");
                 } else if (thousands === 2) {
                     parts.push("אלפיים");
-                } else if (thousands >= 3 && thousands <= 10) {
+                } else if (thousands >= 3 && thousands <= 9) {
                     parts.push(units[thousands] + " אלפים");
                 } else {
                     parts.push(convertGroupBelowThousand(thousands) + " אלף");
