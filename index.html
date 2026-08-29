@@ -2827,7 +2827,7 @@
 
         // Helper: Check if a date string is in the past
         function isDateExpired(dateStr) {
-            if (!dateStr || !dateStr.includes('/')) return false;
+            if (!dateStr || typeof dateStr !== 'string' || !dateStr.includes('/')) return false;
             try {
                 const parts = dateStr.split('/');
                 if (parts.length !== 3) return false;
