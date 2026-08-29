@@ -4502,6 +4502,116 @@
 
         // Export as HTML file that opens in MS Word as a document (extremely simple and robust client-side trick)
         // Export as clean Microsoft Word document
+        function generateWordDocumentHtml({
+            clientName,
+            clientId,
+            todayStr,
+            courseName,
+            start,
+            end,
+            formattedSchedule,
+            studyFormatText,
+            formatText,
+            hours,
+            fundName,
+            priceRowsHtml,
+            installmentsHtml,
+            govDetailsHtml,
+            bankHtml,
+            advisorName,
+            advisorTitle
+        }) {
+            return `
+                <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+                <head>
+                    <meta charset="utf-8">
+                    <title>הצעת מחיר - ${clientName}</title>
+                    <style>
+                        @page Section1 {
+                            size: 595.3pt 841.9pt;
+                            margin: 2.0cm 2.0cm 2.0cm 2.0cm;
+                            mso-header-margin: 36.0pt;
+                            mso-footer-margin: 36.0pt;
+                            mso-paper-source: 0;
+                        }
+                        div.Section1 { page: Section1; }
+                        body {
+                            font-family: 'Segoe UI', 'David', Arial, sans-serif;
+                            direction: rtl;
+                            text-align: right;
+                            color: #0F172A;
+                            font-size: 11pt;
+                            line-height: 1.5;
+                        }
+                        table { border-collapse: collapse; width: 100%; }
+                        td { vertical-align: top; }
+                    </style>
+                </head>
+                <body>
+                    <div class="Section1">
+                        <!-- Header -->
+                        <table style="width: 100%; border-bottom: 3px solid #00D27A; margin-bottom: 25px; padding-bottom: 10px;">
+                            <tr>
+                                <td style="font-size: 22pt; font-weight: bold; color: #0F172A;">
+                                    Hacker<span style="color: #00D27A;">.</span>U
+                                    <div style="font-size: 9pt; color: #64748B; letter-spacing: 2px;">TECHDX</div>
+                                </td>
+                                <td style="text-align: left; vertical-align: bottom; font-size: 10pt; color: #64748B;">
+                                    תאריך: ${todayStr}
+                                </td>
+                            </tr>
+                        </table>
+
+                        <!-- Recipient -->
+                        <div style="margin-bottom: 20px; font-size: 12pt;">
+                            <strong>לכבוד:</strong> ${clientName}<br>
+                            ${clientId ? `<strong>ת.ז:</strong> ${clientId}` : ''}
+                        </div>
+
+                        <!-- Title -->
+                        <div style="text-align: center; font-size: 16pt; font-weight: bold; text-decoration: underline; margin-bottom: 20px; color: #0F172A;">
+                            הצעת מחיר לקורס - ${courseName}
+                        </div>
+
+                        <!-- Intro -->
+                        <div style="margin-bottom: 20px;">
+                            בהתאם לבקשתך, להלן הצעת המחיר עבור קורס – <strong>${courseName}</strong>:
+                        </div>
+
+                        <!-- Details Table -->
+                        <table style="width: 100%; margin-bottom: 20px; border: 1px solid #E2E8F0; background-color: #FFFFFF;">
+                            <tr style="background-color: #F8FAFC;"><td style="padding: 8px; border-bottom: 1px solid #E2E8F0; width: 30%;"><strong>מועד פתיחה:</strong></td><td style="padding: 8px; border-bottom: 1px solid #E2E8F0;">${start}</td></tr>
+                            <tr><td style="padding: 8px; border-bottom: 1px solid #E2E8F0;"><strong>מועד סיום משוער:</strong></td><td style="padding: 8px; border-bottom: 1px solid #E2E8F0;">${end}</td></tr>
+                            <tr style="background-color: #F8FAFC;"><td style="padding: 8px; border-bottom: 1px solid #E2E8F0;"><strong>ימי לימוד ושעות:</strong></td><td style="padding: 8px; border-bottom: 1px solid #E2E8F0;">${formattedSchedule.text}</td></tr>
+                            <tr><td style="padding: 8px; border-bottom: 1px solid #E2E8F0;"><strong>מתכונת לימודים:</strong></td><td style="padding: 8px; border-bottom: 1px solid #E2E8F0;">${studyFormatText} (${formatText})</td></tr>
+                            <tr style="background-color: #F8FAFC;"><td style="padding: 8px; border-bottom: 1px solid #E2E8F0;"><strong>שעות לימוד אקדמיות:</strong></td><td style="padding: 8px; border-bottom: 1px solid #E2E8F0;">${hours} שעות</td></tr>
+                            <tr><td style="padding: 8px;"><strong>מסלול הסדר ומימון:</strong></td><td style="padding: 8px;">${fundName}</td></tr>
+                        </table>
+
+                        <!-- Pricing Table -->
+                        <div style="margin-top: 20px; font-weight: bold; font-size: 12pt; margin-bottom: 8px; color: #0F172A;">תמחור והסדר שכר לימוד:</div>
+                        <table style="width: 100%; margin-bottom: 15px; border: 1px solid #CBD5E1; background-color: #FFFFFF;">
+                            ${priceRowsHtml}
+                        </table>
+
+                        ${installmentsHtml}
+                        ${govDetailsHtml}
+                        ${bankHtml}
+
+                        <!-- Signature -->
+                        <div style="margin-top: 40px; padding-top: 15px; border-top: 1px solid #E2E8F0;">
+                            נשמח לעמוד לרשותך לכל שאלה או הבהרה. ניתן לפנות אלינו בטלפון 03-6135565.<br><br>
+                            <strong>בברכה,</strong><br>
+                            <strong>${advisorName}</strong><br>
+                            ${advisorTitle}<br>
+                            מכללת האקריו
+                        </div>
+                    </div>
+                </body>
+                </html>
+            `;
+        }
+
         function exportWordHtml() {
             if (!validateQuoteForm()) return;
 
@@ -4617,95 +4727,25 @@
                 `;
             }
 
-            const wordDocumentHtml = `
-                <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
-                <head>
-                    <meta charset="utf-8">
-                    <title>הצעת מחיר - ${clientName}</title>
-                    <style>
-                        @page Section1 {
-                            size: 595.3pt 841.9pt;
-                            margin: 2.0cm 2.0cm 2.0cm 2.0cm;
-                            mso-header-margin: 36.0pt;
-                            mso-footer-margin: 36.0pt;
-                            mso-paper-source: 0;
-                        }
-                        div.Section1 { page: Section1; }
-                        body {
-                            font-family: 'Segoe UI', 'David', Arial, sans-serif;
-                            direction: rtl;
-                            text-align: right;
-                            color: #0F172A;
-                            font-size: 11pt;
-                            line-height: 1.5;
-                        }
-                        table { border-collapse: collapse; width: 100%; }
-                        td { vertical-align: top; }
-                    </style>
-                </head>
-                <body>
-                    <div class="Section1">
-                        <!-- Header -->
-                        <table style="width: 100%; border-bottom: 3px solid #00D27A; margin-bottom: 25px; padding-bottom: 10px;">
-                            <tr>
-                                <td style="font-size: 22pt; font-weight: bold; color: #0F172A;">
-                                    Hacker<span style="color: #00D27A;">.</span>U
-                                    <div style="font-size: 9pt; color: #64748B; letter-spacing: 2px;">TECHDX</div>
-                                </td>
-                                <td style="text-align: left; vertical-align: bottom; font-size: 10pt; color: #64748B;">
-                                    תאריך: ${todayStr}
-                                </td>
-                            </tr>
-                        </table>
-
-                        <!-- Recipient -->
-                        <div style="margin-bottom: 20px; font-size: 12pt;">
-                            <strong>לכבוד:</strong> ${clientName}<br>
-                            ${clientId ? `<strong>ת.ז:</strong> ${clientId}` : ''}
-                        </div>
-
-                        <!-- Title -->
-                        <div style="text-align: center; font-size: 16pt; font-weight: bold; text-decoration: underline; margin-bottom: 20px; color: #0F172A;">
-                            הצעת מחיר לקורס - ${courseName}
-                        </div>
-
-                        <!-- Intro -->
-                        <div style="margin-bottom: 20px;">
-                            בהתאם לבקשתך, להלן הצעת המחיר עבור קורס – <strong>${courseName}</strong>:
-                        </div>
-
-                        <!-- Details Table -->
-                        <table style="width: 100%; margin-bottom: 20px; border: 1px solid #E2E8F0; background-color: #FFFFFF;">
-                            <tr style="background-color: #F8FAFC;"><td style="padding: 8px; border-bottom: 1px solid #E2E8F0; width: 30%;"><strong>מועד פתיחה:</strong></td><td style="padding: 8px; border-bottom: 1px solid #E2E8F0;">${start}</td></tr>
-                            <tr><td style="padding: 8px; border-bottom: 1px solid #E2E8F0;"><strong>מועד סיום משוער:</strong></td><td style="padding: 8px; border-bottom: 1px solid #E2E8F0;">${end}</td></tr>
-                            <tr style="background-color: #F8FAFC;"><td style="padding: 8px; border-bottom: 1px solid #E2E8F0;"><strong>ימי לימוד ושעות:</strong></td><td style="padding: 8px; border-bottom: 1px solid #E2E8F0;">${formattedSchedule.text}</td></tr>
-                            <tr><td style="padding: 8px; border-bottom: 1px solid #E2E8F0;"><strong>מתכונת לימודים:</strong></td><td style="padding: 8px; border-bottom: 1px solid #E2E8F0;">${studyFormatText} (${formatText})</td></tr>
-                            <tr style="background-color: #F8FAFC;"><td style="padding: 8px; border-bottom: 1px solid #E2E8F0;"><strong>שעות לימוד אקדמיות:</strong></td><td style="padding: 8px; border-bottom: 1px solid #E2E8F0;">${hours} שעות</td></tr>
-                            <tr><td style="padding: 8px;"><strong>מסלול הסדר ומימון:</strong></td><td style="padding: 8px;">${fundName}</td></tr>
-                        </table>
-
-                        <!-- Pricing Table -->
-                        <div style="margin-top: 20px; font-weight: bold; font-size: 12pt; margin-bottom: 8px; color: #0F172A;">תמחור והסדר שכר לימוד:</div>
-                        <table style="width: 100%; margin-bottom: 15px; border: 1px solid #CBD5E1; background-color: #FFFFFF;">
-                            ${priceRowsHtml}
-                        </table>
-
-                        ${installmentsHtml}
-                        ${govDetailsHtml}
-                        ${bankHtml}
-
-                        <!-- Signature -->
-                        <div style="margin-top: 40px; padding-top: 15px; border-top: 1px solid #E2E8F0;">
-                            נשמח לעמוד לרשותך לכל שאלה או הבהרה. ניתן לפנות אלינו בטלפון 03-6135565.<br><br>
-                            <strong>בברכה,</strong><br>
-                            <strong>${advisorName}</strong><br>
-                            ${advisorTitle}<br>
-                            מכללת האקריו
-                        </div>
-                    </div>
-                </body>
-                </html>
-            `;
+            const wordDocumentHtml = generateWordDocumentHtml({
+                clientName,
+                clientId,
+                todayStr,
+                courseName,
+                start,
+                end,
+                formattedSchedule,
+                studyFormatText,
+                formatText,
+                hours,
+                fundName,
+                priceRowsHtml,
+                installmentsHtml,
+                govDetailsHtml,
+                bankHtml,
+                advisorName,
+                advisorTitle
+            });
 
             const blob = new Blob([wordDocumentHtml], { type: 'application/msword;charset=utf-8' });
             const url = URL.createObjectURL(blob);
