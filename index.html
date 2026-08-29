@@ -1842,22 +1842,6 @@
         };
         const DEFAULT_SYNC_KEY = "eran";
         let db = null;
-        // Theme Switcher (Dark/Light mode) Logic (Globally available at startup)
-        function toggleTheme() {
-            const isLight = document.body.classList.toggle('light-theme');
-            localStorage.setItem('hackeru_theme', isLight ? 'light' : 'dark');
-            updateThemeUI(isLight);
-        }
-
-        function updateThemeUI(isLight) {
-            const themeBtn = document.getElementById('themeToggleBtn');
-            const mobileThemeBtn = document.getElementById('mobileThemeToggleBtn');
-            const icon = isLight ? '☀️' : '🌙';
-            
-            if (themeBtn) themeBtn.innerText = icon;
-            if (mobileThemeBtn) mobileThemeBtn.innerText = icon;
-        }
-        window.toggleTheme = toggleTheme;
 
         // Preset course options database
         const coursePresets = {
