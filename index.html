@@ -1101,7 +1101,12 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="courseSelect">בחר קורס (תבנית)</label>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                        <label for="courseSelect" style="margin-bottom: 0;">בחר קורס (תבנית)</label>
+                        <button type="button" class="btn-manage-courses" id="btnManageCourses" onclick="openManageCoursesModal()" style="background: rgba(59, 130, 246, 0.12); border: 1px solid rgba(59, 130, 246, 0.4); color: var(--primary-color); font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 5px; cursor: pointer; display: flex; align-items: center; gap: 4px; font-family: inherit; transition: all 0.2s ease;">
+                            ⚙️ ניהול קורסים
+                        </button>
+                    </div>
                     <select id="courseSelect">
                         <option value="cyber" selected>סייבר ואבטחת מידע</option>
                         <option value="fullstack">פיתוח תוכנה (Full Stack)</option>
@@ -2062,6 +2067,277 @@
             }
         };
 
+        // ==========================================
+        // ⚙️ DYNAMIC CUSTOM COURSES MANAGEMENT MODULE
+        // ==========================================
+        let customCourses = [];
+
+        function loadCustomCoursesFromStorage() {
+            try {
+                const stored = localStorage.getItem("hackeru_custom_courses");
+                if (stored) {
+                    customCourses = JSON.parse(stored) || [];
+                }
+            } catch(e) {
+                customCourses = [];
+            }
+        }
+
+        function saveCustomCoursesToStorage() {
+            try {
+                localStorage.setItem("hackeru_custom_courses", JSON.stringify(customCourses));
+                if (typeof pushDataToFirebase === "function") {
+                    pushDataToFirebase("customCourses", customCourses);
+                }
+            } catch(e) {}
+        }
+
+        function getAllMergedCoursePresets() {
+            const merged = { ...coursePresets };
+            if (customCourses && Array.isArray(customCourses)) {
+                customCourses.forEach(c => {
+                    if (c && c.key) {
+                        merged[c.key] = {
+                            name: c.name || "",
+                            govName: c.govName || c.name || "",
+                            hours: String(c.hours || "300"),
+                            originalPrice: Number(c.originalPrice || 19900),
+                            code: c.code || "",
+                            schedule: c.eveningSchedule || c.schedule || "א'+ד', 17:30-21:15",
+                            tamat: c.tamat || "0011010148",
+                            format: c.format || "evening",
+                            study: c.study || "היברידי",
+                            tamatSymbol: c.tamatSymbol || "",
+                            depositCode: c.depositCode || "",
+                            syllabusUrl: c.syllabusUrl || "https://www.hackeru.co.il/courses",
+                            morningSchedule: c.morningSchedule || "ב'+ה', 09:00-16:30",
+                            eveningSchedule: c.eveningSchedule || "א'+ד', 17:30-21:15",
+                            isCustom: true
+                        };
+                        coursePresets[c.key] = merged[c.key];
+                    }
+                });
+            }
+            return merged;
+        }
+
+        function populateCourseDropdown() {
+            const courseSelect = document.getElementById("courseSelect");
+            if (!courseSelect) return;
+
+            const currentValue = courseSelect.value;
+            getAllMergedCoursePresets();
+
+            courseSelect.innerHTML = "";
+
+            // Built-in presets
+            for (const [key, preset] of Object.entries(coursePresets)) {
+                if (preset && !preset.isCustom) {
+                    const opt = document.createElement("option");
+                    opt.value = key;
+                    opt.textContent = preset.name;
+                    courseSelect.appendChild(opt);
+                }
+            }
+
+            // Custom courses
+            if (customCourses && customCourses.length > 0) {
+                const group = document.createElement("optgroup");
+                group.label = "✨ קורסים מותאמים אישית";
+                customCourses.forEach(c => {
+                    const opt = document.createElement("option");
+                    opt.value = c.key;
+                    opt.textContent = c.name + " (★)";
+                    group.appendChild(opt);
+                });
+                courseSelect.appendChild(group);
+            }
+
+            // Custom manual option
+            const customOpt = document.createElement("option");
+            customOpt.value = "custom";
+            customOpt.textContent = "מותאם אישית...";
+            courseSelect.appendChild(customOpt);
+
+            if (currentValue && coursePresets[currentValue]) {
+                courseSelect.value = currentValue;
+            } else if (courseSelect.options.length > 0) {
+                courseSelect.selectedIndex = 0;
+            }
+
+            const countSpan = document.getElementById("customCoursesCount");
+            if (countSpan) countSpan.textContent = customCourses.length;
+        }
+
+        function openManageCoursesModal() {
+            loadCustomCoursesFromStorage();
+            populateCourseDropdown();
+            const modal = document.getElementById("manageCoursesModal");
+            if (modal) {
+                modal.style.display = "flex";
+                switchCourseModalTab(customCourses.length > 0 ? "add" : "add");
+                renderCustomCoursesList();
+            }
+        }
+
+        function closeManageCoursesModal() {
+            const modal = document.getElementById("manageCoursesModal");
+            if (modal) modal.style.display = "none";
+        }
+
+        function switchCourseModalTab(tab) {
+            const form = document.getElementById("formAddCustomCourse");
+            const list = document.getElementById("containerCustomCoursesList");
+            const btnAdd = document.getElementById("btnTabAddCourse");
+            const btnList = document.getElementById("btnTabListCourses");
+
+            if (tab === "add") {
+                if (form) form.style.display = "flex";
+                if (list) list.style.display = "none";
+                if (btnAdd) { btnAdd.style.background = "var(--primary-color)"; btnAdd.style.color = "var(--text-dark)"; }
+                if (btnList) { btnList.style.background = "transparent"; btnList.style.color = "var(--primary-color)"; }
+            } else {
+                if (form) form.style.display = "none";
+                if (list) list.style.display = "flex";
+                if (btnList) { btnList.style.background = "var(--primary-color)"; btnList.style.color = "var(--text-dark)"; }
+                if (btnAdd) { btnAdd.style.background = "transparent"; btnAdd.style.color = "var(--primary-color)"; }
+                renderCustomCoursesList();
+            }
+        }
+
+        function resetAddCourseForm() {
+            const form = document.getElementById("formAddCustomCourse");
+            if (form) form.reset();
+            const editId = document.getElementById("courseEditId");
+            if (editId) editId.value = "";
+            const submitBtn = document.getElementById("btnSubmitCustomCourse");
+            if (submitBtn) submitBtn.textContent = "💾 שמור קורס במערכת";
+        }
+
+        function handleSaveCustomCourse(e) {
+            e.preventDefault();
+            const editId = document.getElementById("courseEditId").value;
+            const name = document.getElementById("newCourseName").value.trim();
+            const govName = document.getElementById("newCourseGovName").value.trim() || name;
+            const hours = document.getElementById("newCourseHours").value.trim();
+            const originalPrice = Number(document.getElementById("newCourseOriginalPrice").value);
+            const code = document.getElementById("newCourseCode").value.trim();
+            const depositCode = document.getElementById("newCourseDepositCode").value.trim();
+            const tamatSymbol = document.getElementById("newCourseTamatSymbol").value.trim();
+            const syllabusUrl = document.getElementById("newCourseSyllabusUrl").value.trim();
+            const eveningSchedule = document.getElementById("newCourseEveningSchedule").value.trim() || "א'+ד', 17:30-21:15";
+            const morningSchedule = document.getElementById("newCourseMorningSchedule").value.trim() || "ב'+ה', 09:00-16:30";
+
+            if (!name || !hours || !originalPrice) {
+                alert("נא למלא את שדות החובה: שם קורס, שעות לימוד ומחיר מקורי.");
+                return;
+            }
+
+            const key = editId ? editId : "course_" + Date.now();
+
+            const courseObj = {
+                key,
+                name,
+                govName,
+                hours,
+                originalPrice,
+                code,
+                depositCode,
+                tamatSymbol,
+                syllabusUrl,
+                eveningSchedule,
+                morningSchedule,
+                updatedAt: Date.now()
+            };
+
+            if (editId) {
+                customCourses = customCourses.map(c => c.key === editId ? courseObj : c);
+            } else {
+                customCourses.unshift(courseObj);
+            }
+
+            saveCustomCoursesToStorage();
+            populateCourseDropdown();
+            
+            const courseSelect = document.getElementById("courseSelect");
+            if (courseSelect) {
+                courseSelect.value = key;
+                if (typeof handleCoursePresetChange === "function") {
+                    handleCoursePresetChange();
+                }
+            }
+
+            alert(editId ? `הקורס "${name}" עודכן בהצלחה!` : `הקורס החדש "${name}" נוסף בהצלחה למערכת! 🎉`);
+            resetAddCourseForm();
+            closeManageCoursesModal();
+        }
+
+        function deleteCustomCourse(key) {
+            const course = customCourses.find(c => c.key === key);
+            const name = course ? course.name : "";
+            if (confirm(`האם אתה בטוח שברצונך למחוק את הקורס "${name}"?`)) {
+                customCourses = customCourses.filter(c => c.key !== key);
+                saveCustomCoursesToStorage();
+                populateCourseDropdown();
+                renderCustomCoursesList();
+            }
+        }
+
+        function editCustomCourse(key) {
+            const course = customCourses.find(c => c.key === key);
+            if (!course) return;
+
+            document.getElementById("courseEditId").value = course.key;
+            document.getElementById("newCourseName").value = course.name || "";
+            document.getElementById("newCourseGovName").value = course.govName || "";
+            document.getElementById("newCourseHours").value = course.hours || "";
+            document.getElementById("newCourseOriginalPrice").value = course.originalPrice || "";
+            document.getElementById("newCourseCode").value = course.code || "";
+            document.getElementById("newCourseDepositCode").value = course.depositCode || "";
+            document.getElementById("newCourseTamatSymbol").value = course.tamatSymbol || "";
+            document.getElementById("newCourseSyllabusUrl").value = course.syllabusUrl || "";
+            document.getElementById("newCourseEveningSchedule").value = course.eveningSchedule || "";
+            document.getElementById("newCourseMorningSchedule").value = course.morningSchedule || "";
+
+            document.getElementById("btnSubmitCustomCourse").textContent = "💾 עדכן קורס";
+            switchCourseModalTab("add");
+        }
+
+        function renderCustomCoursesList() {
+            const container = document.getElementById("containerCustomCoursesList");
+            if (!container) return;
+
+            if (!customCourses || customCourses.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 24px 12px; color: #94A3B8; font-size: 13px;">
+                        טרם נוספו קורסים מותאמים אישית למערכת.<br>
+                        לחץ על "➕ הוסף קורס חדש" להוספת הקורס הראשון!
+                    </div>
+                `;
+                return;
+            }
+
+            let html = "";
+            customCourses.forEach(c => {
+                const nameStr = (typeof escapeHTML === "function") ? escapeHTML(c.name) : c.name;
+                html += `
+                    <div style="background: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px 14px; display: flex; justify-content: space-between; align-items: center; gap: 10px;">
+                        <div>
+                            <div style="font-weight: 700; font-size: 13.5px; color: var(--text-light);">${nameStr}</div>
+                            <div style="font-size: 11.5px; color: #64748B; margin-top: 2px;">
+                                ⏱️ ${c.hours} שעות | 💰 ${c.originalPrice ? c.originalPrice.toLocaleString() + ' ₪' : ''} ${c.code ? '| 🔢 קוד: ' + c.code : ''}
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 6px;">
+                            <button type="button" class="clear-btn" style="color: #3B82F6; border-color: #93C5FD; font-size: 11px; padding: 4px 8px;" onclick="editCustomCourse('${c.key}')">✏️ ערוך</button>
+                            <button type="button" class="clear-btn" style="color: #EF4444; border-color: #FCA5A5; font-size: 11px; padding: 4px 8px;" onclick="deleteCustomCourse('${c.key}')">🗑️ מחק</button>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
         // Cache DOM elements
         const els = {
             courseSelect: document.getElementById('courseSelect'),
@@ -2170,6 +2446,10 @@
 
         // Update badge count
         updateBadgeCount();
+
+        // Initialize custom courses module
+        loadCustomCoursesFromStorage();
+        populateCourseDropdown();
 
         // Format currency helper
         function formatILS(num) {
@@ -5449,6 +5729,106 @@
             <div style="padding: 12px 20px; border-top: 1px solid var(--border-color); background: var(--bg-color); display: flex; justify-content: space-between; align-items: center;">
                 <div style="font-size: 11px; color: #94A3B8;">💡 לחיצה על כל הצעה תטען אותה מיידית לעריכה מלאה בטופס.</div>
                 <button type="button" class="btn btn-pdf" style="padding: 6px 16px; font-size: 12.5px;" onclick="closeCrmModal()">סגור חלון</button>
+            </div>
+        </div>
+    <!-- Dedicated Dynamic Course Management Modal -->
+    <div id="manageCoursesModal" class="no-print" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(4px); z-index: 9999; justify-content: center; align-items: center; padding: 16px;" onclick="if(event.target===this) closeManageCoursesModal()">
+        <div style="background: var(--panel-bg, #FFFFFF); border: 1px solid var(--border-color); border-radius: 14px; width: 100%; max-width: 640px; max-height: 90vh; display: flex; flex-direction: column; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35); overflow: hidden;" onclick="event.stopPropagation()">
+            
+            <!-- Modal Header -->
+            <div style="padding: 16px 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: rgba(59, 130, 246, 0.08);">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 24px;">⚙️</span>
+                    <div>
+                        <div style="font-weight: 800; font-size: 16px; color: var(--text-light, #0F172A);">ניהול והוספת קורסים במערכת</div>
+                        <div style="font-size: 11.5px; color: #64748B;">הוספת קורס חדש, עדכון מחירים ושעות, וסנכרון בזמן אמת</div>
+                    </div>
+                </div>
+                <button type="button" onclick="closeManageCoursesModal()" style="background: none; border: none; font-size: 22px; color: #94A3B8; cursor: pointer; padding: 4px 8px; border-radius: 6px; line-height: 1;" title="סגור חלון">✕</button>
+            </div>
+
+            <!-- Tabs: Create New Course / Existing Custom Courses -->
+            <div style="padding: 12px 20px; border-bottom: 1px solid var(--border-color); display: flex; gap: 10px; background: var(--bg-color);">
+                <button type="button" id="btnTabAddCourse" class="btn btn-pdf" style="padding: 6px 14px; font-size: 12px; background: var(--primary-color); color: var(--text-dark);" onclick="switchCourseModalTab('add')">➕ הוסף קורס חדש</button>
+                <button type="button" id="btnTabListCourses" class="btn btn-outline" style="padding: 6px 14px; font-size: 12px; background: transparent; color: var(--primary-color);" onclick="switchCourseModalTab('list')">📋 קורסים מותאמים אישית (<span id="customCoursesCount">0</span>)</button>
+            </div>
+
+            <!-- Modal Body Content -->
+            <div style="padding: 18px 20px; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 12px; min-height: 250px; max-height: 480px;">
+                
+                <!-- View 1: Form to Add/Edit Course -->
+                <form id="formAddCustomCourse" onsubmit="handleSaveCustomCourse(event)" style="display: flex; flex-direction: column; gap: 12px;">
+                    <input type="hidden" id="courseEditId" value="">
+                    
+                    <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                        <div style="flex: 2; min-width: 200px;">
+                            <label style="font-size: 11.5px; font-weight: 700; display: block; margin-bottom: 4px;">שם הקורס מלא (מופיע בהצעה) *</label>
+                            <input type="text" id="newCourseName" required placeholder="למשל: דאטה סיינס ובינה מלאכותית" style="width: 100%; padding: 8px 12px; font-size: 13px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--panel-bg); color: var(--text-light);">
+                        </div>
+                        <div style="flex: 1; min-width: 140px;">
+                            <label style="font-size: 11.5px; font-weight: 700; display: block; margin-bottom: 4px;">שם במשרד העבודה / תמ"ת</label>
+                            <input type="text" id="newCourseGovName" placeholder="שם רשמי לשוברים..." style="width: 100%; padding: 8px 12px; font-size: 13px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--panel-bg); color: var(--text-light);">
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                        <div style="flex: 1; min-width: 120px;">
+                            <label style="font-size: 11.5px; font-weight: 700; display: block; margin-bottom: 4px;">שעות לימוד *</label>
+                            <input type="number" id="newCourseHours" required placeholder="350" min="1" max="2000" style="width: 100%; padding: 8px 12px; font-size: 13px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--panel-bg); color: var(--text-light);">
+                        </div>
+                        <div style="flex: 1; min-width: 130px;">
+                            <label style="font-size: 11.5px; font-weight: 700; display: block; margin-bottom: 4px;">מחיר מקורי (₪) *</label>
+                            <input type="number" id="newCourseOriginalPrice" required placeholder="19900" min="100" max="100000" style="width: 100%; padding: 8px 12px; font-size: 13px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--panel-bg); color: var(--text-light);">
+                        </div>
+                        <div style="flex: 1; min-width: 130px;">
+                            <label style="font-size: 11.5px; font-weight: 700; display: block; margin-bottom: 4px;">קוד קורס בפריזה</label>
+                            <input type="text" id="newCourseCode" placeholder="02447599" style="width: 100%; padding: 8px 12px; font-size: 13px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--panel-bg); color: var(--text-light);">
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                        <div style="flex: 1; min-width: 130px;">
+                            <label style="font-size: 11.5px; font-weight: 700; display: block; margin-bottom: 4px;">קוד פיקדון צבאי</label>
+                            <input type="text" id="newCourseDepositCode" placeholder="0240043999" style="width: 100%; padding: 8px 12px; font-size: 13px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--panel-bg); color: var(--text-light);">
+                        </div>
+                        <div style="flex: 1; min-width: 130px;">
+                            <label style="font-size: 11.5px; font-weight: 700; display: block; margin-bottom: 4px;">סמל תמ"ת / שאלון</label>
+                            <input type="text" id="newCourseTamatSymbol" placeholder="1234" style="width: 100%; padding: 8px 12px; font-size: 13px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--panel-bg); color: var(--text-light);">
+                        </div>
+                        <div style="flex: 2; min-width: 180px;">
+                            <label style="font-size: 11.5px; font-weight: 700; display: block; margin-bottom: 4px;">קישור לסילבוס באתר (URL)</label>
+                            <input type="url" id="newCourseSyllabusUrl" placeholder="https://www.hackeru.co.il/courses/..." style="width: 100%; padding: 8px 12px; font-size: 13px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--panel-bg); color: var(--text-light);">
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                        <div style="flex: 1; min-width: 180px;">
+                            <label style="font-size: 11.5px; font-weight: 700; display: block; margin-bottom: 4px;">ימי/שעות קורס ערב</label>
+                            <input type="text" id="newCourseEveningSchedule" placeholder="א'+ד', 17:30-21:15" style="width: 100%; padding: 8px 12px; font-size: 13px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--panel-bg); color: var(--text-light);">
+                        </div>
+                        <div style="flex: 1; min-width: 180px;">
+                            <label style="font-size: 11.5px; font-weight: 700; display: block; margin-bottom: 4px;">ימי/שעות קורס בוקר</label>
+                            <input type="text" id="newCourseMorningSchedule" placeholder="ב'+ה', 09:00-16:30" style="width: 100%; padding: 8px 12px; font-size: 13px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--panel-bg); color: var(--text-light);">
+                        </div>
+                    </div>
+
+                    <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px;">
+                        <button type="button" class="clear-btn" onclick="resetAddCourseForm()" style="font-size: 12px; padding: 6px 14px;">נקה טופס</button>
+                        <button type="submit" class="btn btn-pdf" style="font-size: 13px; padding: 8px 20px;" id="btnSubmitCustomCourse">💾 שמור קורס במערכת</button>
+                    </div>
+                </form>
+
+                <!-- View 2: List of Custom Courses -->
+                <div id="containerCustomCoursesList" style="display: none; flex-direction: column; gap: 10px;">
+                    <!-- Dynamically populated list -->
+                </div>
+
+            </div>
+
+            <!-- Modal Footer -->
+            <div style="padding: 12px 20px; border-top: 1px solid var(--border-color); background: var(--bg-color); display: flex; justify-content: space-between; align-items: center;">
+                <div style="font-size: 11px; color: #94A3B8;">💡 הקורסים החדשים שתשמור יתווספו לרשימה הנפתחת ויסונכרנו אוטומטית בענן.</div>
+                <button type="button" class="btn btn-pdf" style="padding: 6px 16px; font-size: 12.5px;" onclick="closeManageCoursesModal()">סגור</button>
             </div>
         </div>
     </div>
