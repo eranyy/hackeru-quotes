@@ -2338,6 +2338,14 @@
             container.innerHTML = html;
         }
 
+        window.openManageCoursesModal = openManageCoursesModal;
+        window.closeManageCoursesModal = closeManageCoursesModal;
+        window.switchCourseModalTab = switchCourseModalTab;
+        window.resetAddCourseForm = resetAddCourseForm;
+        window.handleSaveCustomCourse = handleSaveCustomCourse;
+        window.deleteCustomCourse = deleteCustomCourse;
+        window.editCustomCourse = editCustomCourse;
+
         // Cache DOM elements
         const els = {
             courseSelect: document.getElementById('courseSelect'),
@@ -5731,6 +5739,8 @@
                 <button type="button" class="btn btn-pdf" style="padding: 6px 16px; font-size: 12.5px;" onclick="closeCrmModal()">סגור חלון</button>
             </div>
         </div>
+    </div>
+
     <!-- Dedicated Dynamic Course Management Modal -->
     <div id="manageCoursesModal" class="no-print" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(4px); z-index: 9999; justify-content: center; align-items: center; padding: 16px;" onclick="if(event.target===this) closeManageCoursesModal()">
         <div style="background: var(--panel-bg, #FFFFFF); border: 1px solid var(--border-color); border-radius: 14px; width: 100%; max-width: 640px; max-height: 90vh; display: flex; flex-direction: column; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35); overflow: hidden;" onclick="event.stopPropagation()">
