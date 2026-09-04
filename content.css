@@ -1,0 +1,729 @@
+/* CSS injected into WhatsApp Web */
+
+:root {
+  --wa-assistant-primary: #00a884;
+  --wa-assistant-primary-hover: #008f72;
+  --wa-assistant-bg: #111b21;
+  --wa-assistant-card-bg: #202c33;
+  --wa-assistant-text: #e9edef;
+  --wa-assistant-text-muted: #8696a0;
+  --wa-assistant-border: #374248;
+  --wa-assistant-font: Segoe UI, Helvetica Neue, Helvetica, Lucida Grande, Arial, Ubuntu, Cantarell, Fira Sans, sans-serif;
+}
+
+/* Floating Trigger Button Base */
+.wa-assistant-trigger {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: grab;
+  z-index: 999999;
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s ease, background 0.2s ease;
+  color: white;
+  user-select: none;
+  touch-action: none;
+}
+
+.wa-assistant-trigger * {
+  pointer-events: none !important;
+}
+
+/* WhatsApp Web Trigger Aesthetics (Matches WhatsApp native toolbar action icons: 38px) */
+.wa-trigger-whatsapp {
+  width: 38px;
+  height: 38px;
+  font-size: 16px;
+  background: linear-gradient(135deg, #00e676, #00a884);
+  box-shadow: 0 4px 14px rgba(0, 168, 132, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.wa-trigger-whatsapp:hover {
+  transform: scale(1.08);
+  box-shadow: 0 6px 18px rgba(0, 230, 118, 0.45);
+}
+
+/* Outlook Web Trigger Aesthetics (Matches Outlook Web native ribbon/toolbar action icons: 34px) */
+.wa-trigger-outlook {
+  width: 34px;
+  height: 34px;
+  font-size: 15px;
+  background: linear-gradient(135deg, #0078d4, #106ebe);
+  box-shadow: 0 4px 14px rgba(0, 120, 212, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.wa-trigger-outlook:hover {
+  transform: scale(1.08);
+  box-shadow: 0 6px 18px rgba(0, 120, 212, 0.55);
+}
+
+.wa-assistant-trigger:active {
+  cursor: grabbing;
+}
+
+
+/* Sidebar Drawer */
+.wa-assistant-sidebar {
+  position: fixed;
+  top: 0;
+  right: -360px;
+  width: 350px;
+  height: 100vh;
+  background-color: var(--wa-assistant-bg);
+  box-shadow: -5px 0 25px rgba(0, 0, 0, 0.4);
+  z-index: 1000000;
+  transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  color: var(--wa-assistant-text);
+  font-family: var(--wa-assistant-font);
+  border-left: 1px solid var(--wa-assistant-border);
+  direction: rtl; /* RTL Support */
+}
+
+.wa-assistant-sidebar.open {
+  right: 0;
+}
+
+.wa-assistant-header {
+  padding: 20px;
+  background-color: var(--wa-assistant-card-bg);
+  border-bottom: 1px solid var(--wa-assistant-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+}
+
+.wa-assistant-header h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.wa-assistant-close-btn {
+  background: transparent;
+  border: none;
+  color: var(--wa-assistant-text-muted);
+  font-size: 20px;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.wa-assistant-close-btn:hover {
+  color: var(--wa-assistant-text);
+}
+
+/* Sidebar Search */
+.wa-assistant-search-box {
+  padding: 12px 16px;
+  background-color: var(--wa-assistant-bg);
+}
+
+.wa-assistant-search-input {
+  width: 100%;
+  background-color: var(--wa-assistant-card-bg);
+  border: 1px solid var(--wa-assistant-border);
+  border-radius: 8px;
+  padding: 8px 12px;
+  color: var(--wa-assistant-text);
+  font-size: 13px;
+  outline: none;
+  font-family: var(--wa-assistant-font);
+}
+
+.wa-assistant-search-input:focus {
+  border-color: var(--wa-assistant-primary);
+}
+
+/* Categories Bar */
+.wa-assistant-categories {
+  display: flex;
+  gap: 6px;
+  padding: 0 16px 12px 16px;
+  overflow-x: auto;
+  border-bottom: 1px solid var(--wa-assistant-border);
+  white-space: nowrap;
+}
+
+/* Hide scrollbar for categories bar */
+.wa-assistant-categories::-webkit-scrollbar {
+  display: none;
+}
+
+.wa-assistant-cat-pill {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  background-color: var(--wa-assistant-card-bg);
+  color: var(--wa-assistant-text-muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+
+.wa-assistant-cat-pill:hover {
+  color: var(--wa-assistant-text);
+}
+
+.wa-assistant-cat-pill.active {
+  background-color: rgba(0, 168, 132, 0.15);
+  color: var(--wa-assistant-primary);
+  border-color: rgba(0, 168, 132, 0.3);
+}
+
+/* Template List */
+.wa-assistant-list {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding: 16px;
+}
+
+.wa-assistant-item {
+  background-color: var(--wa-assistant-card-bg);
+  border: 1px solid var(--wa-assistant-border);
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.wa-assistant-item:hover {
+  border-color: var(--wa-assistant-primary);
+  transform: translateY(-1px);
+}
+
+.wa-assistant-item-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.wa-assistant-item-title {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.wa-assistant-item-shortcut {
+  font-size: 10px;
+  background-color: rgba(255, 255, 255, 0.08);
+  padding: 1px 6px;
+  border-radius: 4px;
+  color: #f59e0b;
+  font-family: monospace;
+}
+
+.wa-assistant-item-body {
+  font-size: 11px;
+  color: var(--wa-assistant-text-muted);
+  line-height: 1.4;
+  white-space: pre-wrap;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.wa-assistant-item-body mark {
+  background: rgba(0, 168, 132, 0.2);
+  color: #00a884;
+  border-radius: 2px;
+  padding: 0 2px;
+}
+
+/* Modal Overlay for Placeholder Inputs */
+.wa-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000005 !important;
+  font-family: var(--wa-assistant-font);
+  direction: rtl;
+}
+
+.wa-modal-box {
+  background-color: var(--wa-assistant-card-bg);
+  border: 1px solid var(--wa-assistant-border);
+  border-radius: 12px;
+  width: 440px;
+  max-width: 95%;
+  max-height: 88vh;
+  padding: 20px 24px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  color: var(--wa-assistant-text);
+  animation: wa-scale-in 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-sizing: border-box;
+}
+
+@keyframes wa-scale-in {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.wa-modal-box h3 {
+  margin: 0 0 8px 0;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.wa-modal-box p {
+  margin: 0 0 16px 0;
+  font-size: 12px;
+  color: var(--wa-assistant-text-muted);
+}
+
+.wa-modal-fields {
+  margin-bottom: 20px;
+  max-height: 45vh;
+  overflow-y: auto;
+  padding-left: 6px;
+}
+
+.wa-modal-field-group {
+  margin-bottom: 12px;
+}
+
+.wa-modal-field-group label {
+  display: block;
+  font-size: 12px;
+  color: var(--wa-assistant-text-muted);
+  margin-bottom: 4px;
+}
+
+.wa-modal-field-group input {
+  width: 100%;
+  background-color: var(--wa-assistant-bg);
+  border: 1px solid var(--wa-assistant-border);
+  border-radius: 6px;
+  padding: 8px 12px;
+  color: var(--wa-assistant-text);
+  font-size: 13px;
+  outline: none;
+  font-family: var(--wa-assistant-font);
+}
+
+.wa-modal-field-group input:focus {
+  border-color: var(--wa-assistant-primary);
+}
+
+.wa-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.wa-modal-btn {
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  font-family: var(--wa-assistant-font);
+}
+
+.wa-modal-btn-primary {
+  background-color: var(--wa-assistant-primary);
+  color: white;
+}
+
+.wa-modal-btn-primary:hover {
+  background-color: var(--wa-assistant-primary-hover);
+}
+
+.wa-modal-btn-secondary {
+  background-color: transparent;
+  color: var(--wa-assistant-text-muted);
+  border: 1px solid var(--wa-assistant-border);
+}
+
+.wa-modal-btn-secondary:hover {
+  background-color: rgba(255, 255, 255, 0.04);
+  color: var(--wa-assistant-text);
+}
+
+/* Autocomplete Dropdown */
+.wa-assistant-autocomplete-dropdown {
+  position: fixed;
+  background-color: var(--wa-assistant-card-bg);
+  border: 1px solid var(--wa-assistant-border);
+  border-radius: 8px;
+  box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.4);
+  z-index: 10001;
+  max-height: 200px;
+  overflow-y: auto;
+  min-width: 280px;
+  font-family: var(--wa-assistant-font);
+  direction: rtl;
+  color: var(--wa-assistant-text);
+  padding: 4px 0;
+}
+
+.wa-assistant-autocomplete-item {
+  padding: 8px 12px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+  font-size: 13px;
+  transition: background-color 0.15s ease;
+}
+
+.wa-assistant-autocomplete-item:hover,
+.wa-assistant-autocomplete-item.selected {
+  background-color: rgba(0, 168, 132, 0.15);
+  color: var(--wa-assistant-primary);
+}
+
+.wa-assistant-autocomplete-shortcut {
+  font-size: 11px;
+  color: #f59e0b;
+  font-family: monospace;
+  font-weight: 600;
+  margin-right: 12px;
+}
+
+/* Syllabus List in Settings */
+.wa-syllabus-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: var(--wa-assistant-card-bg);
+  border: 1px solid var(--wa-assistant-border);
+  border-radius: 6px;
+  padding: 6px 10px;
+  gap: 8px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.wa-syllabus-row:hover {
+  border-color: var(--wa-assistant-primary);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.wa-syllabus-name-input {
+  background: transparent;
+  border: none;
+  color: var(--wa-assistant-text);
+  font-size: 12px;
+  font-family: var(--wa-assistant-font);
+  outline: none;
+  flex-grow: 1;
+  min-width: 0;
+  padding: 2px 0;
+  border-bottom: 1px solid transparent;
+  transition: border-bottom-color 0.2s ease;
+}
+
+.wa-syllabus-name-input:focus {
+  border-bottom-color: var(--wa-assistant-primary);
+}
+
+.wa-syllabus-meta {
+  font-size: 9px;
+  color: var(--wa-assistant-text-muted);
+  white-space: nowrap;
+  max-width: 90px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  direction: ltr;
+  text-align: right;
+}
+
+.wa-syllabus-delete-btn {
+  background: transparent;
+  border: none;
+  color: var(--wa-assistant-text-muted);
+  cursor: pointer;
+  font-size: 12px;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.wa-syllabus-delete-btn:hover {
+  background-color: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+}
+
+/* Syllabus Dropdown Menu styling */
+.wa-syllabus-dropdown-menu {
+  position: absolute;
+  z-index: 10005;
+  background-color: var(--wa-assistant-card-bg);
+  border: 1px solid var(--wa-assistant-border);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+  padding: 6px 0;
+  min-width: 180px;
+  display: flex;
+  flex-direction: column;
+  animation: wa-scale-in 0.15s ease-out;
+  direction: rtl;
+}
+
+.wa-syllabus-dropdown-item {
+  padding: 8px 14px;
+  font-size: 12px;
+  color: var(--wa-assistant-text);
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  font-family: var(--wa-assistant-font);
+  text-align: right;
+}
+
+.wa-syllabus-dropdown-item:hover {
+  background-color: rgba(0, 168, 132, 0.15);
+  color: var(--wa-assistant-primary);
+}
+
+/* Reminders List & Cards styling */
+.wa-assistant-reminder-card {
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.wa-assistant-reminder-card:hover {
+  transform: translateY(-1px);
+  border-color: var(--wa-assistant-primary);
+}
+
+/* Hover Bell Button on Message Bubbles */
+.wa-assistant-bell-btn {
+  display: none;
+  position: absolute;
+  cursor: pointer;
+  z-index: 999;
+  font-size: 13px;
+  background: var(--wa-assistant-card-bg);
+  border: 1px solid var(--wa-assistant-border);
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  transition: transform 0.2s ease, background-color 0.2s ease;
+  user-select: none;
+}
+
+.wa-assistant-bell-btn:hover {
+  transform: scale(1.1);
+  background-color: var(--wa-assistant-border);
+}
+
+/* Inject Hover styles using CSS rules */
+[data-testid="msg-container"], .message-in, .message-out {
+  position: relative;
+}
+
+[data-testid="msg-container"]:hover .wa-assistant-bell-btn, 
+.message-in:hover .wa-assistant-bell-btn, 
+.message-out:hover .wa-assistant-bell-btn {
+  display: flex;
+}
+
+/* RTL adjustment: Position the bell at the bottom outer corners of the bubble */
+.wa-assistant-bell-btn.wa-incoming {
+  left: 12px;
+  bottom: -10px;
+}
+
+.wa-assistant-bell-btn.wa-outgoing {
+  right: 12px;
+  bottom: -10px;
+}
+
+/* Sidebar Tab buttons styling */
+.wa-assistant-tab-btn {
+  transition: border-bottom-color 0.2s ease, color 0.2s ease;
+}
+
+.wa-assistant-tab-btn:hover {
+  color: var(--wa-assistant-text);
+}
+
+/* Make only the left part of the datetime-local input (calendar icon + empty space in RTL) clickable to open the native calendar popup */
+#wa-rem-custom-time::-webkit-calendar-picker-indicator {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 60px; /* Cover only the left side */
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  opacity: 0;
+  cursor: pointer;
+  z-index: 2;
+}
+
+/* Glowing/pulsing bell animation for active reminders */
+@keyframes wa-bell-glow {
+  0% {
+    filter: drop-shadow(0 0 1px #eab308) drop-shadow(0 0 2px #eab308);
+    transform: scale(1) rotate(0deg);
+  }
+  50% {
+    filter: drop-shadow(0 0 3px #eab308) drop-shadow(0 0 6px #eab308);
+    transform: scale(1.1) rotate(5deg);
+  }
+  100% {
+    filter: drop-shadow(0 0 1px #eab308) drop-shadow(0 0 2px #eab308);
+    transform: scale(1) rotate(-5deg);
+  }
+}
+
+/* Leads CRM Tracker Styling */
+.wa-lead-card {
+  background: var(--wa-assistant-card-bg);
+  border: 1px solid var(--wa-assistant-border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.2s ease;
+  position: relative;
+  direction: rtl;
+  text-align: right;
+}
+
+.wa-lead-card:hover {
+  border-color: rgba(0, 168, 132, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Yellow Marker highlighted card matching Eran's manual coloring */
+.wa-lead-card-highlighted {
+  background: rgba(234, 179, 8, 0.12) !important;
+  border-color: rgba(234, 179, 8, 0.6) !important;
+  box-shadow: 0 0 12px rgba(234, 179, 8, 0.15) !important;
+}
+
+.wa-lead-card-highlighted:hover {
+  background: rgba(234, 179, 8, 0.18) !important;
+  border-color: rgba(234, 179, 8, 0.8) !important;
+}
+
+/* Daily attempt boxes layout */
+.wa-lead-day-box {
+  background: var(--wa-assistant-bg);
+  border: 1px solid var(--wa-assistant-border);
+  border-radius: 6px;
+  color: var(--wa-assistant-text-muted);
+  font-size: 10px;
+  padding: 5px 0;
+  text-align: center;
+  cursor: pointer;
+  user-select: none;
+  font-weight: 700;
+  transition: all 0.15s ease;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.wa-lead-day-box:hover {
+  border-color: var(--wa-assistant-primary);
+  color: var(--wa-assistant-text);
+  background: rgba(0, 168, 132, 0.05);
+}
+
+/* Attempt color coding rules */
+.wa-lead-day-box.filled.wa-attempt-1 {
+  background: rgba(249, 115, 22, 0.1);
+  border-color: #f97316;
+  color: #f97316;
+}
+
+.wa-lead-day-box.filled.wa-attempt-2 {
+  background: rgba(234, 179, 8, 0.2);
+  border-color: #eab308;
+  color: #ca8a04;
+  box-shadow: 0 0 8px rgba(234, 179, 8, 0.2);
+}
+
+.wa-lead-day-box.filled.wa-attempt-3 {
+  background: rgba(234, 179, 8, 0.35);
+  border-color: #ca8a04;
+  color: #854d0e;
+}
+
+.wa-lead-day-box.filled.wa-attempt-busy {
+  background: rgba(239, 68, 68, 0.12);
+  border-color: #ef4444;
+  color: #ef4444;
+}
+
+.wa-lead-day-box.filled.wa-attempt-msg {
+  background: rgba(16, 185, 129, 0.12);
+  border-color: #10b981;
+  color: #10b981;
+}
+
+.wa-lead-day-box.filled.wa-attempt-custom {
+  background: rgba(59, 130, 246, 0.12);
+  border-color: #3b82f6;
+  color: #3b82f6;
+}
+
+/* Autocomplete Menu Popup */
+.wa-assistant-autocomplete-dropdown {
+  position: fixed !important;
+  background-color: #202c33 !important;
+  border: 1px solid #374248 !important;
+  border-radius: 8px !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5) !important;
+  max-height: 220px !important;
+  overflow-y: auto !important;
+  width: 280px !important;
+  z-index: 2000000 !important;
+  direction: rtl !important;
+  font-family: Segoe UI, Helvetica Neue, Helvetica, Arial, sans-serif !important;
+  padding: 4px !important;
+}
+
+.wa-assistant-autocomplete-item {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  padding: 8px 12px !important;
+  font-size: 13px !important;
+  color: #e9edef !important;
+  cursor: pointer !important;
+  border-radius: 6px !important;
+  transition: background 0.15s ease !important;
+}
+
+.wa-assistant-autocomplete-item:hover,
+.wa-assistant-autocomplete-item.selected {
+  background-color: rgba(0, 168, 132, 0.3) !important;
+  color: #00e676 !important;
+}
+
+.wa-assistant-autocomplete-shortcut {
+  font-size: 11px !important;
+  color: #8696a0 !important;
+  background: #111b21 !important;
+  padding: 2px 6px !important;
+  border-radius: 4px !important;
+}
+
+

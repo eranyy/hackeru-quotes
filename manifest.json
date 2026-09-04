@@ -1,24 +1,77 @@
 {
-  "name": "מחולל הצעות מחיר | HackerU",
-  "short_name": "הצעות מחיר HackerU",
-  "description": "מערכת דינמית ליצירת והדפסת הצעות מחיר של האקריו",
-  "start_url": "./index.html",
-  "display": "standalone",
-  "background_color": "#0F172A",
-  "theme_color": "#00D27A",
-  "orientation": "any",
-  "icons": [
+  "manifest_version": 3,
+  "name": "עוזר הודעות WhatsApp ו-CRM",
+  "version": "1.2",
+  "description": "תוסף לניהול ושליחת הודעות מובנות, סנכרון תזכורות וזיהוי לקוחות ב-WhatsApp Web ו-Priza CRM",
+  "permissions": [
+    "storage",
+    "clipboardWrite",
+    "unlimitedStorage",
+    "tabs"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "host_permissions": [
+    "https://web.whatsapp.com/*",
+    "https://*.priza.net/*",
+    "http://*.priza.net/*",
+    "https://*.hackeru.co.il/*",
+    "https://*.hackeru.com/*",
+    "https://outlook.office.com/*",
+    "https://outlook.office365.com/*",
+    "https://*.sharepoint.com/*",
+    "https://*.live.com/*",
+    "https://*.office.com/*",
+    "https://*.office365.com/*",
+    "https://*.microsoft.com/*",
+    "https://mail.google.com/*",
+    "https://api.voicenter.com/*",
+    "https://generativelanguage.googleapis.com/*",
+    "https://*.firebaseio.com/*"
+  ],
+  "action": {
+    "default_title": "ניהול תבניות",
+    "default_popup": "options.html"
+  },
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
+  },
+  "content_scripts": [
     {
-      "src": "icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
+      "matches": [
+        "https://web.whatsapp.com/*",
+        "https://*.priza.net/*",
+        "http://*.priza.net/*",
+        "https://*.hackeru.co.il/*",
+        "https://*.hackeru.com/*",
+        "https://outlook.office.com/*",
+        "https://outlook.office365.com/*",
+        "https://*.sharepoint.com/*",
+        "https://*.live.com/*",
+        "https://*.office.com/*",
+        "https://*.office365.com/*",
+        "https://*.microsoft.com/*",
+        "https://mail.google.com/*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "css": [
+        "content.css"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  "web_accessible_resources": [
     {
-      "src": "icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "resources": [
+        "main-world.js"
+      ],
+      "matches": [
+        "https://web.whatsapp.com/*"
+      ]
     }
   ]
 }

@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ניהול תבניות הודעה - עוזר WhatsApp</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Rubik:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="logo-area">
+        <div class="logo-icon">💬</div>
+        <div class="logo-text">
+          <h2>WhatsApp</h2>
+          <span>עוזר הודעות מובנות</span>
+        </div>
+      </div>
+      
+      <nav class="categories-nav">
+        <h3>קטגוריות</h3>
+        <ul id="categoriesList">
+          <li class="active" data-category="all">
+            <span class="category-icon">📁</span>
+            <span class="category-name">הכל</span>
+            <span class="category-count" id="count-all">0</span>
+          </li>
+          <!-- Categories will be dynamically rendered here -->
+        </ul>
+        <button id="addCategoryBtn" class="btn btn-secondary btn-sm">+ קטגוריה חדשה</button>
+      </nav>
+
+      <!-- Features and Modular Tools Selector -->
+      <div class="sidebar-features-box" style="margin-top: 16px; border-top: 1px solid var(--card-border); padding-top: 16px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+          <h3 style="font-size: 12px; text-transform: uppercase; color: var(--text-secondary); font-weight: 700; margin: 0;">🎛️ בורר רכיבים וכלים</h3>
+          <button type="button" id="openFullTabBtn" class="btn btn-secondary btn-sm" style="font-size: 10px; padding: 3px 8px; border-radius: 4px;" title="פתח מסך ניהול מלא בלשונית נפרדת">🖥️ מסך מלא</button>
+        </div>
+
+        <!-- 4 Platform Tabs -->
+        <div style="display: flex; gap: 3px; background: rgba(0,0,0,0.3); padding: 3px; border-radius: 6px; margin-bottom: 10px;">
+          <button type="button" id="opt-feat-tab-whatsapp" class="opt-feat-tab" style="flex: 1; padding: 6px 2px; font-size: 10px; font-weight: 700; border-radius: 4px; border: none; cursor: pointer; background: var(--primary); color: white; transition: all 0.2s ease; font-family: inherit;">💬 ווטסאפ</button>
+          <button type="button" id="opt-feat-tab-mail" class="opt-feat-tab" style="flex: 1; padding: 6px 2px; font-size: 10px; font-weight: 700; border-radius: 4px; border: none; cursor: pointer; background: transparent; color: var(--text-secondary); transition: all 0.2s ease; font-family: inherit;">✉️ דוא"ל</button>
+          <button type="button" id="opt-feat-tab-excel" class="opt-feat-tab" style="flex: 1; padding: 6px 2px; font-size: 10px; font-weight: 700; border-radius: 4px; border: none; cursor: pointer; background: transparent; color: var(--text-secondary); transition: all 0.2s ease; font-family: inherit;">📊 אקסל</button>
+          <button type="button" id="opt-feat-tab-web" class="opt-feat-tab" style="flex: 1; padding: 6px 2px; font-size: 10px; font-weight: 700; border-radius: 4px; border: none; cursor: pointer; background: transparent; color: var(--text-secondary); transition: all 0.2s ease; font-family: inherit;">🌐 אתרי Web</button>
+        </div>
+
+        <!-- Floating Screen Buttons -->
+        <div style="font-size: 11px; font-weight: 700; color: #a5b4fc; margin-bottom: 6px;">🔘 כפתורים צפים על המסך:</div>
+        
+        <div style="display: flex; flex-direction: column; gap: 6px; background: rgba(255,255,255,0.02); padding: 8px 10px; border-radius: 8px; border: 1px solid var(--card-border); margin-bottom: 10px;">
+          <label style="display: flex; align-items: center; justify-content: space-between; font-size: 11px; color: var(--text-primary); cursor: pointer; user-select: none;">
+            <span>💬 כפתור סרגל תבניות צף</span>
+            <input type="checkbox" id="opt-toggle-btn-sidebar" style="accent-color: var(--primary); cursor: pointer;">
+          </label>
+          <label style="display: flex; align-items: center; justify-content: space-between; font-size: 11px; color: var(--text-primary); cursor: pointer; user-select: none;">
+            <span>📎 כפתור סילבוס מהיר צף</span>
+            <input type="checkbox" id="opt-toggle-btn-syllabus" style="accent-color: var(--primary); cursor: pointer;">
+          </label>
+          <label style="display: flex; align-items: center; justify-content: space-between; font-size: 11px; color: var(--text-primary); cursor: pointer; user-select: none;">
+            <span>📞 כפתור חייגן / חיפוש מספר צף</span>
+            <input type="checkbox" id="opt-toggle-btn-dialer" style="accent-color: var(--primary); cursor: pointer;">
+          </label>
+          <label style="display: flex; align-items: center; justify-content: space-between; font-size: 11px; color: var(--text-primary); cursor: pointer; user-select: none;">
+            <span>📋 כפתור העתקת מספר צף</span>
+            <input type="checkbox" id="opt-toggle-btn-copy" style="accent-color: var(--primary); cursor: pointer;">
+          </label>
+          <label style="display: flex; align-items: center; justify-content: space-between; font-size: 11px; color: var(--text-primary); cursor: pointer; user-select: none;">
+            <span>🔔 כפתור תזכורת מהירה צף</span>
+            <input type="checkbox" id="opt-toggle-btn-reminder" style="accent-color: var(--primary); cursor: pointer;">
+          </label>
+        </div>
+
+        <!-- App Modules -->
+        <div style="font-size: 11px; font-weight: 700; color: #a5b4fc; margin-bottom: 6px;">📑 רכיבים ולשוניות בסרגל:</div>
+        <div style="display: flex; flex-direction: column; gap: 6px; background: rgba(255,255,255,0.02); padding: 8px 10px; border-radius: 8px; border: 1px solid var(--card-border);">
+          <label style="display: flex; align-items: center; justify-content: space-between; font-size: 11px; color: var(--text-primary); cursor: pointer; user-select: none;">
+            <span>📝 לשונית תבניות הודעה</span>
+            <input type="checkbox" id="opt-toggle-templates" style="accent-color: var(--primary); cursor: pointer;">
+          </label>
+          <label style="display: flex; align-items: center; justify-content: space-between; font-size: 11px; color: var(--text-primary); cursor: pointer; user-select: none;">
+            <span>🔔 לשונית תזכורות ופולואפ</span>
+            <input type="checkbox" id="opt-toggle-reminders" style="accent-color: var(--primary); cursor: pointer;">
+          </label>
+          <label style="display: flex; align-items: center; justify-content: space-between; font-size: 11px; color: var(--text-primary); cursor: pointer; user-select: none;">
+            <span>⭐ סרגל קיצורים מהירים נעוץ</span>
+            <input type="checkbox" id="opt-toggle-pinned" style="accent-color: var(--primary); cursor: pointer;">
+          </label>
+          <label style="display: flex; align-items: center; justify-content: space-between; font-size: 11px; color: var(--text-primary); cursor: pointer; user-select: none;">
+            <span>👥 מעקב לידים CRM</span>
+            <input type="checkbox" id="opt-toggle-leads" style="accent-color: var(--primary); cursor: pointer;">
+          </label>
+          <label style="display: flex; align-items: center; justify-content: space-between; font-size: 11px; color: var(--text-primary); cursor: pointer; user-select: none;">
+            <span>💳 הסדרי תשלום וגבייה</span>
+            <input type="checkbox" id="opt-toggle-payments" style="accent-color: var(--primary); cursor: pointer;">
+          </label>
+        </div>
+      </div>
+
+      <div class="sidebar-footer" style="margin-top: 16px; border-top: 1px solid var(--card-border); padding-top: 16px;">
+        <button id="exportBtn" class="btn btn-icon-text">
+          <span>📤</span> גיבוי תבניות (ייצוא)
+        </button>
+        <button id="importBtn" class="btn btn-icon-text">
+          <span>📥</span> שחזור תבניות (ייבוא)
+        </button>
+        <input type="file" id="importFile" accept=".json" style="display: none;">
+      </div>
+
+      <!-- AI Settings -->
+      <div class="sidebar-settings" style="margin-top: 16px; border-top: 1px solid var(--card-border); padding-top: 16px;">
+        <h3 style="font-size: 12px; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 8px; font-weight: 600;">הגדרות בינה מלאכותית (AI)</h3>
+        <div class="form-group">
+          <label for="aiApiKey" style="font-size: 11px; margin-bottom: 4px;">מפתח API של Gemini (חינמי)</label>
+          <input type="password" id="aiApiKey" placeholder="הזן מפתח API..." style="padding: 8px; font-size: 12px; background: rgba(255,255,255,0.03); height: 34px;">
+          <small class="form-help" style="font-size: 10px; margin-top: 4px;">
+            <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color: var(--primary); text-decoration: none;">קבל מפתח API בחינם כאן ↗</a>
+          </small>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <header class="main-header">
+        <div class="search-bar-container">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="searchInput" placeholder="חיפוש לפי כותרת, קיצור או תוכן...">
+        </div>
+        <button id="newTemplateBtn" class="btn btn-primary">
+          <span class="btn-icon">+</span> תבנית חדשה
+        </button>
+      </header>
+
+      <section class="templates-section">
+        <div class="section-title-area">
+          <h1 id="currentCategoryTitle">כל התבניות</h1>
+          <span class="template-counter" id="templateCounter">טוען...</span>
+        </div>
+
+        <div class="templates-grid" id="templatesGrid">
+          <!-- Templates cards will be dynamically injected here -->
+        </div>
+
+        <!-- Empty State -->
+        <div class="empty-state" id="emptyState" style="display: none;">
+          <div class="empty-icon">📝</div>
+          <h3>אין עדיין תבניות בקטגוריה זו</h3>
+          <p>צור תבנית חדשה כדי להתחיל לחסוך זמן יקר בוואטסאפ!</p>
+          <button id="emptyStateCreateBtn" class="btn btn-primary">צור תבנית ראשונה</button>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Modal for Creating/Editing Template -->
+  <div class="modal-backdrop" id="templateModal" style="display: none;">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 id="modalTitle">יצירת תבנית חדשה</h2>
+        <button class="close-modal-btn" id="closeModalBtn">&times;</button>
+      </div>
+      <form id="templateForm">
+        <input type="hidden" id="templateId">
+        
+        <div class="form-group">
+          <label for="tplTitle">כותרת התבנית</label>
+          <input type="text" id="tplTitle" required placeholder="לדוגמה: שליחת הצעת מחיר, ברכת שלום">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="tplShortcut">קיצור דרך במקלדת (למשל: -שיווק או /שלום)</label>
+            <input type="text" id="tplShortcut" required placeholder="לדוגמה: -שיווק או /שלום">
+            <small class="form-help">הקלד קיצור זה בצ'אט כדי להפעיל את התבנית במהירות (למשל: <code>/מחיר</code>)</small>
+          </div>
+          
+          <div class="form-group">
+            <label for="tplCategory">קטגוריה</label>
+            <select id="tplCategory" required>
+              <option value="כללי">כללי</option>
+              <!-- Dynamic options -->
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="tplContent">תוכן ההודעה</label>
+          <textarea id="tplContent" rows="6" required placeholder="הקלד את ההודעה כאן.
+כדי להוסיף שדה דינמי (משתנה), השתמש בסוגריים מסולסלים, למשל: {שם לקוח} או {סכום}"></textarea>
+          <div class="placeholder-helper" style="display: flex; justify-content: space-between; align-items: center; margin-top: 6px;">
+            <span style="font-size: 11px; color: var(--text-secondary);">טיפ: הוסף משתנים כמו <code>{שם}</code>, <code>{תאריך}</code>.</span>
+          </div>
+        </div>
+
+        <!-- AI Writing Assistant Panel -->
+        <div class="ai-assistant-panel" style="margin-bottom: 20px; background: rgba(99, 102, 241, 0.05); padding: 14px; border-radius: var(--border-radius); border: 1px dashed rgba(99, 102, 241, 0.25);">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <span style="font-size: 12px; font-weight: 600; color: #a5b4fc; display: flex; align-items: center; gap: 4px;">עוזר כתיבה AI ✨</span>
+            <span id="aiStatus" style="font-size: 11px; color: var(--text-secondary);"></span>
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <input type="text" id="aiPrompt" placeholder="מה ברצונך לשנות? (למשל: הפוך ליותר שיווקי, קצר, הוסף אימוג'ים...)" style="flex-grow: 1; padding: 8px 12px; font-size: 12px; height: 36px;">
+            <button type="button" id="aiGenerateBtn" class="btn btn-primary btn-sm" style="padding: 8px 12px; font-size: 12px; height: 36px; white-space: nowrap;">שפר טקסט</button>
+          </div>
+          <small class="form-help" style="margin-top: 6px; font-size: 10px; color: var(--text-secondary);">ה-AI ישמור על המשתנים שלך (כמו `{First Name}`) ללא שינוי.</small>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="cancelModalBtn">ביטול</button>
+          <button type="submit" class="btn btn-primary" id="saveTemplateBtn">שמור תבנית</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal for Creating Category -->
+  <div class="modal-backdrop" id="categoryModal" style="display: none;">
+    <div class="modal-card modal-sm">
+      <div class="modal-header">
+        <h2>קטגוריה חדשה</h2>
+        <button class="close-modal-btn" id="closeCategoryModalBtn">&times;</button>
+      </div>
+      <form id="categoryForm">
+        <div class="form-group">
+          <label for="catName">שם הקטגוריה</label>
+          <input type="text" id="catName" required placeholder="לדוגמה: תמיכה, הצעות מחיר">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="cancelCategoryModalBtn">ביטול</button>
+          <button type="submit" class="btn btn-primary">צור</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="options.js"></script>
+</body>
+</html>
