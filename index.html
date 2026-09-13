@@ -2338,17 +2338,21 @@
             let html = "";
             customCourses.forEach(c => {
                 const nameStr = (typeof escapeHTML === "function") ? escapeHTML(c.name) : c.name;
+                const hoursStr = (typeof escapeHTML === "function") ? escapeHTML(c.hours) : c.hours;
+                const codeStr = (typeof escapeHTML === "function") ? escapeHTML(c.code) : c.code;
+                const keyStr = (typeof escapeHTML === "function") ? escapeHTML(c.key) : c.key;
+
                 html += `
                     <div style="background: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px 14px; display: flex; justify-content: space-between; align-items: center; gap: 10px;">
                         <div>
                             <div style="font-weight: 700; font-size: 13.5px; color: var(--text-light);">${nameStr}</div>
                             <div style="font-size: 11.5px; color: #64748B; margin-top: 2px;">
-                                ⏱️ ${c.hours} שעות | 💰 ${c.originalPrice ? c.originalPrice.toLocaleString() + ' ₪' : ''} ${c.code ? '| 🔢 קוד: ' + c.code : ''}
+                                ⏱️ ${hoursStr} שעות | 💰 ${c.originalPrice ? c.originalPrice.toLocaleString() + ' ₪' : ''} ${c.code ? '| 🔢 קוד: ' + codeStr : ''}
                             </div>
                         </div>
                         <div style="display: flex; gap: 6px;">
-                            <button type="button" class="clear-btn" style="color: #3B82F6; border-color: #93C5FD; font-size: 11px; padding: 4px 8px;" onclick="editCustomCourse('${c.key}')">✏️ ערוך</button>
-                            <button type="button" class="clear-btn" style="color: #EF4444; border-color: #FCA5A5; font-size: 11px; padding: 4px 8px;" onclick="deleteCustomCourse('${c.key}')">🗑️ מחק</button>
+                            <button type="button" class="clear-btn" style="color: #3B82F6; border-color: #93C5FD; font-size: 11px; padding: 4px 8px;" data-key="${keyStr}" onclick="editCustomCourse(this.getAttribute('data-key'))">✏️ ערוך</button>
+                            <button type="button" class="clear-btn" style="color: #EF4444; border-color: #FCA5A5; font-size: 11px; padding: 4px 8px;" data-key="${keyStr}" onclick="deleteCustomCourse(this.getAttribute('data-key'))">🗑️ מחק</button>
                         </div>
                     </div>
                 `;
