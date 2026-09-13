@@ -4248,14 +4248,15 @@ CRITICAL SALES RESPONSE REQUIREMENTS:
 }
 
 function base64ToBlob(base64, type) {
-  const parts = base64.split(';base64,');
-  const raw = window.atob(parts[1]);
-  const rawLength = raw.length;
-  const uInt8Array = new Uint8Array(rawLength);
-  for (let i = 0; i < rawLength; ++i) {
-    uInt8Array[i] = raw.charCodeAt(i);
+  const parts = base64.split(",");
+  const base64Data = parts.length > 1 ? parts[1] : base64;
+  const binStr = window.atob(base64Data);
+  const len = binStr.length;
+  const arr = new Uint8Array(len);
+  for (let i = 0; i < len; i++) {
+    arr[i] = binStr.charCodeAt(i);
   }
-  return new Blob([uInt8Array], { type: type });
+  return new Blob([arr], { type: type });
 }
 
 function escapeHTML(str) {
