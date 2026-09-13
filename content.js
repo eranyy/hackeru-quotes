@@ -2572,20 +2572,30 @@ function getWhatsAppEditor() {
   };
 
   // 1. Explicitly target WhatsApp Web main chat editor in footer
-  const waMainFooterEditor = document.querySelector('#main footer div[contenteditable="true"]') || 
-                             document.querySelector('#main div[contenteditable="true"][data-tab="10"]') ||
-                             document.querySelector('#main div[contenteditable="true"]');
-  if (waMainFooterEditor && !isAssistantUI(waMainFooterEditor)) {
-    return waMainFooterEditor;
+  const waSelectors = [
+    '#main footer div[contenteditable="true"]',
+    '#main div[contenteditable="true"][data-tab="10"]',
+    '#main div[contenteditable="true"]'
+  ];
+  for (const selector of waSelectors) {
+    const editor = document.querySelector(selector);
+    if (editor && !isAssistantUI(editor)) {
+      return editor;
+    }
   }
 
   // 2. Outlook Web / Gmail / External Webmail editors
-  const outlookEditor = document.querySelector('div[contenteditable="true"][aria-label*="Message body" i]') ||
-                        document.querySelector('div[contenteditable="true"][aria-label*="גוף ההודעה" i]') ||
-                        document.querySelector('div[contenteditable="true"][aria-label*="תוכן" i]') ||
-                        document.querySelector('div[contenteditable="true"].elementToProof') ||
-                        document.querySelector('div[role="textbox"][contenteditable="true"]');
-  if (outlookEditor) return outlookEditor;
+  const outlookSelectors = [
+    'div[contenteditable="true"][aria-label*="Message body" i]',
+    'div[contenteditable="true"][aria-label*="גוף ההודעה" i]',
+    'div[contenteditable="true"][aria-label*="תוכן" i]',
+    'div[contenteditable="true"].elementToProof',
+    'div[role="textbox"][contenteditable="true"]'
+  ];
+  for (const selector of outlookSelectors) {
+    const editor = document.querySelector(selector);
+    if (editor) return editor;
+  }
 
   if (document.activeElement && !isAssistantUI(document.activeElement) && (
     document.activeElement.getAttribute('contenteditable') === 'true' ||
