@@ -5381,7 +5381,8 @@ function extractClientFromPrizaOrSelection() {
   const isPriza = window.location.hostname.includes("priza.net") || window.location.hostname.includes("hackeru");
   if (isPriza) {
     try {
-      const candidates = document.querySelectorAll("span, div, td, b, strong, p, a, label, h1, h2, h3, font");
+      const container = document.querySelector(".main-content, #main, #content, .container, main") || document.body || document;
+      const candidates = container.querySelectorAll("span, div, td, b, strong, p, a, label, h1, h2, h3, font");
       for (const el of candidates) {
         if (el.children.length > 6) continue;
         const text = (el.innerText || el.textContent || "").trim();
