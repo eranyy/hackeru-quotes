@@ -1,3 +1,17 @@
+// Helpers
+function escapeHTML(str) {
+  if (!str) return '';
+  return String(str).replace(/[&<>'"]/g,
+    tag => ({
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      "'": '&#39;',
+      '"': '&quot;'
+    }[tag] || tag)
+  );
+}
+
 // Global Error Handlers for options page
 window.onerror = function(message, source, lineno, colno, error) {
   const errDiv = document.createElement('div');
@@ -14,7 +28,7 @@ window.onerror = function(message, source, lineno, colno, error) {
   errDiv.style.direction = 'ltr';
   errDiv.style.textAlign = 'left';
   errDiv.style.boxShadow = '0 4px 12px rgba(0,0,0,0.3)';
-  errDiv.innerHTML = `<h3>JS Error:</h3><p>${message}</p><p>Source: ${source}:${lineno}</p>`;
+  errDiv.innerHTML = `<h3>JS Error:</h3><p>${escapeHTML(String(message))}</p><p>Source: ${escapeHTML(String(source))}:${lineno}</p>`;
   (document.body || document.documentElement).appendChild(errDiv);
   return false;
 };
@@ -32,7 +46,7 @@ window.onunhandledrejection = function(event) {
   errDiv.style.fontFamily = 'monospace';
   errDiv.style.direction = 'ltr';
   errDiv.style.textAlign = 'left';
-  errDiv.innerHTML = `<h3>Promise Rejection:</h3><p>${event.reason}</p>`;
+  errDiv.innerHTML = `<h3>Promise Rejection:</h3><p>${escapeHTML(String(event.reason))}</p>`;
   (document.body || document.documentElement).appendChild(errDiv);
 };
 
@@ -344,18 +358,6 @@ function renderTemplates() {
   }
 }
 
-// Helpers
-function escapeHTML(str) {
-  return str.replace(/[&<>'"]/g, 
-    tag => ({
-      '&': '&amp;',
-      '<': '&lt;',
-      '>': '&gt;',
-      "'": '&#39;',
-      '"': '&quot;'
-    }[tag] || tag)
-  );
-}
 
 function saveToStorage() {
   if (typeof chrome !== "undefined" && chrome.storage && chrome.storage.local) {
