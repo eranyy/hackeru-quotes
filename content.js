@@ -7643,8 +7643,19 @@ function updateReminderIndicators() {
     // 2. Chat List (Left Pane) Indicator
     const chatCells = document.querySelectorAll('[data-testid="cell-frame-container"]');
     chatCells.forEach(cell => {
-      const nameEl = cell.querySelector('[dir="auto"], span[title]');
+      let state = cellStateCache.get(cell);
+
+      // If we don't have a state, or the previously cached nameEl is no longer connected to the DOM, re-query it
+      if (!state || !state.nameEl || !state.nameEl.isConnected) {
+        state = { nameEl: cell.querySelector('[dir="auto"], span[title]') };
+        cellStateCache.set(cell, state);
+      }
+
+      const nameEl = state.nameEl;
       if (!nameEl) return;
+
+      // We must re-read the text content on each tick because WhatsApp Web uses a
+      // virtualized list and recycles these DOM nodes when scrolling.
       const rawCellText = (nameEl.title || nameEl.innerText || "").replace(/🔔/g, "").trim();
       const cellDigits = rawCellText.replace(/\D/g, "");
       
@@ -7659,58 +7670,77 @@ function updateReminderIndicators() {
         return false;
       });
       
-      const existingBells = cell.querySelectorAll(".wa-list-glowing-bell");
       if (hasReminder) {
-        if (existingBells.length === 0) {
-          const cellBell = document.createElement("span");
-          cellBell.className = "wa-list-glowing-bell";
-          cellBell.innerHTML = "🔔";
-          cellBell.title = "יש תזכורת פעילה! לחץ לצפייה מהירה.";
-          cellBell.style.cssText = `
-            margin-right: 6px;
-            margin-left: 6px;
-            font-size: 13px;
-            animation: wa-bell-glow 1.5s infinite alternate;
-            color: #eab308;
-            display: inline-block;
-            cursor: pointer;
-          `;
-          cellBell.addEventListener("click", (e) => {
-            e.stopPropagation();
-            if (!sidebarOpen) toggleSidebar();
-            const tabBtn = document.getElementById("wa-tab-reminders-btn");
-            if (tabBtn) tabBtn.click();
-            
-            const rem = reminders.find(r => r && (r.chatTitle === rawCellText || r.chatId === rawCellText || (cellDigits && r.chatId && r.chatId.includes(cellDigits))));
-            if (rem) {
-              setTimeout(() => {
-                const card = document.getElementById(`wa-reminder-card-${rem.id}`);
-                if (card) {
-                  card.scrollIntoView({ behavior: "smooth", block: "center" });
-                  card.style.transition = "all 0.3s ease";
-                  card.style.outline = "2px solid #ca8a04";
-                  card.style.boxShadow = "0 0 15px rgba(234, 179, 8, 0.4)";
-                  setTimeout(() => {
-                    card.style.outline = "none";
-                    card.style.boxShadow = "none";
-                  }, 2000);
-                }
-              }, 150);
+        // If React re-rendered and wiped our injected bell, we must re-inject it.
+        // We verify that state.bellEl is still connected to the DOM.
+        if (!state.hasBell || (state.bellEl && !state.bellEl.isConnected)) {
+          const existingBells = cell.querySelectorAll(".wa-list-glowing-bell");
+          if (existingBells.length === 0) {
+            const cellBell = document.createElement("span");
+            cellBell.className = "wa-list-glowing-bell";
+            cellBell.innerHTML = "🔔";
+            cellBell.title = "יש תזכורת פעילה! לחץ לצפייה מהירה.";
+            cellBell.style.cssText = `
+              margin-right: 6px;
+              margin-left: 6px;
+              font-size: 13px;
+              animation: wa-bell-glow 1.5s infinite alternate;
+              color: #eab308;
+              display: inline-block;
+              cursor: pointer;
+            `;
+            cellBell.addEventListener("click", (e) => {
+              e.stopPropagation();
+              if (!sidebarOpen) toggleSidebar();
+              const tabBtn = document.getElementById("wa-tab-reminders-btn");
+              if (tabBtn) tabBtn.click();
+
+              const rem = reminders.find(r => r && (r.chatTitle === rawCellText || r.chatId === rawCellText || (cellDigits && r.chatId && r.chatId.includes(cellDigits))));
+              if (rem) {
+                setTimeout(() => {
+                  const card = document.getElementById(`wa-reminder-card-${rem.id}`);
+                  if (card) {
+                    card.scrollIntoView({ behavior: "smooth", block: "center" });
+                    card.style.transition = "all 0.3s ease";
+                    card.style.outline = "2px solid #ca8a04";
+                    card.style.boxShadow = "0 0 15px rgba(234, 179, 8, 0.4)";
+                    setTimeout(() => {
+                      card.style.outline = "none";
+                      card.style.boxShadow = "none";
+                    }, 2000);
+                  }
+                }, 150);
+              }
+            });
+            const nameParent = nameEl.parentElement;
+            if (nameParent) {
+              nameParent.appendChild(cellBell);
+              state.hasBell = true;
+              state.bellEl = cellBell;
             }
-          });
-          const nameParent = nameEl.parentElement;
-          if (nameParent) {
-            nameParent.appendChild(cellBell);
+          } else {
+            state.hasBell = true;
+            state.bellEl = existingBells[0];
           }
         }
       } else {
-        existingBells.forEach(el => el.remove());
+        if (state.hasBell || state.hasBell === undefined) {
+          if (state.bellEl && state.bellEl.isConnected) {
+            state.bellEl.remove();
+          } else {
+            const existingBells = cell.querySelectorAll(".wa-list-glowing-bell");
+            existingBells.forEach(el => el.remove());
+          }
+          state.hasBell = false;
+          state.bellEl = null;
+        }
       }
     });
   } catch (err) {
     console.error("Critical error in updateReminderIndicators:", err);
   }
 }
+const cellStateCache = new WeakMap();
 let lastStorageSyncCheck = 0;
 
 // Background reminder check loop (Synchronized across all open tabs)
