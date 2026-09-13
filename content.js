@@ -2561,45 +2561,68 @@ function renderFloatingPinnedBar() {
   });
 }
 
-function getWhatsAppEditor() {
-  const isAssistantUI = (el) => {
-    if (!el) return false;
-    return el.closest('#wa-assistant-sidebar-panel') ||
-           el.closest('.wa-modal-overlay') ||
-           el.closest('#wa-floating-alert-card') ||
-           (el.id && el.id.startsWith('wa-')) ||
-           el.classList.contains('wa-pl-input');
-  };
+const isAssistantUI = (el) => {
+  if (!el) return false;
+  return el.closest('#wa-assistant-sidebar-panel') ||
+         el.closest('.wa-modal-overlay') ||
+         el.closest('#wa-floating-alert-card') ||
+         (el.id && el.id.startsWith('wa-')) ||
+         el.classList.contains('wa-pl-input');
+};
 
+const getWhatsAppWebEditor = () => {
+  return document.querySelector('#main footer div[contenteditable="true"]') ||
+         document.querySelector('#main div[contenteditable="true"][data-tab="10"]') ||
+         document.querySelector('#main div[contenteditable="true"]');
+};
+
+const getWebmailEditor = () => {
+  return document.querySelector('div[contenteditable="true"][aria-label*="Message body" i]') ||
+         document.querySelector('div[contenteditable="true"][aria-label*="גוף ההודעה" i]') ||
+         document.querySelector('div[contenteditable="true"][aria-label*="תוכן" i]') ||
+         document.querySelector('div[contenteditable="true"].elementToProof') ||
+         document.querySelector('div[role="textbox"][contenteditable="true"]');
+};
+
+const getActiveEditorElement = () => {
+  const active = document.activeElement;
+  if (!active || isAssistantUI(active)) return null;
+
+  if (
+    active.getAttribute('contenteditable') === 'true' ||
+    active.tagName === 'TEXTAREA' ||
+    active.tagName === 'INPUT' ||
+    active.getAttribute('role') === 'textbox'
+  ) {
+    return active;
+  }
+  return null;
+};
+
+const getFallbackEditor = () => {
+  const editors = document.querySelectorAll('div[contenteditable="true"]');
+  const validEditors = Array.from(editors).filter(e => !isAssistantUI(e));
+  if (validEditors.length > 0) return validEditors[validEditors.length - 1];
+  return null;
+};
+
+function getWhatsAppEditor() {
   // 1. Explicitly target WhatsApp Web main chat editor in footer
-  const waMainFooterEditor = document.querySelector('#main footer div[contenteditable="true"]') || 
-                             document.querySelector('#main div[contenteditable="true"][data-tab="10"]') ||
-                             document.querySelector('#main div[contenteditable="true"]');
+  const waMainFooterEditor = getWhatsAppWebEditor();
   if (waMainFooterEditor && !isAssistantUI(waMainFooterEditor)) {
     return waMainFooterEditor;
   }
 
   // 2. Outlook Web / Gmail / External Webmail editors
-  const outlookEditor = document.querySelector('div[contenteditable="true"][aria-label*="Message body" i]') ||
-                        document.querySelector('div[contenteditable="true"][aria-label*="גוף ההודעה" i]') ||
-                        document.querySelector('div[contenteditable="true"][aria-label*="תוכן" i]') ||
-                        document.querySelector('div[contenteditable="true"].elementToProof') ||
-                        document.querySelector('div[role="textbox"][contenteditable="true"]');
+  const outlookEditor = getWebmailEditor();
   if (outlookEditor) return outlookEditor;
 
-  if (document.activeElement && !isAssistantUI(document.activeElement) && (
-    document.activeElement.getAttribute('contenteditable') === 'true' ||
-    document.activeElement.tagName === 'TEXTAREA' ||
-    document.activeElement.tagName === 'INPUT' ||
-    document.activeElement.getAttribute('role') === 'textbox'
-  )) {
-    return document.activeElement;
-  }
+  // 3. Active element check
+  const activeEditor = getActiveEditorElement();
+  if (activeEditor) return activeEditor;
 
-  const editors = document.querySelectorAll('div[contenteditable="true"]');
-  const validEditors = Array.from(editors).filter(e => !isAssistantUI(e));
-  if (validEditors.length > 0) return validEditors[validEditors.length - 1];
-  return null;
+  // 4. Fallback to generic contenteditable
+  return getFallbackEditor();
 }
 
 // Global flag to prevent re-entrant duplicate template injections during synthetic input events
