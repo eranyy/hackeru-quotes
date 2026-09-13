@@ -14,7 +14,19 @@ window.onerror = function(message, source, lineno, colno, error) {
   errDiv.style.direction = 'ltr';
   errDiv.style.textAlign = 'left';
   errDiv.style.boxShadow = '0 4px 12px rgba(0,0,0,0.3)';
-  errDiv.innerHTML = `<h3>JS Error:</h3><p>${message}</p><p>Source: ${source}:${lineno}</p>`;
+
+  const h3 = document.createElement('h3');
+  h3.textContent = 'JS Error:';
+  errDiv.appendChild(h3);
+
+  const pMsg = document.createElement('p');
+  pMsg.textContent = String(message);
+  errDiv.appendChild(pMsg);
+
+  const pSource = document.createElement('p');
+  pSource.textContent = `Source: ${String(source)}:${lineno}`;
+  errDiv.appendChild(pSource);
+
   (document.body || document.documentElement).appendChild(errDiv);
   return false;
 };
@@ -32,7 +44,15 @@ window.onunhandledrejection = function(event) {
   errDiv.style.fontFamily = 'monospace';
   errDiv.style.direction = 'ltr';
   errDiv.style.textAlign = 'left';
-  errDiv.innerHTML = `<h3>Promise Rejection:</h3><p>${event.reason}</p>`;
+
+  const h3 = document.createElement('h3');
+  h3.textContent = 'Promise Rejection:';
+  errDiv.appendChild(h3);
+
+  const p = document.createElement('p');
+  p.textContent = String(event.reason);
+  errDiv.appendChild(p);
+
   (document.body || document.documentElement).appendChild(errDiv);
 };
 
