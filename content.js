@@ -436,14 +436,8 @@ function fetchInitialCloudSync(callback) {
     throw new Error("HTTP " + res.status);
   }).then(cloudData => {
     if (cloudData && typeof cloudData === "object") {
-      const hasCloudContent = (cloudData.reminders && cloudData.reminders.length > 0) ||
-                              (cloudData.leadsTracker && cloudData.leadsTracker.length > 0) ||
-                              (cloudData.paymentsTracker && cloudData.paymentsTracker.length > 0) ||
-                              (cloudData.templates && cloudData.templates.length > 0);
-      
-      const hasLocalContent = (reminders && reminders.length > 0) ||
-                              (leadsTracker && leadsTracker.length > 0) ||
-                              (paymentsTracker && paymentsTracker.length > 0);
+      const hasCloudContent = ["reminders", "leadsTracker", "paymentsTracker", "templates"].some(key => cloudData[key]?.length > 0);
+      const hasLocalContent = [reminders, leadsTracker, paymentsTracker].some(arr => arr?.length > 0);
 
       if (hasCloudContent) {
         handleIncomingCloudSync(cloudData);
